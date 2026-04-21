@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Hồ sơ học viên</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="page-bg">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="header-left">
+        <a href="/index.html" class="logo">
+          <div class="logo-box"><i class="fas fa-graduation-cap"></i></div>
+          <span>Gia Sư Việt</span>
+        </a>
+        <nav class="desktop-nav">
+          <a href="/index.html">Trang chủ</a>
+          <a href="/tim-gia-su.html">Tìm gia sư</a>
+          <a href="/lop-gia-su.html">Tìm lớp học</a>
+        </nav>
+      </div>
+      <div class="header-right" id="headerRight"></div>
+      <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+    </div>
+    <div id="mobileMenu" class="mobile-menu hidden"></div>
+  </header>
+
+  <main class="profile-page">
+    <div class="container">
+      <div class="profile-layout">
+        <aside class="profile-sidebar">
+          <nav class="profile-nav">
+            <a href="#personal-info" class="profile-tab active" data-section="personal-info"><i class="fas fa-user"></i><span>Thông tin cơ bản</span></a>
+            <a href="#password" class="profile-tab" data-section="password"><i class="fas fa-lock"></i><span>Đổi mật khẩu</span></a>
+            <a href="#identity-verification" class="profile-tab" data-section="identity-verification"><i class="fas fa-id-card"></i><span>Xác minh danh tính</span></a>
+          </nav>
+        </aside>
+
+        <section class="profile-main">
+          <div id="personal-info" class="profile-section">
+            <div class="section-heading">
+              <h1>Hồ sơ cá nhân</h1>
+              <p>Cập nhật thông tin cơ bản của tài khoản học viên.</p>
+            </div>
+
+            <form id="learnerProfileForm" class="card-box stack-lg">
+              <div class="avatar-row">
+                <div class="avatar-preview-wrap">
+                  <img id="profileAvatar" class="profile-avatar-large" src="https://ui-avatars.com/api/?name=User&background=2563eb&color=fff&size=220" alt="Avatar">
+                  <button type="button" id="deleteAvatarButton" class="avatar-delete-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <div>
+                  <label for="avatarUpload" class="btn btn-outline-dark upload-btn"><i class="fas fa-upload"></i> Tải ảnh lên</label>
+                  <input id="avatarUpload" type="file" class="hidden" accept="image/*">
+                  <p class="helper-text">JPG, PNG tối đa 5MB</p>
+                </div>
+              </div>
+
+              <div class="form-grid two-cols">
+                <div class="form-group">
+                  <label for="fullNameInput">Họ và tên *</label>
+                  <input id="fullNameInput" required maxlength="100">
+                </div>
+                <div class="form-group">
+                  <label for="emailInput">Email</label>
+                  <input id="emailInput" disabled>
+                </div>
+                <div class="form-group">
+                  <label for="phoneInput">Số điện thoại</label>
+                  <input id="phoneInput" maxlength="20">
+                </div>
+                <div class="form-group">
+                  <label for="birthDateInput">Ngày sinh</label>
+                  <input id="birthDateInput" type="date">
+                </div>
+                <div class="form-group">
+                  <label for="genderSelect">Giới tính</label>
+                  <select id="genderSelect">
+                    <option value="OTHER">Khác</option>
+                    <option value="MALE">Nam</option>
+                    <option value="FEMALE">Nữ</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="statusInput">Trạng thái tài khoản</label>
+                  <input id="statusInput" disabled>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="addressInput">Địa chỉ</label>
+                <input id="addressInput" maxlength="255" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành">
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-primary btn-lg"><i class="fas fa-save"></i> Lưu thay đổi</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="password" class="profile-section hidden">
+            <div class="section-heading">
+              <h1>Đổi mật khẩu</h1>
+              <p>Cập nhật mật khẩu tài khoản học viên.</p>
+            </div>
+
+            <form id="learnerPasswordForm" class="card-box stack-md">
+              <div class="form-group"><label for="currentPasswordInput">Mật khẩu hiện tại *</label><input id="currentPasswordInput" type="password" required></div>
+              <div class="form-group"><label for="newPasswordInput">Mật khẩu mới *</label><input id="newPasswordInput" type="password" required></div>
+              <div class="form-group"><label for="confirmPasswordInput">Xác nhận mật khẩu mới *</label><input id="confirmPasswordInput" type="password" required></div>
+              <div class="form-actions">
+                <button class="btn btn-primary btn-lg"><i class="fas fa-key"></i> Đổi mật khẩu</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="identity-verification" class="profile-section hidden">
+            <div class="section-heading">
+              <h1>Xác minh danh tính</h1>
+              <p>Cập nhật thông tin xác minh và gửi duyệt.</p>
+            </div>
+            <form id="learnerIdentityVerificationForm" class="card-box stack-md">
+              <div class="form-group">
+                <label for="learnerIdentityStatusInput">Trạng thái</label>
+                <input id="learnerIdentityStatusInput" disabled>
+              </div>
+              <div class="form-grid two-cols">
+                <div class="form-group"><label for="learnerIdFullNameInput">Họ tên trên giấy tờ *</label><input id="learnerIdFullNameInput" maxlength="120" required></div>
+                <div class="form-group"><label for="learnerIdNumberInput">Số giấy tờ *</label><input id="learnerIdNumberInput" maxlength="20" required></div>
+                <div class="form-group"><label for="learnerIdDobInput">Ngày sinh trên giấy tờ</label><input id="learnerIdDobInput" type="date"></div>
+                <div class="form-group"><label for="learnerIdIssuedDateInput">Ngày cấp</label><input id="learnerIdIssuedDateInput" type="date"></div>
+                <div class="form-group"><label for="learnerIdIssuedPlaceInput">Nơi cấp</label><input id="learnerIdIssuedPlaceInput" maxlength="255"></div>
+                <div class="form-group"><label for="learnerIdAddressInput">Địa chỉ trên giấy tờ</label><input id="learnerIdAddressInput" maxlength="255"></div>
+
+                <div class="form-group">
+                  <label for="learnerIdFrontImageInput">Link ảnh mặt trước *</label>
+                  <input id="learnerIdFrontImageInput" maxlength="500">
+                  <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <label for="learnerIdFrontFile" class="btn btn-outline-dark"><i class="fas fa-upload"></i> Chọn ảnh từ máy</label>
+                    <input id="learnerIdFrontFile" type="file" class="hidden" accept="image/*">
+                    <a id="learnerIdFrontPreview" class="text-link" href="#" target="_blank" rel="noopener">Xem ảnh</a>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="learnerIdBackImageInput">Link ảnh mặt sau *</label>
+                  <input id="learnerIdBackImageInput" maxlength="500">
+                  <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <label for="learnerIdBackFile" class="btn btn-outline-dark"><i class="fas fa-upload"></i> Chọn ảnh từ máy</label>
+                    <input id="learnerIdBackFile" type="file" class="hidden" accept="image/*">
+                    <a id="learnerIdBackPreview" class="text-link" href="#" target="_blank" rel="noopener">Xem ảnh</a>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="learnerIdSelfieImageInput">Link ảnh selfie *</label>
+                  <input id="learnerIdSelfieImageInput" maxlength="500">
+                  <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <label for="learnerIdSelfieFile" class="btn btn-outline-dark"><i class="fas fa-upload"></i> Chọn ảnh từ máy</label>
+                    <input id="learnerIdSelfieFile" type="file" class="hidden" accept="image/*">
+                    <a id="learnerIdSelfiePreview" class="text-link" href="#" target="_blank" rel="noopener">Xem ảnh</a>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="learnerIdentityRejectedReasonInput">Lý do từ chối (nếu có)</label>
+                <input id="learnerIdentityRejectedReasonInput" disabled>
+              </div>
+              <div class="form-actions">
+                <button type="button" id="learnerSaveIdentityDraftBtn" class="btn btn-outline-dark btn-lg"><i class="fas fa-save"></i> Lưu nháp</button>
+                <button class="btn btn-primary btn-lg"><i class="fas fa-paper-plane"></i> Gửi xác minh</button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer"></footer>
+  <script src="../assets/js/app.js"></script>
+  <script src="../assets/js/api-client.js"></script>
+  <script src="../assets/js/learner-profile.js?v=20260421-1"></script>
+</body>
+</html>

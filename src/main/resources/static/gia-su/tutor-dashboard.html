@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Dashboard Gia sư</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="page-bg">
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="header-left">
+      <a href="/index.html" class="logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Cổng Gia Sư</span></a>
+      <nav class="desktop-nav"><a href="/index.html">Trang chủ</a><a href="/tim-gia-su.html">Tìm gia sư</a><a href="/lop-gia-su.html">Tìm lớp học</a></nav>
+    </div>
+    <div class="header-right" id="headerRight"></div>
+    <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+  </div>
+  <div id="mobileMenu" class="mobile-menu hidden"><a href="/index.html">Trang chủ</a><a href="/tim-gia-su.html">Tìm gia sư</a><a href="/lop-gia-su.html">Tìm lớp học</a></div>
+</header>
+
+<main class="page-section">
+  <div class="container">
+    <div class="heading"><h1>Dashboard Gia sư</h1><p>Tổng quan hoạt động, hồ sơ và lớp học của bạn</p></div>
+
+    <div class="kpi-grid">
+      <div class="kpi"><strong id="kpiPosts">0</strong><span>Bài đăng phù hợp</span></div>
+      <div class="kpi"><strong id="kpiPendingApps">0</strong><span>Đơn ứng tuyển đang chờ</span></div>
+      <div class="kpi"><strong id="kpiCourses">0</strong><span>Lớp/khóa học của tôi</span></div>
+      <div class="kpi"><strong id="kpiUnreadNoti">0</strong><span>Thông báo chưa đọc</span></div>
+    </div>
+
+    <div class="dashboard-grid" style="margin-top:24px">
+      <section class="dashboard-stack">
+        <div class="card-box">
+          <h2 class="detail-section-title">Bài đăng mới phù hợp</h2>
+          <div id="availablePosts" class="mini-list"></div>
+        </div>
+        <div class="card-box">
+          <h2 class="detail-section-title">Đơn ứng tuyển gần đây</h2>
+          <div id="recentApplications" class="mini-list"></div>
+        </div>
+      </section>
+
+      <aside class="dashboard-stack">
+        <div class="card-box">
+          <h2 class="detail-sidebar-title">Trạng thái hồ sơ</h2>
+          <div class="badge-row"><span id="profileStatusBadge" class="badge badge-gray">Chưa có dữ liệu</span></div>
+          <p id="profileStatusText" class="muted">Đang tải thông tin hồ sơ...</p>
+        </div>
+        <div class="card-box">
+          <h2 class="detail-sidebar-title">Lớp học gần đây</h2>
+          <div id="recentCourses" class="mini-list"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer"><div class="container footer-grid"><div><div class="logo footer-logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Cổng Gia Sư</span></div><p>Nền tảng kết nối gia sư và học viên hàng đầu Việt Nam</p><p>Địa chỉ: 122 Hoàng Quốc Việt, Cầu Giấy, Hà Nội</p></div><div><h3>Dành cho học viên</h3><a href="/tim-gia-su.html">Tìm gia sư</a></div><div><h3>Dành cho gia sư</h3><a href="/gia-su/profile.html">Hồ sơ</a></div><div><h3>Hỗ trợ</h3><a href="#">Liên hệ</a></div></div><div class="footer-bottom">© 2025 Cổng Gia Sư. Tất cả quyền được bảo lưu.</div></footer>
+
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/api-client.js"></script>
+<script src="../assets/js/tutor-dashboard.js"></script>
+</body>
+</html>

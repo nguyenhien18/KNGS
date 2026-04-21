@@ -1,0 +1,8 @@
+﻿target/
+.idea/
+.vscode/
+*.log
+uploads/
+.env
+.env.*
+secrets-local.properties

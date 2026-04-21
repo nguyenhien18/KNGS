@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Tao bai dang hoc vien</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="page-bg">
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="header-left">
+      <a href="/index.html" class="logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Gia Su Viet</span></a>
+      <nav class="desktop-nav"><a href="/index.html">Trang chu</a><a href="/tim-gia-su.html">Tim gia su</a><a href="/lop-gia-su.html">Tim lop hoc</a></nav>
+    </div>
+    <div class="header-right" id="headerRight"></div>
+    <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+  </div>
+  <div id="mobileMenu" class="mobile-menu hidden"></div>
+</header>
+
+<main class="create-page">
+  <div class="container create-wrap">
+    <div class="section-heading">
+      <h1>Tao bai dang tim gia su</h1>
+      <p>Nhap thong tin nhu cau hoc de he thong duyet va ket noi gia su phu hop.</p>
+    </div>
+
+    <div class="approval-banner pending" style="margin-bottom:18px">
+      <i class="fas fa-hourglass-half"></i>
+      <div>
+        <strong>Quy trinh duyet bai dang</strong>
+        <div class="helper-text">Bai dang moi se o trang thai <strong>Cho duyet</strong>. Quan tri vien co the duyet hoac tu choi.</div>
+      </div>
+    </div>
+
+    <form id="createPostForm">
+      <section class="form-section">
+        <h2>Thong tin co ban</h2>
+        <div class="form-group">
+          <label>Tieu de bai dang *</label>
+          <input id="postTitle" maxlength="120" placeholder="Vi du: Tim gia su Toan 11 luyen thi hoc ky">
+        </div>
+        <div class="form-grid two-cols mt-20">
+          <div class="form-group">
+            <label>Mon hoc *</label>
+            <select id="postSubject"></select>
+          </div>
+          <div class="form-group">
+            <label>Khoi lop *</label>
+            <select id="postGrade"></select>
+          </div>
+          <div class="form-group">
+            <label>Hinh thuc hoc *</label>
+            <select id="postMode">
+              <option value="ONLINE">ONLINE</option>
+              <option value="OFFLINE">OFFLINE</option>
+              <option value="BOTH">BOTH</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Ngân sách / buổi (VND)</label>
+            <input id="postBudget" type="number" min="0" placeholder="Ví dụ: 200000">
+          </div>
+        </div>
+
+        <div class="form-group mt-20">
+          <label>Mo ta nhu cau</label>
+          <textarea id="postDescription" rows="5" maxlength="1200" placeholder="Mo ta chi tiet muc tieu hoc, mong muon ve gia su..."></textarea>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Lich hoc va dia diem</h2>
+        <div class="form-grid two-cols">
+          <div class="form-group">
+            <label>Tinh / Thanh pho</label>
+            <select id="postProvince">
+              <option value="">Chon khu vuc</option>
+              <option>Ha Noi</option>
+              <option>TP.HCM</option>
+              <option>Da Nang</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Quan / Huyen</label>
+            <input id="postDistrict" placeholder="Vi du: Cau Giay">
+          </div>
+        </div>
+
+        <div class="form-group mt-20">
+          <label>Dia chi cu the</label>
+          <input id="postAddress" maxlength="255" placeholder="So nha, duong... (neu hoc offline)">
+        </div>
+
+        <div class="form-group mt-20">
+          <label>Lich hoc mong muon</label>
+          <input id="postStudyTime" maxlength="120" placeholder="Vi du: Toi T3, T5, T7 - 19h30 den 21h">
+        </div>
+      </section>
+
+      <div class="sticky-submit">
+        <a class="btn btn-outline-dark" href="/hoc-vien/learner-posts.html"><i class="fas fa-arrow-left"></i> Quay lai</a>
+        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-paper-plane"></i> Tao bai dang</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<footer class="site-footer"></footer>
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/api-client.js"></script>
+<script src="../assets/js/create-post.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Lop da ghep</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="page-bg">
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="header-left">
+      <a href="/index.html" class="logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Gia Su Viet</span></a>
+      <nav class="desktop-nav"><a href="/index.html">Trang chu</a><a href="/tim-gia-su.html">Tim gia su</a><a href="/lop-gia-su.html">Tim lop hoc</a></nav>
+    </div>
+    <div class="header-right" id="headerRight"></div>
+    <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+  </div>
+  <div id="mobileMenu" class="mobile-menu hidden"></div>
+</header>
+<main class="container page-section">
+  <div class="heading"><h1>Lop da ghep</h1><p>Quan ly cac lop 1-1 da ghep tu bai dang da duoc chap nhan gia su</p></div>
+
+  <div class="manage-tabs" id="classTabs">
+    <button class="manage-tab active" data-filter="ALL">Tat ca</button>
+    <button class="manage-tab" data-filter="ACTIVE">Dang hoc</button>
+    <button class="manage-tab" data-filter="COMPLETED">Da hoan thanh</button>
+  </div>
+
+  <div class="toolbar-split">
+    <div class="result-text-big" id="classesCountText">0 lop</div>
+  </div>
+
+  <div id="classesList" class="list-grid"></div>
+</main>
+<footer class="site-footer"></footer>
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/api-client.js"></script>
+<script src="../assets/js/learner-classes.js"></script>
+</body>
+</html>

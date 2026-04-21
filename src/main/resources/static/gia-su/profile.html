@@ -1,0 +1,312 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Hồ sơ cá nhân</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="page-bg">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="header-left">
+        <a href="/index.html" class="logo">
+          <div class="logo-box"><i class="fas fa-graduation-cap"></i></div>
+          <span>Cổng Gia Sư</span>
+        </a>
+        <nav class="desktop-nav">
+          <a href="/index.html">Trang chủ</a>
+          <a href="/tim-gia-su.html">Tìm gia sư</a>
+          <a href="/lop-gia-su.html">Tìm lớp học</a>
+        </nav>
+      </div>
+      <div class="header-right" id="headerRight"></div>
+      <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+    </div>
+    <div id="mobileMenu" class="mobile-menu hidden">
+      <a href="/index.html">Trang chủ</a>
+      <a href="/tim-gia-su.html">Tìm gia sư</a>
+      <a href="/lop-gia-su.html">Tìm lớp học</a>
+    </div>
+  </header>
+
+  <main class="profile-page">
+    <div class="container">
+      <div class="profile-layout">
+        <aside class="profile-sidebar">
+          <nav class="profile-nav">
+            <a href="#personal-info" class="profile-tab active" data-section="personal-info"><i class="fas fa-user"></i><span>Thông tin cá nhân</span></a>
+            <a href="#password" class="profile-tab" data-section="password"><i class="fas fa-lock"></i><span>Mật khẩu</span></a>
+            <a href="#identity-verification" class="profile-tab" data-section="identity-verification"><i class="fas fa-id-card"></i><span>Xác minh danh tính</span></a>
+          </nav>
+        </aside>
+
+        <section class="profile-main">
+          <div id="personal-info" class="profile-section">
+            <div class="section-heading section-heading-split">
+              <div>
+                <h1>Hồ sơ cá nhân</h1>
+                <p>Cập nhật thông tin đúng với dữ liệu hệ thống đang hỗ trợ lưu trữ.</p>
+              </div>
+              <a id="viewMyPublicProfile" href="#" class="btn btn-outline-primary">
+                <i class="fas fa-eye"></i> Xem hồ sơ của tôi
+              </a>
+            </div>
+
+            <form class="stack-lg">
+              <div class="card-box">
+                <h2>Thông tin cơ bản</h2>
+                <div class="avatar-row">
+                  <div class="avatar-preview-wrap">
+                    <img id="profileAvatar" class="profile-avatar-large" src="https://ui-avatars.com/api/?name=Tutor&background=2563eb&color=fff&size=220" alt="Avatar">
+                    <button type="button" id="deleteAvatarButton" class="avatar-delete-btn"><i class="fas fa-times"></i></button>
+                  </div>
+                  <div>
+                    <label for="avatarUpload" class="btn btn-outline-dark upload-btn"><i class="fas fa-upload"></i> Tải ảnh lên</label>
+                    <input id="avatarUpload" type="file" class="hidden" accept="image/*">
+                    <p class="helper-text">JPG, PNG tối đa 2MB</p>
+                  </div>
+                </div>
+
+                <div class="form-grid two-cols">
+                  <div class="form-group">
+                    <label>Họ và tên *</label>
+                    <input id="fullNameInput" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Email</label>
+                    <input id="emailInput" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input id="phoneInput">
+                  </div>
+                  <div class="form-group">
+                    <label>Ngày sinh</label>
+                    <input id="birthDateInput" type="date">
+                  </div>
+                  <div class="form-group">
+                    <label>Giới tính</label>
+                    <select id="genderSelect">
+                      <option value="OTHER">Chọn giới tính</option>
+                      <option value="MALE">Nam</option>
+                      <option value="FEMALE">Nữ</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group mt-20">
+                  <label>Địa chỉ</label>
+                  <input id="addressInput" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành">
+                </div>
+              </div>
+
+              <div class="card-box">
+                <h2>Thông tin gia sư</h2>
+
+                <div class="form-grid two-cols">
+                  <div class="form-group">
+                    <label>Trình độ học vấn</label>
+                    <select id="qualificationSelect">
+                      <option value="">Chọn trình độ</option>
+                      <option value="Trung cấp">Trung cấp</option>
+                      <option value="Cao đẳng">Cao đẳng</option>
+                      <option value="Đại học">Đại học</option>
+                      <option value="Thạc sĩ">Thạc sĩ</option>
+                      <option value="Tiến sĩ">Tiến sĩ</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Kinh nghiệm giảng dạy</label>
+                    <select id="experienceSelect">
+                      <option value="">Chọn kinh nghiệm</option>
+                      <option value="Chưa có kinh nghiệm">Chưa có kinh nghiệm</option>
+                      <option value="Dưới 1 năm">Dưới 1 năm</option>
+                      <option value="1-3 năm">1-3 năm</option>
+                      <option value="3-5 năm">3-5 năm</option>
+                      <option value="Trên 5 năm">Trên 5 năm</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Hình thức dạy *</label>
+                    <select id="teachingModeSelect" required>
+                      <option value="BOTH">Cả online và offline</option>
+                      <option value="ONLINE">Online</option>
+                      <option value="OFFLINE">Offline</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Học phí/giờ</label>
+                    <input id="hourlyRateInput" type="number" min="0" step="1000" placeholder="Ví dụ: 150000">
+                  </div>
+                  <div class="form-group">
+                    <label>Tỉnh/Thành phố</label>
+                    <input id="provinceInput" placeholder="Ví dụ: Hà Nội">
+                  </div>
+                  <div class="form-group">
+                    <label>Quận/Huyện</label>
+                    <input id="districtInput" placeholder="Ví dụ: Cầu Giấy">
+                  </div>
+                </div>
+
+                <div class="form-group mt-20">
+                  <label>Môn dạy *</label>
+                  <div id="subjectsList" class="tag-editor-list"></div>
+                  <div class="tag-editor-input">
+                    <select id="subjectSelect">
+                      <option value="">Chọn môn dạy</option>
+                    </select>
+                    <button type="button" id="addSubjectBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm</button>
+                  </div>
+                </div>
+
+                <div class="form-group mt-20">
+                  <label>Khối lớp *</label>
+                  <div id="gradesList" class="tag-editor-list"></div>
+                  <div class="tag-editor-input">
+                    <select id="gradeSelect">
+                      <option value="">Chọn khối lớp hoặc nhóm khối</option>
+                    </select>
+                    <button type="button" id="addGradeBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm</button>
+                  </div>
+                </div>
+
+                <div class="form-group mt-20">
+                  <label>Giới thiệu bản thân</label>
+                  <textarea id="bio" maxlength="1000" rows="5" placeholder="Mô tả về bản thân, phương pháp giảng dạy, thành tích..."></textarea>
+                  <div class="char-counter-container" data-for="bio"></div>
+                </div>
+
+                <div class="form-group mt-20">
+                  <label>Bằng cấp</label>
+                  <div id="certificatesList" class="tag-editor-list"></div>
+                  <div class="tag-editor-input">
+                    <input id="certificateTitleInput" placeholder="Ví dụ: Cử nhân Sư phạm Toán">
+                    <button type="button" id="addCertificateBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm</button>
+                  </div>
+                  <div class="tag-editor-input mt-20">
+                    <label for="certificateImageFile" class="btn btn-outline-dark"><i class="fas fa-upload"></i> Tải ảnh bằng cấp</label>
+                    <input id="certificateImageFile" type="file" class="hidden" accept="image/*">
+                    <input id="certificateImageUrlInput" placeholder="Hoặc dán link ảnh bằng cấp (nếu có)">
+                    <a id="certificateImagePreview" class="text-link hidden" href="#" target="_blank" rel="noopener">Xem ảnh</a>
+                  </div>
+                  <p class="helper-text">Trên hồ sơ cá nhân chỉ hiển thị tên bằng cấp. Ảnh bằng cấp (nếu có) chỉ admin xem.</p>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-primary btn-lg"><i class="fas fa-save"></i> Lưu tất cả thay đổi</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="password" class="profile-section hidden">
+            <div class="section-heading"><h1>Đổi mật khẩu</h1><p>Cập nhật mật khẩu của bạn</p></div>
+            <form class="card-box stack-md">
+              <div class="form-group"><label>Mật khẩu hiện tại *</label><input type="password"></div>
+              <div class="form-group"><label>Mật khẩu mới *</label><input type="password"></div>
+              <div class="form-group"><label>Xác nhận mật khẩu mới *</label><input type="password"></div>
+              <div class="password-footer"><a href="#" class="text-link">Quên mật khẩu?</a><button class="btn btn-primary btn-lg"><i class="fas fa-save"></i> Đổi mật khẩu</button></div>
+            </form>
+          </div>
+
+          <div id="identity-verification" class="profile-section hidden">
+            <div class="section-heading"><h1>Xác minh danh tính</h1><p>Cập nhật thông tin và gửi duyệt xác minh danh tính.</p></div>
+            <form id="identityVerificationForm" class="card-box stack-lg">
+              <div class="form-group">
+                <label>Trạng thái</label>
+                <input id="identityStatusInput" disabled>
+              </div>
+              <div class="form-grid two-cols">
+                <div class="form-group">
+                  <label>Họ tên trên giấy tờ *</label>
+                  <input id="idFullNameInput" required maxlength="120">
+                </div>
+                <div class="form-group">
+                  <label>Số giấy tờ *</label>
+                  <input id="idNumberInput" required maxlength="20">
+                </div>
+                <div class="form-group">
+                  <label>Ngày sinh trên giấy tờ</label>
+                  <input id="idDobInput" type="date">
+                </div>
+                <div class="form-group">
+                  <label>Ngày cấp</label>
+                  <input id="idIssuedDateInput" type="date">
+                </div>
+                <div class="form-group">
+                  <label>Nơi cấp</label>
+                  <input id="idIssuedPlaceInput" maxlength="255">
+                </div>
+                <div class="form-group">
+                  <label>Địa chỉ trên giấy tờ</label>
+                  <input id="idAddressInput" maxlength="255">
+                </div>
+                <div class="form-group">
+                  <label>Link ảnh mặt trước *</label>
+                  <input id="idFrontImageInput" maxlength="500">
+                  <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <label for="idFrontFile" class="btn btn-outline-dark"><i class="fas fa-upload"></i> Chọn ảnh từ máy</label>
+                    <input id="idFrontFile" type="file" class="hidden" accept="image/*">
+                    <a id="idFrontPreview" class="text-link hidden" href="#" target="_blank" rel="noopener">Xem ảnh</a>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Link ảnh mặt sau *</label>
+                  <input id="idBackImageInput" maxlength="500">
+                  <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <label for="idBackFile" class="btn btn-outline-dark"><i class="fas fa-upload"></i> Chọn ảnh từ máy</label>
+                    <input id="idBackFile" type="file" class="hidden" accept="image/*">
+                    <a id="idBackPreview" class="text-link hidden" href="#" target="_blank" rel="noopener">Xem ảnh</a>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Link ảnh selfie *</label>
+                  <input id="idSelfieImageInput" maxlength="500">
+                  <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <label for="idSelfieFile" class="btn btn-outline-dark"><i class="fas fa-upload"></i> Chọn ảnh từ máy</label>
+                    <input id="idSelfieFile" type="file" class="hidden" accept="image/*">
+                    <a id="idSelfiePreview" class="text-link hidden" href="#" target="_blank" rel="noopener">Xem ảnh</a>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Lý do từ chối (nếu có)</label>
+                <input id="identityRejectedReasonInput" disabled>
+              </div>
+              <div class="form-actions">
+                <button type="button" id="saveIdentityDraftBtn" class="btn btn-outline-dark btn-lg">
+                  <i class="fas fa-save"></i> Lưu nháp
+                </button>
+                <button class="btn btn-primary btn-lg">
+                  <i class="fas fa-paper-plane"></i> Gửi xác minh
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="logo footer-logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Cổng Gia Sư</span></div>
+        <p>Nền tảng kết nối gia sư và học viên hàng đầu Việt Nam</p>
+        <p>Địa chỉ: 122 Hoàng Quốc Việt, Cầu Giấy, Hà Nội</p>
+      </div>
+      <div><h3>Dành cho học viên</h3><a href="/lop-gia-su.html">Tìm gia sư</a><a href="#">Cách thức hoạt động</a><a href="#">Bảng giá</a><a href="#">Câu hỏi thường gặp</a></div>
+      <div><h3>Dành cho gia sư</h3><a href="#">Trở thành gia sư</a><a href="#">Hướng dẫn đăng lớp</a><a href="#">Chính sách hoa hồng</a><a href="#">Công cụ gia sư</a></div>
+      <div><h3>Hỗ trợ</h3><a href="#">Trung tâm trợ giúp</a><a href="#">Liên hệ</a><a href="#">Điều khoản sử dụng</a><a href="#">Chính sách bảo mật</a></div>
+    </div>
+    <div class="footer-bottom">© 2025 Cổng Gia Sư. Tất cả quyền được bảo lưu.</div>
+  </footer>
+
+  <script src="../assets/js/app.js"></script>
+  <script src="../assets/js/api-client.js"></script>
+  <script src="../assets/js/profile.js?v=20260421-3"></script>
+</body>
+</html>
+

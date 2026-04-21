@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Quản lý người dùng</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    .admin-users-shell { display: grid; gap: 20px; }
+    .admin-filter-card {
+      padding: 22px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+    .admin-filter-grid {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 180px;
+      gap: 16px;
+      align-items: end;
+    }
+    .admin-filter-grid .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--secondary-800);
+    }
+    .admin-filter-grid select {
+      height: 46px;
+      border: 1px solid var(--secondary-300);
+      border-radius: 12px;
+      padding: 0 14px;
+      background: #fff;
+      font-size: 16px;
+    }
+    .admin-filter-grid .btn {
+      height: 46px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .users-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--secondary-600);
+      font-size: 14px;
+      padding: 0 4px;
+    }
+    .users-toolbar strong { color: var(--secondary-900); }
+    .users-grid { display: grid; gap: 12px; }
+    .user-card {
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+    .user-main { min-width: 0; }
+    .user-headline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .user-name {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--secondary-900);
+    }
+    .user-email {
+      margin: 0 0 8px;
+      color: var(--secondary-600);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .user-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      color: var(--secondary-700);
+    }
+    .user-meta b { color: var(--secondary-900); }
+    .user-action {
+      min-width: 132px;
+      white-space: nowrap;
+    }
+    @media (max-width: 900px) {
+      .admin-filter-grid { grid-template-columns: 1fr 1fr; }
+      .admin-filter-grid .btn { grid-column: 1 / -1; }
+    }
+    @media (max-width: 700px) {
+      .admin-filter-grid { grid-template-columns: 1fr; }
+      .users-grid { grid-template-columns: 1fr; }
+      .user-card { grid-template-columns: 1fr; }
+      .user-email { white-space: normal; }
+      .user-action { width: 100%; }
+    }
+  </style>
+</head>
+<body class="page-bg">
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="header-left">
+      <a href="/index.html" class="logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Gia Sư Việt</span></a>
+      <nav class="desktop-nav"><a href="/index.html">Trang chủ</a><a href="/tim-gia-su.html">Tìm gia sư</a><a href="/lop-gia-su.html">Tìm lớp học</a></nav>
+    </div>
+    <div class="header-right" id="headerRight"></div>
+    <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+  </div>
+  <div id="mobileMenu" class="mobile-menu hidden"></div>
+</header>
+<main class="container page-section admin-users-shell">
+  <div class="heading"><h1>Quản lý người dùng</h1><p>Lọc nhanh và cập nhật trạng thái tài khoản</p></div>
+  <section class="card-box admin-filter-card">
+    <div class="admin-filter-grid">
+      <div class="field"><label>Vai trò</label><select id="roleFilter"><option value="">Tất cả</option><option value="ADMIN">ADMIN</option><option value="TUTOR">TUTOR</option><option value="LEARNER">LEARNER</option></select></div>
+      <div class="field"><label>Trạng thái</label><select id="statusFilter"><option value="">Tất cả</option><option value="ACTIVE">Đang hoạt động</option><option value="BLOCKED">Đã khóa</option></select></div>
+      <button id="filterBtn" class="btn btn-primary"><i class="fas fa-filter"></i> Lọc</button>
+    </div>
+  </section>
+  <div class="users-toolbar">
+    <span id="usersCountText">Đang tải dữ liệu...</span>
+    <span><strong>Quản lý quyền truy cập</strong> theo vai trò</span>
+  </div>
+  <div id="usersList" class="users-grid"></div>
+</main>
+<footer class="site-footer"></footer>
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/api-client.js"></script>
+<script src="../assets/js/admin-users.js"></script>
+</body>
+</html>

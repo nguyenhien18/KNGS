@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Tìm gia sư</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="page-bg">
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="header-left"><a href="index.html" class="logo">
+                    <div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Cổng Gia Sư</span>
+                </a>
+                <nav class="desktop-nav"><a href="index.html">Trang chủ</a><a href="tim-gia-su.html" class="active">Tìm
+                        gia sư</a><a href="tim-lop.html">Tìm lớp học</a></nav>
+            </div>
+            <div class="header-right" id="headerRight"></div><button id="mobileMenuButton" class="mobile-menu-btn"><i
+                    class="fas fa-bars"></i></button>
+        </div>
+        <div id="mobileMenu" class="mobile-menu hidden"><a href="index.html">Trang chủ</a><a href="tim-gia-su.html"
+                class="active">Tìm gia sư</a><a href="tim-lop.html">Tìm lớp học</a></div>
+    </header>
+    <main class="container">
+        <section class="search-panel card-box">
+            <h1>Khám phá Gia sư tài năng</h1>
+            <p class="panel-subtitle">Tìm kiếm người đồng hành hoàn hảo cho hành trình học tập của bạn.</p>
+            <div class="search-grid">
+                <div class="search-field">
+                    <label for="tutorNameInput">Tên gia sư</label>
+                    <input id="tutorNameInput" placeholder="Nhập tên gia sư">
+                </div>
+                <div class="search-field">
+                    <label for="subjectSelect">Môn học</label>
+                    <select id="subjectSelect">
+                        <option value="">Tất cả môn học</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <label for="gradeSelect">Khối lớp</label>
+                    <select id="gradeSelect">
+                        <option value="">Tất cả khối lớp</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <label for="teachingModeSelect">Hình thức học</label>
+                    <select id="teachingModeSelect">
+                        <option value="">Tất cả hình thức</option>
+                        <option value="ONLINE">Online</option>
+                        <option value="OFFLINE">Offline</option>
+                        <option value="BOTH">Online và Offline</option>
+                    </select>
+                </div>
+                <button id="searchButton" class="btn btn-primary full-btn"><i class="fas fa-search"></i> Tìm kiếm</button>
+            </div>
+        </section>
+        <div class="result-bar">Tìm thấy <strong id="resultCount">0</strong> gia sư phù hợp</div>
+        <section id="loadingState" class="results-grid">
+            <div class="skeleton-card">
+                <div class="skeleton-top">
+                    <div class="skeleton-avatar"></div>
+                    <div class="skeleton-lines">
+                        <div class="line line-lg"></div>
+                        <div class="line line-md"></div>
+                        <div class="line line-sm"></div>
+                    </div>
+                </div>
+                <div class="line"></div>
+                <div class="line line-80"></div>
+                <div class="tag-row">
+                    <div class="tag-skeleton"></div>
+                    <div class="tag-skeleton wide"></div>
+                </div>
+                <div class="button-skeleton"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-top">
+                    <div class="skeleton-avatar"></div>
+                    <div class="skeleton-lines">
+                        <div class="line line-lg"></div>
+                        <div class="line line-md"></div>
+                        <div class="line line-sm"></div>
+                    </div>
+                </div>
+                <div class="line"></div>
+                <div class="line line-80"></div>
+                <div class="tag-row">
+                    <div class="tag-skeleton"></div>
+                    <div class="tag-skeleton wide"></div>
+                </div>
+                <div class="button-skeleton"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-top">
+                    <div class="skeleton-avatar"></div>
+                    <div class="skeleton-lines">
+                        <div class="line line-lg"></div>
+                        <div class="line line-md"></div>
+                        <div class="line line-sm"></div>
+                    </div>
+                </div>
+                <div class="line"></div>
+                <div class="line line-80"></div>
+                <div class="tag-row">
+                    <div class="tag-skeleton"></div>
+                    <div class="tag-skeleton wide"></div>
+                </div>
+                <div class="button-skeleton"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-top">
+                    <div class="skeleton-avatar"></div>
+                    <div class="skeleton-lines">
+                        <div class="line line-lg"></div>
+                        <div class="line line-md"></div>
+                        <div class="line line-sm"></div>
+                    </div>
+                </div>
+                <div class="line"></div>
+                <div class="line line-80"></div>
+                <div class="tag-row">
+                    <div class="tag-skeleton"></div>
+                    <div class="tag-skeleton wide"></div>
+                </div>
+                <div class="button-skeleton"></div>
+            </div>
+        </section>
+        <section id="tutorResults" class="results-grid hidden"></section>
+        <section id="noResults" class="empty-state hidden">
+            <div><i class="fas fa-exclamation-circle"></i>
+                <h3> Không tìm thấy gia sư nào.</h3>
+                <p>Hãy thử thay đổi bộ lọc tìm kiếm.</p>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <div class="logo footer-logo">
+                    <div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Cổng Gia Sư</span>
+                </div>
+                <p>Nền tảng kết nối gia sư và học viên hàng đầu Việt Nam</p>
+                <p>Địa chỉ: 122 Hoàng Quốc Việt, Cầu Giấy, Hà Nội</p>
+            </div>
+            <div>
+                <h3>Dành cho học viên</h3><a href="tim-gia-su.html">Tìm gia sư</a><a href="#">Cách thức hoạt động</a><a
+                    href="#">Câu hỏi thường gặp</a>
+            </div>
+            <div>
+                <h3>Dành cho gia sư</h3><a href="/gia-su/profile.html">Trở thành gia sư</a><a href="#">Hướng dẫn đăng
+                    lớp</a><a href="#">Công cụ gia sư</a>
+            </div>
+            <div>
+                <h3>Hỗ trợ</h3><a href="#">Trung tâm trợ giúp</a><a href="#">Liên hệ</a><a href="#">Điều khoản sử
+                    dụng</a><a href="#">Chính sách bảo mật</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2026  Gia Sư Việt. Tất cả quyền được bảo lưu.</div>
+    </footer>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/api-client.js"></script>
+    <script src="assets/js/tutor-search.js?v=20260421-3"></script>
+</body>
+
+</html>
+

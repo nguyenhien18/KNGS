@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cổng Gia Sư – Kết nối học viên và gia sư</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="assets/css/landing.css" />
+</head>
+<body class="home-guest">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="header-left">
+        <a href="/index.html" class="logo">
+          <div class="logo-box"><i class="fas fa-graduation-cap"></i></div>
+          <span>Cổng Gia Sư</span>
+        </a>
+        <nav class="desktop-nav">
+          <a href="/index.html" class="active">Trang chủ</a>
+          <a href="/tim-gia-su.html">Tìm gia sư</a>
+          <a href="/lop-gia-su.html">Tìm lớp học</a>
+        </nav>
+      </div>
+      <div class="header-right" id="headerRight"></div>
+      <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+    </div>
+    <div id="mobileMenu" class="mobile-menu hidden">
+      <a href="/index.html" class="active">Trang chủ</a>
+      <a href="/tim-gia-su.html">Tìm gia sư</a>
+      <a href="/lop-gia-su.html">Tìm lớp học</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-badge"><span>🎓</span> Nền tảng gia sư #1 Việt Nam</div>
+        <h1 class="hero-title">Kết nối <span class="highlight">học viên</span><br>và <span class="highlight">gia sư</span></h1>
+        <p class="hero-desc">Kết nối Gia sư và Học viên Nhanh chóng, tin cậy, hiệu quả.</p>
+        <div class="hero-stats">
+          <div class="stat-item"><div class="stat-number">5.000+</div><div class="stat-label">Gia sư</div></div>
+          <div class="stat-item"><div class="stat-number">20.000+</div><div class="stat-label">Học viên</div></div>
+          <div class="stat-item"><div class="stat-number">50+</div><div class="stat-label">Môn học</div></div>
+          <div class="stat-item"><div class="stat-number">98%</div><div class="stat-label">Hài lòng</div></div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-card-wrap">
+          <div class="hero-main-card">
+            <div class="tutor-avatar-wrap">
+              <div class="tutor-avatar">NT</div>
+              <div class="tutor-info-card">
+                <div class="name">Nguyễn Thanh Bình</div>
+                <div class="role">Gia sư Toán – Lý</div>
+              </div>
+              <span class="card-badge">✓ Đã xác minh</span>
+            </div>
+            <div class="card-subjects">
+              <span class="subject-tag">Toán học</span>
+              <span class="subject-tag">Vật lý</span>
+              <span class="subject-tag">Hóa học</span>
+            </div>
+            <div class="card-rating"><span class="stars">★★★★★</span><span>4.9 (128 đánh giá)</span></div>
+          </div>
+          <div class="float-card float-card-1"><div class="fc-label">Học phí / giờ</div><div class="fc-value">150.000đ</div></div>
+          <div class="float-card float-card-2"><div class="fc-label">Đã nhận lớp</div><div class="fc-value">47 lớp</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/api-client.js"></script>
+  <script>
+    document.getElementById('headerRight').innerHTML = renderUtilityHeaderRight();
+    renderHeaderExtras();
+  </script>
+</body>
+</html>
+
