@@ -2,6 +2,7 @@ package com.conggiasu.service;
 
 import com.conggiasu.dto.request.TutorCertificateUpsertRequest;
 import com.conggiasu.dto.response.AdminTutorCertificateResponse;
+import com.conggiasu.dto.response.FileUploadResponse;
 import com.conggiasu.dto.response.TutorCertificateResponse;
 import com.conggiasu.entity.Tutor;
 import com.conggiasu.entity.TutorCertificate;
@@ -18,12 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TutorCertificateService {
-    private static final java.util.Set<String> CERTIFICATE_IMAGE_DIRS = java.util.Set.of("identity", "certificates");
     private final TutorRepository tutorRepository;
     private final TutorCertificateRepository tutorCertificateRepository;
     private final UserRepository userRepository;
@@ -66,24 +67,19 @@ public class TutorCertificateService {
     }
 
     @Transactional(readOnly = true)
+    public FileUploadResponse uploadMyCertificateImage(Long tutorUserId, MultipartFile file) {
+        findTutorByUserId(tutorUserId);
+        String url = fileStorageService.storeCertificateImage(file);
+        return FileUploadResponse.builder().url(url).build();
+    }
+
+    @Transactional(readOnly = true)
     public List<AdminTutorCertificateResponse> getTutorCertificatesForAdmin(Long adminUserId, Long tutorId) {
         validateAdmin(adminUserId);
         findTutorById(tutorId);
         return tutorCertificateRepository.findByTutorId(tutorId).stream()
             .map(this::toAdminResponse)
             .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public FileStorageService.StoredImage loadCertificateImageForAdmin(Long adminUserId, Long certificateId) {
-        validateAdmin(adminUserId);
-        TutorCertificate certificate = tutorCertificateRepository.findById(certificateId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay bang cap"));
-        String imagePath = trimToNull(certificate.getCertificateImageUrl());
-        if (imagePath == null) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Bang cap khong co anh");
-        }
-        return fileStorageService.loadImageByManagedUrl(imagePath, CERTIFICATE_IMAGE_DIRS);
     }
 
     private void applyRequest(TutorCertificate certificate, TutorCertificateUpsertRequest request) {
@@ -145,6 +141,7 @@ public class TutorCertificateService {
             .certificateType(certificate.getCertificateType())
             .issuer(certificate.getIssuer())
             .issuedDate(certificate.getIssuedDate())
+            .certificateImageUrl(certificate.getCertificateImageUrl())
             .status(certificate.getStatus())
             .reviewedBy(certificate.getReviewedBy() != null ? certificate.getReviewedBy().getId() : null)
             .reviewedAt(certificate.getReviewedAt())

@@ -17,20 +17,12 @@ import com.conggiasu.entity.enums.UserRole;
 import com.conggiasu.entity.enums.UserStatus;
 import com.conggiasu.service.AdminService;
 import com.conggiasu.service.CurrentUserService;
-import com.conggiasu.service.FileStorageService;
 import com.conggiasu.service.IdentityVerificationService;
 import com.conggiasu.service.TutorCertificateService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.MediaTypeFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -110,17 +102,6 @@ public class AdminController {
             .build();
     }
 
-    @GetMapping("/certificates/{certificateId}/image")
-    public ResponseEntity<Resource> viewCertificateImage(@PathVariable Long certificateId) {
-        FileStorageService.StoredImage image = tutorCertificateService.loadCertificateImageForAdmin(currentUserService.userId(), certificateId);
-        MediaType mediaType = MediaTypeFactory.getMediaType(image.filename()).orElse(MediaType.APPLICATION_OCTET_STREAM);
-        return ResponseEntity.status(HttpStatus.OK)
-            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + image.filename() + "\"")
-            .cacheControl(CacheControl.noStore())
-            .contentType(mediaType)
-            .body(image.resource());
-    }
-
     @GetMapping("/identity-verifications/pending")
     public ApiResponse<List<IdentityVerificationResponse>> getPendingIdentityVerifications() {
         return ApiResponse.<List<IdentityVerificationResponse>>builder()
@@ -128,21 +109,6 @@ public class AdminController {
             .message("Success")
             .result(identityVerificationService.getPendingVerifications(currentUserService.userId()))
             .build();
-    }
-
-    @GetMapping("/identity-verifications/{verificationId}/images/{type}")
-    public ResponseEntity<Resource> viewIdentityImageForAdmin(@PathVariable Long verificationId, @PathVariable String type) {
-        FileStorageService.StoredImage image = identityVerificationService.loadIdentityImageForAdmin(
-            currentUserService.userId(),
-            verificationId,
-            type
-        );
-        MediaType mediaType = MediaTypeFactory.getMediaType(image.filename()).orElse(MediaType.APPLICATION_OCTET_STREAM);
-        return ResponseEntity.status(HttpStatus.OK)
-            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + image.filename() + "\"")
-            .cacheControl(CacheControl.noStore())
-            .contentType(mediaType)
-            .body(image.resource());
     }
 
     @GetMapping("/tutors/{tutorId}/identity-verification")

@@ -9,23 +9,15 @@ import com.conggiasu.dto.response.IdentityVerificationResponse;
 import com.conggiasu.dto.response.UserProfileResponse;
 import com.conggiasu.service.AccountService;
 import com.conggiasu.service.CurrentUserService;
-import com.conggiasu.service.FileStorageService;
 import com.conggiasu.service.IdentityVerificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.MediaTypeFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -75,17 +67,6 @@ public class AccountController {
             .message("Success")
             .result(accountService.uploadIdentityImage(currentUserService.userId(), file))
             .build();
-    }
-
-    @GetMapping("/identity-verification/images/{type}")
-    public ResponseEntity<Resource> viewMyIdentityImage(@PathVariable String type) {
-        FileStorageService.StoredImage image = identityVerificationService.loadMyIdentityImage(currentUserService.userId(), type);
-        MediaType mediaType = MediaTypeFactory.getMediaType(image.filename()).orElse(MediaType.APPLICATION_OCTET_STREAM);
-        return ResponseEntity.status(HttpStatus.OK)
-            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + image.filename() + "\"")
-            .cacheControl(CacheControl.noStore())
-            .contentType(mediaType)
-            .body(image.resource());
     }
 
     @PostMapping("/change-password")

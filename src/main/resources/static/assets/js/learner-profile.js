@@ -53,6 +53,8 @@
   const learnerIdSelfiePreview = document.getElementById('learnerIdSelfiePreview');
 
   let avatarUrl = null;
+  let imageLightbox = null;
+  let lightboxImage = null;
 
   function avatarFallback(name) {
     return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name || 'Learner') + '&background=2563eb&color=fff&size=220';
@@ -90,27 +92,46 @@
     anchor.href = url;
   }
 
-  async function openProtectedImage(path) {
-    const blob = await ApiClient.getBlob(path);
-    const objectUrl = URL.createObjectURL(blob);
-    const win = window.open(objectUrl, '_blank', 'noopener');
-    if (!win) {
-      URL.revokeObjectURL(objectUrl);
-      throw new Error('Trinh duyet dang chan cua so moi.');
-    }
-    setTimeout(function () {
-      URL.revokeObjectURL(objectUrl);
-    }, 60000);
-  }
-
-  function updateIdentityPreview(anchor, hasValue) {
+  function updateIdentityPreview(anchor, url) {
     if (!anchor) return;
-    if (!hasValue) {
+    if (!url) {
       anchor.classList.add('hidden');
+      anchor.removeAttribute('href');
       return;
     }
     anchor.classList.remove('hidden');
     anchor.href = '#';
+    anchor.removeAttribute('target');
+    anchor.removeAttribute('rel');
+    anchor.dataset.previewUrl = url;
+  }
+
+  function ensureImageLightbox() {
+    if (imageLightbox && lightboxImage) return;
+    imageLightbox = document.createElement('div');
+    imageLightbox.className = 'lightbox hidden';
+    imageLightbox.innerHTML = '<span class="lightbox-close" id="learnerCloseLightbox">&times;</span><img id="learnerLightboxImage" src="" alt="Preview">';
+    document.body.appendChild(imageLightbox);
+    lightboxImage = imageLightbox.querySelector('#learnerLightboxImage');
+    const closeBtn = imageLightbox.querySelector('#learnerCloseLightbox');
+    closeBtn.addEventListener('click', closeImagePreview);
+    imageLightbox.addEventListener('click', function (event) {
+      if (event.target === imageLightbox) closeImagePreview();
+    });
+  }
+
+  function openImagePreview(url) {
+    const value = String(url || '').trim();
+    if (!value) return;
+    ensureImageLightbox();
+    lightboxImage.src = value;
+    imageLightbox.classList.remove('hidden');
+  }
+
+  function closeImagePreview() {
+    if (!imageLightbox || !lightboxImage) return;
+    imageLightbox.classList.add('hidden');
+    lightboxImage.removeAttribute('src');
   }
 
   async function uploadIdentityFile(file) {
@@ -120,7 +141,7 @@
     return res && res.url ? res.url : null;
   }
 
-  function bindIdentityUpload(fileInput, textInput, previewAnchor, imageType) {
+  function bindIdentityUpload(fileInput, textInput, previewAnchor) {
     if (!fileInput || !textInput) return;
     fileInput.addEventListener('change', async function (event) {
       const file = event.target.files && event.target.files[0];
@@ -129,7 +150,7 @@
         const url = await uploadIdentityFile(file);
         if (!url) throw new Error('Upload ảnh thất bại.');
         textInput.value = url;
-        updateIdentityPreview(previewAnchor, true);
+        updateIdentityPreview(previewAnchor, url);
         alert('Tải ảnh thành công.');
       } catch (err) {
         alert(err.message || 'Không thể tải ảnh.');
@@ -139,18 +160,13 @@
     });
 
     textInput.addEventListener('input', function () {
-      updateIdentityPreview(previewAnchor, Boolean((textInput.value || '').trim()));
+      updateIdentityPreview(previewAnchor, (textInput.value || '').trim());
     });
 
-    if (previewAnchor && imageType) {
-      previewAnchor.addEventListener('click', async function (event) {
+    if (previewAnchor) {
+      previewAnchor.addEventListener('click', function (event) {
         event.preventDefault();
-        if (!(textInput.value || '').trim()) return;
-        try {
-          await openProtectedImage('/api/account/identity-verification/images/' + encodeURIComponent(imageType));
-        } catch (err) {
-          alert(err.message || 'Không thể mở ảnh.');
-        }
+        openImagePreview(previewAnchor.dataset.previewUrl || textInput.value);
       });
     }
   }
@@ -180,9 +196,9 @@
     learnerIdSelfieImageInput.value = (identity && identity.selfieImageUrl) || '';
     learnerIdentityRejectedReasonInput.value = (identity && identity.rejectedReason) || '';
 
-    updateIdentityPreview(learnerIdFrontPreview, Boolean(learnerIdFrontImageInput.value));
-    updateIdentityPreview(learnerIdBackPreview, Boolean(learnerIdBackImageInput.value));
-    updateIdentityPreview(learnerIdSelfiePreview, Boolean(learnerIdSelfieImageInput.value));
+    updateIdentityPreview(learnerIdFrontPreview, learnerIdFrontImageInput.value);
+    updateIdentityPreview(learnerIdBackPreview, learnerIdBackImageInput.value);
+    updateIdentityPreview(learnerIdSelfiePreview, learnerIdSelfieImageInput.value);
   }
 
   function setTab(tabName) {
@@ -230,9 +246,9 @@
     setAvatar(null);
   });
 
-  bindIdentityUpload(learnerIdFrontFile, learnerIdFrontImageInput, learnerIdFrontPreview, 'front');
-  bindIdentityUpload(learnerIdBackFile, learnerIdBackImageInput, learnerIdBackPreview, 'back');
-  bindIdentityUpload(learnerIdSelfieFile, learnerIdSelfieImageInput, learnerIdSelfiePreview, 'selfie');
+  bindIdentityUpload(learnerIdFrontFile, learnerIdFrontImageInput, learnerIdFrontPreview);
+  bindIdentityUpload(learnerIdBackFile, learnerIdBackImageInput, learnerIdBackPreview);
+  bindIdentityUpload(learnerIdSelfieFile, learnerIdSelfieImageInput, learnerIdSelfiePreview);
 
   learnerProfileForm.addEventListener('submit', async function (event) {
     event.preventDefault();

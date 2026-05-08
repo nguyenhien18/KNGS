@@ -5,26 +5,21 @@ import com.cloudinary.utils.ObjectUtils;
 import com.conggiasu.exception.AppException;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Slf4j
 public class FileStorageService {
     private static final long MAX_IMAGE_SIZE = 5L * 1024 * 1024;
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "webp", "gif");
     private static final String ROOT_FOLDER = "ket-noi-gia-su";
-    private static final String CLOUDINARY_HOST_SUFFIX = ".cloudinary.com";
-
     private final Cloudinary cloudinary;
-
-    public record StoredImage(Resource resource, String contentType, String filename, String subDir) {}
 
     public FileStorageService(Cloudinary cloudinary) {
         this.cloudinary = cloudinary;
@@ -36,8 +31,8 @@ public class FileStorageService {
             String url = storeImage(file, "avatars");
             deleteOldAvatarIfManaged(currentAvatarUrl);
             return url;
-        } catch (IOException e) {
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Khong the luu tep anh");
+        } catch (Exception e) {
+            throw mapUploadException(e);
         }
     }
 
@@ -45,8 +40,17 @@ public class FileStorageService {
         validateImage(file);
         try {
             return storeImage(file, "identity");
-        } catch (IOException e) {
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Khong the luu tep anh");
+        } catch (Exception e) {
+            throw mapUploadException(e);
+        }
+    }
+
+    public String storeCertificateImage(MultipartFile file) {
+        validateImage(file);
+        try {
+            return storeImage(file, "certificates");
+        } catch (Exception e) {
+            throw mapUploadException(e);
         }
     }
 
@@ -110,64 +114,6 @@ public class FileStorageService {
         }
     }
 
-    public StoredImage loadImageByManagedUrl(String urlPath, Set<String> allowedSubDirs) {
-        if (urlPath == null || urlPath.isBlank()) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Khong tim thay anh");
-        }
-        try {
-            URI uri = new URI(urlPath.trim());
-            String host = uri.getHost();
-            if (host == null || !host.endsWith(CLOUDINARY_HOST_SUFFIX)) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Duong dan anh khong hop le");
-            }
-            String path = uri.getPath();
-            String uploadMarker = "/upload/";
-            int idx = path.indexOf(uploadMarker);
-            if (idx < 0) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Duong dan anh khong hop le");
-            }
-
-            String afterUpload = path.substring(idx + uploadMarker.length());
-            String[] segments = afterUpload.split("/");
-            int start = 0;
-            if (segments.length > 0 && segments[0].matches("v\\d+")) {
-                start = 1;
-            }
-            if (segments.length < start + 3) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Duong dan anh khong hop le");
-            }
-
-            if (!ROOT_FOLDER.equals(segments[start])) {
-                throw new AppException(HttpStatus.FORBIDDEN, "Khong co quyen truy cap anh nay");
-            }
-            String subDir = segments[start + 1];
-            if (allowedSubDirs == null || allowedSubDirs.stream().noneMatch(subDir::equals)) {
-                throw new AppException(HttpStatus.FORBIDDEN, "Khong co quyen truy cap anh nay");
-            }
-            String filename = segments[segments.length - 1];
-            if (filename.isBlank()) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Ten tep khong hop le");
-            }
-
-            UrlResource resource = new UrlResource(uri);
-            String contentType = guessContentType(filename);
-            return new StoredImage(resource, contentType, filename, subDir);
-        } catch (URISyntaxException e) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Duong dan anh khong hop le");
-        } catch (IOException e) {
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Khong the doc tep anh");
-        }
-    }
-
-    private String guessContentType(String filename) {
-        String lower = filename.toLowerCase(Locale.ROOT);
-        if (lower.endsWith(".png")) return "image/png";
-        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
-        if (lower.endsWith(".webp")) return "image/webp";
-        if (lower.endsWith(".gif")) return "image/gif";
-        return "application/octet-stream";
-    }
-
     private String extractPublicId(String url) {
         try {
             URI uri = new URI(url.trim());
@@ -190,6 +136,22 @@ public class FileStorageService {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    private AppException mapUploadException(Exception ex) {
+        String message = ex.getMessage();
+        if (message != null && message.toLowerCase(Locale.ROOT).contains("invalid signature")) {
+            log.error("Cloudinary signature error while uploading image", ex);
+            return new AppException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Cau hinh Cloudinary khong hop le. Kiem tra CLOUDINARY_API_KEY va CLOUDINARY_API_SECRET"
+            );
+        }
+        if (ex instanceof IOException) {
+            return new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Khong the luu tep anh");
+        }
+        log.error("Unexpected cloud upload error", ex);
+        return new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Khong the luu tep anh");
     }
 }
 

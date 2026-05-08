@@ -28,6 +28,9 @@
   const tutorDetailModal = document.getElementById('tutorDetailModal');
   const tutorDetailBody = document.getElementById('tutorDetailBody');
   const reviewDetailModalTitle = document.getElementById('reviewDetailModalTitle');
+  let imageLightbox = null;
+  let lightboxImage = null;
+  let closeLightboxButton = null;
 
   const sectionTitleByKind = {
     tutor: 'Ho so gia su cho duyet',
@@ -72,17 +75,51 @@
     return 'badge-gray';
   }
 
-  async function openProtectedImage(path) {
-    const blob = await ApiClient.getBlob(path);
-    const objectUrl = URL.createObjectURL(blob);
-    const win = window.open(objectUrl, '_blank', 'noopener');
-    if (!win) {
-      URL.revokeObjectURL(objectUrl);
-      throw new Error('Trinh duyet dang chan cua so moi.');
+  function ensureImageLightbox() {
+    if (imageLightbox && lightboxImage && closeLightboxButton) return;
+    imageLightbox = document.createElement('div');
+    imageLightbox.id = 'adminImageLightbox';
+    imageLightbox.className = 'lightbox hidden';
+    imageLightbox.innerHTML = '<span class="lightbox-close" id="adminCloseLightbox">&times;</span><img id="adminLightboxImage" src="" alt="Preview">';
+    document.body.appendChild(imageLightbox);
+    lightboxImage = imageLightbox.querySelector('#adminLightboxImage');
+    closeLightboxButton = imageLightbox.querySelector('#adminCloseLightbox');
+    closeLightboxButton.addEventListener('click', closeImagePreview);
+    imageLightbox.addEventListener('click', function (event) {
+      if (event.target === imageLightbox) closeImagePreview();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && imageLightbox && !imageLightbox.classList.contains('hidden')) {
+        closeImagePreview();
+      }
+    });
+  }
+
+  function closeImagePreview() {
+    if (!imageLightbox || !lightboxImage) return;
+    imageLightbox.classList.add('hidden');
+    lightboxImage.removeAttribute('src');
+  }
+
+  function openImagePreview(url) {
+    ensureImageLightbox();
+    if (!lightboxImage || !imageLightbox) return;
+    lightboxImage.src = url;
+    imageLightbox.classList.remove('hidden');
+  }
+
+  function toCloudinaryUrl(value) {
+    try {
+      const raw = String(value || '').trim();
+      if (!raw) return null;
+      const url = new URL(raw);
+      const isHttp = url.protocol === 'http:' || url.protocol === 'https:';
+      const isCloudinary = String(url.hostname || '').toLowerCase().endsWith('.cloudinary.com');
+      if (!isHttp || !isCloudinary) return null;
+      return url.toString();
+    } catch (_) {
+      return null;
     }
-    setTimeout(function () {
-      URL.revokeObjectURL(objectUrl);
-    }, 60000);
   }
 
   function renderCertificateList(certificates) {
@@ -90,10 +127,16 @@
       return '<p class="muted">Chua co bang cap.</p>';
     }
     return certificates.map(function (certificate) {
-      const rawUrl = String(certificate.certificateImageUrl || '').trim();
+      const rawUrl = String(
+        certificate.certificateImageUrl
+        || certificate.certificateImageURL
+        || certificate.imageUrl
+        || certificate.url
+        || ''
+      ).trim();
       const hasImage = rawUrl && rawUrl.toLowerCase() !== 'null' && rawUrl.toLowerCase() !== 'undefined';
       const image = hasImage
-        ? '<button type="button" class="btn btn-soft js-open-cert-image" data-certificate-id="' + escapeHtml(certificate.id) + '">Xem anh bang cap</button>'
+        ? '<button type="button" class="btn btn-soft js-open-cert-image" data-certificate-url="' + escapeHtml(rawUrl) + '">Xem anh bang cap</button>'
         : '<span class="muted">Khong co anh</span>';
       return '' +
         '<div class="mini-item" style="margin-bottom:10px">' +
@@ -134,23 +177,24 @@
       '</div>';
 
     tutorDetailBody.querySelectorAll('.js-open-cert-image').forEach(function (button) {
-      button.addEventListener('click', async function () {
-        const certificateId = button.getAttribute('data-certificate-id');
-        if (!certificateId) return;
-        try {
-          await openProtectedImage('/api/admin/certificates/' + encodeURIComponent(certificateId) + '/image');
-        } catch (err) {
-          alert(err.message || 'Khong mo duoc anh bang cap');
+      button.addEventListener('click', function () {
+        const certificateUrl = button.getAttribute('data-certificate-url');
+        const publicCloudinaryUrl = toCloudinaryUrl(certificateUrl);
+        if (!publicCloudinaryUrl) {
+          alert('Anh bang cap khong hop le hoac khong phai URL Cloudinary.');
+          return;
         }
+        openImagePreview(publicCloudinaryUrl);
       });
     });
   }
 
   function renderIdentityDetailModal(identity) {
     reviewDetailModalTitle.textContent = 'Chi tiet xac minh danh tinh';
-    function imgButton(type, hasImage, label) {
+    function imgButton(imageUrl, label) {
+      const hasImage = Boolean(imageUrl);
       if (!hasImage) return '<p class="muted">' + label + ': Chua co anh</p>';
-      return '<p><button type="button" class="btn btn-soft js-open-identity-image" data-verification-id="' + escapeHtml(identity.id) + '" data-type="' + escapeHtml(type) + '">' + label + '</button></p>';
+      return '<p><button type="button" class="btn btn-soft js-open-identity-image" data-url="' + escapeHtml(imageUrl) + '">' + label + '</button></p>';
     }
     tutorDetailBody.innerHTML = '' +
       '<div class="detail-grid" style="grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:14px">' +
@@ -171,9 +215,9 @@
       '</div>' +
       '<div class="mini-item" style="margin-bottom:14px">' +
         '<p><strong>Anh giay to</strong></p>' +
-        imgButton('front', !!identity.idFrontImageUrl, 'Xem anh mat truoc') +
-        imgButton('back', !!identity.idBackImageUrl, 'Xem anh mat sau') +
-        imgButton('selfie', !!identity.selfieImageUrl, 'Xem anh selfie') +
+        imgButton(identity.idFrontImageUrl, 'Xem anh mat truoc') +
+        imgButton(identity.idBackImageUrl, 'Xem anh mat sau') +
+        imgButton(identity.selfieImageUrl, 'Xem anh selfie') +
       '</div>' +
       '<div class="mini-item">' +
         '<p class="muted">Tao luc: ' + formatDateTime(identity.createdAt) + '</p>' +
@@ -181,17 +225,14 @@
       '</div>';
 
     tutorDetailBody.querySelectorAll('.js-open-identity-image').forEach(function (button) {
-      button.addEventListener('click', async function () {
-        const verificationId = button.getAttribute('data-verification-id');
-        const type = button.getAttribute('data-type');
-        if (!verificationId || !type) return;
-        try {
-          await openProtectedImage(
-            '/api/admin/identity-verifications/' + encodeURIComponent(verificationId) + '/images/' + encodeURIComponent(type)
-          );
-        } catch (err) {
-          alert(err.message || 'Khong mo duoc anh xac minh');
+      button.addEventListener('click', function () {
+        const imageUrl = button.getAttribute('data-url');
+        const publicCloudinaryUrl = toCloudinaryUrl(imageUrl);
+        if (!publicCloudinaryUrl) {
+          alert('Anh xac minh khong hop le hoac khong phai URL Cloudinary.');
+          return;
         }
+        openImagePreview(publicCloudinaryUrl);
       });
     });
   }
@@ -247,6 +288,7 @@
   }
 
   function closeTutorDetailModal() {
+    closeImagePreview();
     tutorDetailModal.classList.add('hidden');
   }
 

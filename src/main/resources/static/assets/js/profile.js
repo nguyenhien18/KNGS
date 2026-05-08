@@ -96,6 +96,8 @@
   let grades = [];
   let certificates = [];
   let avatarUrl = null;
+  let imageLightbox = null;
+  let lightboxImage = null;
 
   function normalizeText(v) {
     return String(v || '')
@@ -147,7 +149,7 @@
     container.innerHTML = items.map((item, idx) => `
       <span class="tag-pill">
         ${kind === 'certificate' && item && typeof item === 'object' ? item.title : item}
-        ${kind === 'certificate' && item && item.certificateImageUrl ? '<a class="text-link" href="' + escapeAttr(item.certificateImageUrl) + '" target="_blank" rel="noopener">Ảnh</a>' : ''}
+        ${kind === 'certificate' && item && item.certificateImageUrl ? '<button type="button" class="text-link cert-preview-link" data-cert-url="' + escapeAttr(item.certificateImageUrl) + '">Ảnh</button>' : ''}
         <button type="button" data-kind="${kind}" data-idx="${idx}"><i class="fas fa-times"></i></button>
       </span>
     `).join('');
@@ -159,6 +161,12 @@
         if (button.dataset.kind === 'grade') grades.splice(index, 1);
         if (button.dataset.kind === 'certificate') certificates.splice(index, 1);
         renderTags();
+      });
+    });
+
+    container.querySelectorAll('.cert-preview-link[data-cert-url]').forEach((button) => {
+      button.addEventListener('click', () => {
+        openImagePreview(button.dataset.certUrl);
       });
     });
   }
@@ -264,6 +272,34 @@
     alert(message);
   }
 
+  function ensureImageLightbox() {
+    if (imageLightbox && lightboxImage) return;
+    imageLightbox = document.createElement('div');
+    imageLightbox.className = 'lightbox hidden';
+    imageLightbox.innerHTML = '<span class="lightbox-close" id="profileCloseLightbox">&times;</span><img id="profileLightboxImage" src="" alt="Preview">';
+    document.body.appendChild(imageLightbox);
+    lightboxImage = imageLightbox.querySelector('#profileLightboxImage');
+    const closeBtn = imageLightbox.querySelector('#profileCloseLightbox');
+    closeBtn.addEventListener('click', closeImagePreview);
+    imageLightbox.addEventListener('click', (event) => {
+      if (event.target === imageLightbox) closeImagePreview();
+    });
+  }
+
+  function openImagePreview(url) {
+    const value = String(url || '').trim();
+    if (!value) return;
+    ensureImageLightbox();
+    lightboxImage.src = value;
+    imageLightbox.classList.remove('hidden');
+  }
+
+  function closeImagePreview() {
+    if (!imageLightbox || !lightboxImage) return;
+    imageLightbox.classList.add('hidden');
+    lightboxImage.removeAttribute('src');
+  }
+
   function updatePreview(anchor, url) {
     if (!anchor) return;
     if (!url) {
@@ -275,27 +311,18 @@
     anchor.href = url;
   }
 
-  async function openProtectedImage(path) {
-    const blob = await ApiClient.getBlob(path);
-    const objectUrl = URL.createObjectURL(blob);
-    const win = window.open(objectUrl, '_blank', 'noopener');
-    if (!win) {
-      URL.revokeObjectURL(objectUrl);
-      throw new Error('Trinh duyet dang chan cua so moi.');
-    }
-    setTimeout(function () {
-      URL.revokeObjectURL(objectUrl);
-    }, 60000);
-  }
-
-  function updateIdentityPreview(anchor, hasValue) {
+  function updateIdentityPreview(anchor, url) {
     if (!anchor) return;
-    if (!hasValue) {
+    if (!url) {
       anchor.classList.add('hidden');
+      anchor.removeAttribute('href');
       return;
     }
     anchor.classList.remove('hidden');
     anchor.href = '#';
+    anchor.removeAttribute('target');
+    anchor.removeAttribute('rel');
+    anchor.dataset.previewUrl = url;
   }
 
   async function uploadIdentityFile(file) {
@@ -308,11 +335,11 @@
   async function uploadCertificateImage(file) {
     const form = new FormData();
     form.append('file', file);
-    const res = await ApiClient.upload('/api/account/identity-image', form);
+    const res = await ApiClient.upload('/api/tutor/certificates/upload-image', form);
     return res && res.url ? res.url : null;
   }
 
-  function bindIdentityUpload(fileInput, textInput, previewAnchor, imageType) {
+  function bindIdentityUpload(fileInput, textInput, previewAnchor) {
     if (!fileInput || !textInput) return;
     fileInput.addEventListener('change', async function (event) {
       const file = event.target.files && event.target.files[0];
@@ -321,7 +348,7 @@
         const url = await uploadIdentityFile(file);
         if (!url) throw new Error('Upload ảnh thất bại.');
         textInput.value = url;
-        updateIdentityPreview(previewAnchor, true);
+        updateIdentityPreview(previewAnchor, url);
         showToast('Tải ảnh thành công.');
       } catch (err) {
         showToast(err && err.message ? err.message : 'Không thể tải ảnh.');
@@ -331,18 +358,13 @@
     });
 
     textInput.addEventListener('input', function () {
-      updateIdentityPreview(previewAnchor, Boolean((textInput.value || '').trim()));
+      updateIdentityPreview(previewAnchor, (textInput.value || '').trim());
     });
 
-    if (previewAnchor && imageType) {
-      previewAnchor.addEventListener('click', async function (event) {
+    if (previewAnchor) {
+      previewAnchor.addEventListener('click', function (event) {
         event.preventDefault();
-        if (!(textInput.value || '').trim()) return;
-        try {
-          await openProtectedImage('/api/account/identity-verification/images/' + encodeURIComponent(imageType));
-        } catch (err) {
-          showToast(err && err.message ? err.message : 'Khong the mo anh.');
-        }
+        openImagePreview(previewAnchor.dataset.previewUrl || textInput.value);
       });
     }
   }
@@ -417,6 +439,38 @@
     if (!added) showToast('Bằng cấp này đã có rồi.');
   }
 
+  function attachCertificateImageByCurrentTitle(url) {
+    const cleanUrl = String(url || '').trim();
+    const title = certificateTitleInput ? certificateTitleInput.value.trim() : '';
+    if (!cleanUrl) return false;
+
+    if (title) {
+      const existingIndex = certificates.findIndex((item) => normalizeText(normalizeCertificateTitle(item)) === normalizeText(title));
+      if (existingIndex >= 0) {
+        certificates[existingIndex].certificateImageUrl = cleanUrl;
+        renderTags();
+        return true;
+      }
+      certificates.push({ title, certificateImageUrl: cleanUrl });
+      renderTags();
+      return true;
+    }
+
+    // Fallback: tu dong gan vao bang cap dau tien chua co anh (hoac bang cap duy nhat).
+    const firstMissingImageIndex = certificates.findIndex((item) => !String(item && item.certificateImageUrl || '').trim());
+    if (firstMissingImageIndex >= 0) {
+      certificates[firstMissingImageIndex].certificateImageUrl = cleanUrl;
+      renderTags();
+      return true;
+    }
+    if (certificates.length === 1) {
+      certificates[0].certificateImageUrl = cleanUrl;
+      renderTags();
+      return true;
+    }
+    return false;
+  }
+
   function updateAvatarPreview() {
     profileAvatar.src = avatarUrl || avatarFallback(fullNameInput.value || 'Tutor');
   }
@@ -438,7 +492,14 @@
       } catch (_) {}
       throw new Error(message);
     }
-    return res.json();
+    const data = await res.json();
+    if (data && typeof data === 'object' && data.result && data.result.url) {
+      return data.result;
+    }
+    if (data && data.url) {
+      return data;
+    }
+    return null;
   }
 
   if (addSubjectBtn) addSubjectBtn.addEventListener('click', handleAddSubject);
@@ -484,7 +545,10 @@
       if (!file) return;
       try {
         const uploaded = await uploadAvatarFile(file);
-        avatarUrl = uploaded && uploaded.url ? uploaded.url : null;
+        if (!uploaded || !uploaded.url) {
+          throw new Error('Không nhận được URL ảnh từ máy chủ.');
+        }
+        avatarUrl = uploaded.url;
         updateAvatarPreview();
         showToast('Tải ảnh đại diện thành công.');
       } catch (err) {
@@ -502,9 +566,9 @@
     });
   }
 
-  bindIdentityUpload(idFrontFile, idFrontImageInput, idFrontPreview, 'front');
-  bindIdentityUpload(idBackFile, idBackImageInput, idBackPreview, 'back');
-  bindIdentityUpload(idSelfieFile, idSelfieImageInput, idSelfiePreview, 'selfie');
+  bindIdentityUpload(idFrontFile, idFrontImageInput, idFrontPreview);
+  bindIdentityUpload(idBackFile, idBackImageInput, idBackPreview);
+  bindIdentityUpload(idSelfieFile, idSelfieImageInput, idSelfiePreview);
 
   if (certificateImageFile) {
     certificateImageFile.addEventListener('change', async function (event) {
@@ -515,6 +579,10 @@
         if (!url) throw new Error('Upload ảnh bằng cấp thất bại.');
         if (certificateImageUrlInput) certificateImageUrlInput.value = url;
         updatePreview(certificateImagePreview, url);
+        const attached = attachCertificateImageByCurrentTitle(url);
+        if (!attached) {
+          showToast('Ảnh đã upload nhưng chưa gắn vào bằng cấp cụ thể. Hãy nhập đúng tên bằng cấp rồi bấm Thêm bằng cấp.');
+        }
         showToast('Tải ảnh bằng cấp thành công.');
       } catch (err) {
         showToast(err && err.message ? err.message : 'Không thể tải ảnh bằng cấp.');
@@ -526,6 +594,13 @@
   if (certificateImageUrlInput) {
     certificateImageUrlInput.addEventListener('input', function () {
       updatePreview(certificateImagePreview, (certificateImageUrlInput.value || '').trim());
+    });
+  }
+
+  if (certificateImagePreview) {
+    certificateImagePreview.addEventListener('click', function (event) {
+      event.preventDefault();
+      openImagePreview(certificateImagePreview.getAttribute('href'));
     });
   }
 
@@ -581,9 +656,9 @@
     idBackImageInput.value = (identity && identity.idBackImageUrl) || '';
     idSelfieImageInput.value = (identity && identity.selfieImageUrl) || '';
     identityRejectedReasonInput.value = (identity && identity.rejectedReason) || '';
-    updateIdentityPreview(idFrontPreview, Boolean(idFrontImageInput.value));
-    updateIdentityPreview(idBackPreview, Boolean(idBackImageInput.value));
-    updateIdentityPreview(idSelfiePreview, Boolean(idSelfieImageInput.value));
+    updateIdentityPreview(idFrontPreview, idFrontImageInput.value);
+    updateIdentityPreview(idBackPreview, idBackImageInput.value);
+    updateIdentityPreview(idSelfiePreview, idSelfieImageInput.value);
   }
 
   function applyCertificates(items) {

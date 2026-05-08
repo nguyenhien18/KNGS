@@ -22,11 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class IdentityVerificationService {
-    private static final java.util.Set<String> IDENTITY_IMAGE_DIRS = java.util.Set.of("identity");
     private final IdentityVerificationRepository identityVerificationRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
-    private final FileStorageService fileStorageService;
 
     @Transactional(readOnly = true)
     public IdentityVerificationResponse getMyVerification(Long userId) {
@@ -149,23 +147,6 @@ public class IdentityVerificationService {
             .orElse(false);
     }
 
-    @Transactional(readOnly = true)
-    public FileStorageService.StoredImage loadMyIdentityImage(Long userId, String type) {
-        IdentityVerification iv = identityVerificationRepository.findByUserId(userId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay ho so xac minh"));
-        String imagePath = resolveImagePath(iv, type);
-        return fileStorageService.loadImageByManagedUrl(imagePath, IDENTITY_IMAGE_DIRS);
-    }
-
-    @Transactional(readOnly = true)
-    public FileStorageService.StoredImage loadIdentityImageForAdmin(Long adminUserId, Long verificationId, String type) {
-        validateAdmin(adminUserId);
-        IdentityVerification iv = identityVerificationRepository.findById(verificationId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay ho so xac minh"));
-        String imagePath = resolveImagePath(iv, type);
-        return fileStorageService.loadImageByManagedUrl(imagePath, IDENTITY_IMAGE_DIRS);
-    }
-
     private void validateReadyToSubmit(IdentityVerification iv) {
         if (iv.getFullNameOnId() == null
             || iv.getIdNumber() == null
@@ -194,20 +175,6 @@ public class IdentityVerificationService {
         }
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
-    }
-
-    private String resolveImagePath(IdentityVerification iv, String type) {
-        String normalizedType = type == null ? "" : type.trim().toLowerCase();
-        String path = switch (normalizedType) {
-            case "front" -> iv.getIdFrontImageUrl();
-            case "back" -> iv.getIdBackImageUrl();
-            case "selfie" -> iv.getSelfieImageUrl();
-            default -> throw new AppException(HttpStatus.BAD_REQUEST, "Loai anh khong hop le");
-        };
-        if (path == null || path.isBlank()) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Khong tim thay anh");
-        }
-        return path;
     }
 
     private IdentityVerificationResponse toResponse(IdentityVerification iv) {

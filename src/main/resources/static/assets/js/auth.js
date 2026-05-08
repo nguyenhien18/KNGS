@@ -1,5 +1,5 @@
 let activeRole = 'learner';
-const API_BASE = window.API_BASE || ((window.location.protocol === 'file:' || (['localhost', '127.0.0.1'].includes(window.location.hostname) && window.location.port !== '8087')) ? 'http://localhost:8087' : '');
+const API_BASE = window.API_BASE || 'http://localhost:8088';
 
 function normalize(v) {
   return String(v || '').trim();

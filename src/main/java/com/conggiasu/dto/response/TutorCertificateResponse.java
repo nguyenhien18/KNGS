@@ -15,6 +15,7 @@ public class TutorCertificateResponse {
     private String certificateType;
     private String issuer;
     private LocalDate issuedDate;
+    private String certificateImageUrl;
     private ApprovalStatus status;
     private Long reviewedBy;
     private LocalDateTime reviewedAt;

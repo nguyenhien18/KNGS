@@ -1,5 +1,5 @@
 window.ApiClient = (function () {
-  const API_BASE = "";
+  const API_BASE = window.API_BASE || "http://localhost:8088";
   const TOKEN_KEY = "accessToken";
   const USER_KEY = "currentUser";
 
@@ -85,34 +85,6 @@ window.ApiClient = (function () {
     return data;
   }
 
-  async function requestBlob(path, options) {
-    const token = getToken();
-    const res = await fetch(API_BASE + path, {
-      headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...(options && options.headers ? options.headers : {})
-      },
-      ...options
-    });
-
-    if (!res.ok) {
-      let message = "Yeu cau that bai";
-      try {
-        const text = (await res.text() || "").trim();
-        if (text && !text.startsWith("<!DOCTYPE") && !text.startsWith("<html")) {
-          message = text;
-        }
-      } catch (_) {}
-      if (message === "Yeu cau that bai" && (res.status === 401 || res.status === 403)) {
-        message = "Ban khong co quyen truy cap chuc nang nay hoac phien dang nhap da het han.";
-      }
-      const error = new Error(message);
-      error.status = res.status;
-      throw error;
-    }
-    return res.blob();
-  }
-
   function encodeQuery(params) {
     const q = new URLSearchParams();
     Object.entries(params || {}).forEach(([k, v]) => {
@@ -177,9 +149,6 @@ window.ApiClient = (function () {
     }
     return data;
       });
-    },
-    getBlob(path, params) {
-      return requestBlob(`${path}${encodeQuery(params)}`, { method: "GET" });
     }
   };
 })();

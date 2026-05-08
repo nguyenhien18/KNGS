@@ -2,6 +2,7 @@ package com.conggiasu.controller;
 
 import com.conggiasu.dto.request.TutorCertificateUpsertRequest;
 import com.conggiasu.dto.response.ApiResponse;
+import com.conggiasu.dto.response.FileUploadResponse;
 import com.conggiasu.dto.response.TutorCertificateResponse;
 import com.conggiasu.service.CurrentUserService;
 import com.conggiasu.service.TutorCertificateService;
@@ -16,7 +17,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/tutor/certificates")
@@ -41,6 +45,15 @@ public class TutorCertificateController {
             .code(200)
             .message("Success")
             .result(tutorCertificateService.createMyCertificate(currentUserService.userId(), request))
+            .build();
+    }
+
+    @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<FileUploadResponse> uploadCertificateImage(@RequestPart("file") MultipartFile file) {
+        return ApiResponse.<FileUploadResponse>builder()
+            .code(200)
+            .message("Success")
+            .result(tutorCertificateService.uploadMyCertificateImage(currentUserService.userId(), file))
             .build();
     }
 
