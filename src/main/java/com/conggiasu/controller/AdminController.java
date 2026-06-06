@@ -9,6 +9,7 @@ import com.conggiasu.dto.response.AdminUserResponse;
 import com.conggiasu.dto.response.ApiResponse;
 import com.conggiasu.dto.response.IdentityVerificationResponse;
 import com.conggiasu.dto.response.LearnerPostResponse;
+import com.conggiasu.dto.response.PageResponse;
 import com.conggiasu.dto.response.TutorCourseResponse;
 import com.conggiasu.dto.response.TutorSummaryResponse;
 import com.conggiasu.entity.Grade;
@@ -47,11 +48,16 @@ public class AdminController {
     private final TutorCertificateService tutorCertificateService;
 
     @GetMapping("/users")
-    public ApiResponse<List<AdminUserResponse>> getUsers(@RequestParam(required = false) UserRole role, @RequestParam(required = false) UserStatus status) {
-        return ApiResponse.<List<AdminUserResponse>>builder()
+    public ApiResponse<PageResponse<AdminUserResponse>> getUsers(
+        @RequestParam(required = false) UserRole role,
+        @RequestParam(required = false) UserStatus status,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<AdminUserResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(adminService.getUsers(role, status))
+            .message("Thành công")
+            .result(adminService.getUsers(role, status, page, size))
             .build();
     }
 
@@ -60,17 +66,20 @@ public class AdminController {
         request.setAdminUserId(currentUserService.userId());
         return ApiResponse.<AdminUserResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.updateUserStatus(userId, request))
             .build();
     }
 
     @GetMapping("/tutors/pending")
-    public ApiResponse<List<TutorSummaryResponse>> getPendingTutors() {
-        return ApiResponse.<List<TutorSummaryResponse>>builder()
+    public ApiResponse<PageResponse<TutorSummaryResponse>> getPendingTutors(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<TutorSummaryResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(adminService.getPendingTutors(currentUserService.userId()))
+            .message("Thành công")
+            .result(adminService.getPendingTutors(currentUserService.userId(), page, size))
             .build();
     }
 
@@ -78,7 +87,7 @@ public class AdminController {
     public ApiResponse<TutorSummaryResponse> getTutorDetail(@PathVariable Long tutorId) {
         return ApiResponse.<TutorSummaryResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.getTutorDetail(currentUserService.userId(), tutorId))
             .build();
     }
@@ -88,7 +97,7 @@ public class AdminController {
         request.setAdminUserId(currentUserService.userId());
         return ApiResponse.<TutorSummaryResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.reviewTutor(tutorId, request))
             .build();
     }
@@ -97,17 +106,20 @@ public class AdminController {
     public ApiResponse<List<AdminTutorCertificateResponse>> getTutorCertificates(@PathVariable Long tutorId) {
         return ApiResponse.<List<AdminTutorCertificateResponse>>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorCertificateService.getTutorCertificatesForAdmin(currentUserService.userId(), tutorId))
             .build();
     }
 
     @GetMapping("/identity-verifications/pending")
-    public ApiResponse<List<IdentityVerificationResponse>> getPendingIdentityVerifications() {
-        return ApiResponse.<List<IdentityVerificationResponse>>builder()
+    public ApiResponse<PageResponse<IdentityVerificationResponse>> getPendingIdentityVerifications(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<IdentityVerificationResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(identityVerificationService.getPendingVerifications(currentUserService.userId()))
+            .message("Thành công")
+            .result(identityVerificationService.getPendingVerifications(currentUserService.userId(), page, size))
             .build();
     }
 
@@ -116,7 +128,7 @@ public class AdminController {
         TutorSummaryResponse tutor = adminService.getTutorDetail(currentUserService.userId(), tutorId);
         return ApiResponse.<IdentityVerificationResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(identityVerificationService.getVerificationByUserIdForAdmin(currentUserService.userId(), tutor.getUserId()))
             .build();
     }
@@ -128,17 +140,20 @@ public class AdminController {
     ) {
         return ApiResponse.<IdentityVerificationResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(identityVerificationService.reviewVerification(currentUserService.userId(), verificationId, request))
             .build();
     }
 
     @GetMapping("/posts/pending")
-    public ApiResponse<List<LearnerPostResponse>> getPendingPosts() {
-        return ApiResponse.<List<LearnerPostResponse>>builder()
+    public ApiResponse<PageResponse<LearnerPostResponse>> getPendingPosts(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<LearnerPostResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(adminService.getPendingPosts(currentUserService.userId()))
+            .message("Thành công")
+            .result(adminService.getPendingPosts(currentUserService.userId(), page, size))
             .build();
     }
 
@@ -147,17 +162,20 @@ public class AdminController {
         request.setAdminUserId(currentUserService.userId());
         return ApiResponse.<LearnerPostResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.reviewPost(postId, request))
             .build();
     }
 
     @GetMapping("/courses/pending")
-    public ApiResponse<List<TutorCourseResponse>> getPendingCourses() {
-        return ApiResponse.<List<TutorCourseResponse>>builder()
+    public ApiResponse<PageResponse<TutorCourseResponse>> getPendingCourses(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<TutorCourseResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(adminService.getPendingCourses(currentUserService.userId()))
+            .message("Thành công")
+            .result(adminService.getPendingCourses(currentUserService.userId(), page, size))
             .build();
     }
 
@@ -166,7 +184,7 @@ public class AdminController {
         request.setAdminUserId(currentUserService.userId());
         return ApiResponse.<TutorCourseResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.reviewCourse(courseId, request))
             .build();
     }
@@ -175,7 +193,7 @@ public class AdminController {
     public ApiResponse<AdminStatsResponse> getStats() {
         return ApiResponse.<AdminStatsResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.getStats(currentUserService.userId()))
             .build();
     }
@@ -184,7 +202,7 @@ public class AdminController {
     public ApiResponse<List<Subject>> getSubjects() {
         return ApiResponse.<List<Subject>>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.getSubjects(currentUserService.userId()))
             .build();
     }
@@ -193,7 +211,7 @@ public class AdminController {
     public ApiResponse<Subject> createSubject(@Valid @RequestBody AdminLookupUpsertRequest request) {
         return ApiResponse.<Subject>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.createSubject(currentUserService.userId(), request.getName()))
             .build();
     }
@@ -202,7 +220,7 @@ public class AdminController {
     public ApiResponse<Subject> updateSubject(@PathVariable Long subjectId, @Valid @RequestBody AdminLookupUpsertRequest request) {
         return ApiResponse.<Subject>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.updateSubject(currentUserService.userId(), subjectId, request.getName()))
             .build();
     }
@@ -212,7 +230,7 @@ public class AdminController {
         adminService.deleteSubject(currentUserService.userId(), subjectId);
         return ApiResponse.<Void>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .build();
     }
 
@@ -220,7 +238,7 @@ public class AdminController {
     public ApiResponse<List<Grade>> getGrades() {
         return ApiResponse.<List<Grade>>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.getGrades(currentUserService.userId()))
             .build();
     }
@@ -229,7 +247,7 @@ public class AdminController {
     public ApiResponse<Grade> createGrade(@Valid @RequestBody AdminLookupUpsertRequest request) {
         return ApiResponse.<Grade>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.createGrade(currentUserService.userId(), request.getName()))
             .build();
     }
@@ -238,7 +256,7 @@ public class AdminController {
     public ApiResponse<Grade> updateGrade(@PathVariable Long gradeId, @Valid @RequestBody AdminLookupUpsertRequest request) {
         return ApiResponse.<Grade>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.updateGrade(currentUserService.userId(), gradeId, request.getName()))
             .build();
     }
@@ -248,7 +266,7 @@ public class AdminController {
         adminService.deleteGrade(currentUserService.userId(), gradeId);
         return ApiResponse.<Void>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .build();
     }
 }

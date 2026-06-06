@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/public")
 @RequiredArgsConstructor
@@ -39,7 +37,7 @@ public class PublicBrowseController {
     ) {
         return ApiResponse.<PageResponse<AvailablePostResponse>>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorFeatureService.getAvailablePosts(keyword, subjectId, gradeId, teachingMode, province, district, page, size))
             .build();
     }
@@ -48,23 +46,25 @@ public class PublicBrowseController {
     public ApiResponse<AvailablePostResponse> getAvailablePostDetail(@PathVariable Long postId) {
         return ApiResponse.<AvailablePostResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorFeatureService.getAvailablePostDetail(postId))
             .build();
     }
 
     @GetMapping("/courses")
-    public ApiResponse<List<TutorCourseResponse>> getAvailableCourses(
+    public ApiResponse<PageResponse<TutorCourseResponse>> getAvailableCourses(
             @RequestParam(required = false) Long subjectId,
             @RequestParam(required = false) Long gradeId,
             @RequestParam(required = false) TeachingMode teachingMode,
             @RequestParam(required = false) String province,
-            @RequestParam(required = false) String district
+            @RequestParam(required = false) String district,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        return ApiResponse.<List<TutorCourseResponse>>builder()
+        return ApiResponse.<PageResponse<TutorCourseResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(learnerService.availableCourses(subjectId, gradeId, teachingMode, province, district))
+            .message("Thành công")
+            .result(learnerService.availableCourses(subjectId, gradeId, teachingMode, province, district, page, size))
             .build();
     }
 
@@ -72,26 +72,34 @@ public class PublicBrowseController {
     public ApiResponse<TutorCourseResponse> getAvailableCourseDetail(@PathVariable Long courseId) {
         return ApiResponse.<TutorCourseResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(learnerService.availableCourseDetail(courseId))
             .build();
     }
 
     @GetMapping("/tutors/{tutorId}/courses")
-    public ApiResponse<List<TutorCourseResponse>> getAvailableCoursesByTutor(@PathVariable Long tutorId) {
-        return ApiResponse.<List<TutorCourseResponse>>builder()
+    public ApiResponse<PageResponse<TutorCourseResponse>> getAvailableCoursesByTutor(
+        @PathVariable Long tutorId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<TutorCourseResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(learnerService.availableCoursesByTutorId(tutorId))
+            .message("Thành công")
+            .result(learnerService.availableCoursesByTutorId(tutorId, page, size))
             .build();
     }
 
     @GetMapping("/tutors/{tutorId}/reviews")
-    public ApiResponse<List<TutorReviewResponse>> getTutorReviews(@PathVariable Long tutorId) {
-        return ApiResponse.<List<TutorReviewResponse>>builder()
+    public ApiResponse<PageResponse<TutorReviewResponse>> getTutorReviews(
+        @PathVariable Long tutorId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<TutorReviewResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(tutorFeatureService.getReviewsByTutorId(tutorId))
+            .message("Thành công")
+            .result(tutorFeatureService.getReviewsByTutorId(tutorId, page, size))
             .build();
     }
 }

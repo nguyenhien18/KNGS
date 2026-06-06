@@ -11,5 +11,6 @@ public class ClassStatusUpdateRequest {
     private Long learnerUserId;
     @NotNull
     private MatchedClassStatus status;
+    private String statusRequestReason;
 }
 

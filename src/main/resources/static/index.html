@@ -1,86 +1,138 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cổng Gia Sư – Kết nối học viên và gia sư</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-  <link rel="stylesheet" href="assets/css/landing.css" />
-</head>
-<body class="home-guest">
-  <header class="site-header">
-    <div class="container header-inner">
-      <div class="header-left">
-        <a href="/index.html" class="logo">
-          <div class="logo-box"><i class="fas fa-graduation-cap"></i></div>
-          <span>Cổng Gia Sư</span>
-        </a>
-        <nav class="desktop-nav">
-          <a href="/index.html" class="active">Trang chủ</a>
-          <a href="/tim-gia-su.html">Tìm gia sư</a>
-          <a href="/lop-gia-su.html">Tìm lớp học</a>
-        </nav>
-      </div>
-      <div class="header-right" id="headerRight"></div>
-      <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-    </div>
-    <div id="mobileMenu" class="mobile-menu hidden">
-      <a href="/index.html" class="active">Trang chủ</a>
-      <a href="/tim-gia-su.html">Tìm gia sư</a>
-      <a href="/lop-gia-su.html">Tìm lớp học</a>
-    </div>
-  </header>
-
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-text">
-        <div class="hero-badge"><span>🎓</span> Nền tảng gia sư #1 Việt Nam</div>
-        <h1 class="hero-title">Kết nối <span class="highlight">học viên</span><br>và <span class="highlight">gia sư</span></h1>
-        <p class="hero-desc">Kết nối Gia sư và Học viên Nhanh chóng, tin cậy, hiệu quả.</p>
-        <div class="hero-stats">
-          <div class="stat-item"><div class="stat-number">5.000+</div><div class="stat-label">Gia sư</div></div>
-          <div class="stat-item"><div class="stat-number">20.000+</div><div class="stat-label">Học viên</div></div>
-          <div class="stat-item"><div class="stat-number">50+</div><div class="stat-label">Môn học</div></div>
-          <div class="stat-item"><div class="stat-number">98%</div><div class="stat-label">Hài lòng</div></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cổng Gia Sư – Kết nối học viên và gia sư</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="assets/css/landing.css?v=20260606-home-2" />
+  </head>
+  <body class="home-guest">
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="header-left">
+          <a href="/index.html" class="logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap">
+              </i>
+            </div>
+            <span>Cổng Gia Sư</span>
+          </a>
+          <nav class="desktop-nav">
+            <a href="/index.html" class="active">Trang chủ</a>
+            <a href="/tim-gia-su.html">Tìm gia sư</a>
+            <a href="/lop-gia-su.html">Tìm lớp học</a>
+          </nav>
         </div>
+        <div class="header-right" id="headerRight">
+        </div>
+        <button id="mobileMenuButton" class="mobile-menu-btn">
+          <i class="fas fa-bars">
+          </i>
+        </button>
       </div>
-
-      <div class="hero-visual">
-        <div class="hero-card-wrap">
-          <div class="hero-main-card">
-            <div class="tutor-avatar-wrap">
-              <div class="tutor-avatar">NT</div>
-              <div class="tutor-info-card">
-                <div class="name">Nguyễn Thanh Bình</div>
-                <div class="role">Gia sư Toán – Lý</div>
-              </div>
-              <span class="card-badge">✓ Đã xác minh</span>
+      <div id="mobileMenu" class="mobile-menu hidden">
+        <a href="/index.html" class="active">Trang chủ</a>
+        <a href="/tim-gia-su.html">Tìm gia sư</a>
+        <a href="/lop-gia-su.html">Tìm lớp học</a>
+      </div>
+    </header>
+    <main class="home-page">
+      <section class="home-hero">
+        <div class="home-hero-inner">
+          <div class="home-hero-text">
+            <h1>Kết nối gia sư và học viên</h1>
+            <p>Kết nối học viên và gia sư theo môn học, khối lớp, hình thức học và khu vực phù hợp.</p>
+            <div class="home-hero-actions">
+              <a class="btn btn-primary" href="/tim-gia-su.html">Tìm gia sư</a>
+              <a class="btn btn-outline" href="/tim-lop.html">Xem lớp học</a>
             </div>
-            <div class="card-subjects">
-              <span class="subject-tag">Toán học</span>
-              <span class="subject-tag">Vật lý</span>
-              <span class="subject-tag">Hóa học</span>
-            </div>
-            <div class="card-rating"><span class="stars">★★★★★</span><span>4.9 (128 đánh giá)</span></div>
           </div>
-          <div class="float-card float-card-1"><div class="fc-label">Học phí / giờ</div><div class="fc-value">150.000đ</div></div>
-          <div class="float-card float-card-2"><div class="fc-label">Đã nhận lớp</div><div class="fc-value">47 lớp</div></div>
+          <div class="home-hero-visual">
+            <img src="/assets/img/home-hero.png" alt="Gia sư hướng dẫn học viên học bài">
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section class="home-section">
+        <div class="home-section-title">
+          <h2>Tại sao chọn Gia Sư Việt?</h2>
+          <p>Hệ thống hỗ trợ các bước quan trọng khi kết nối học viên và gia sư.</p>
+        </div>
+        <div class="home-benefits">
+          <article class="home-benefit">
+            <div class="home-benefit-mark blue"><i class="fas fa-user-check"></i></div>
+            <div>
+              <h3>Gia sư được xác minh</h3>
+              <p>Hồ sơ gia sư, chứng chỉ và danh tính được admin kiểm tra trước khi hiển thị.</p>
+            </div>
+          </article>
+          <article class="home-benefit">
+            <div class="home-benefit-mark green"><i class="fas fa-tag"></i></div>
+            <div>
+              <h3>Học phí minh bạch</h3>
+              <p>Bài đăng có ngân sách dự kiến, gia sư có thể gửi mức phí đề xuất rõ ràng.</p>
+            </div>
+          </article>
+          <article class="home-benefit">
+            <div class="home-benefit-mark violet"><i class="fas fa-star"></i></div>
+            <div>
+              <h3>Đánh giá rõ ràng</h3>
+              <p>Học viên đánh giá sau khi hoàn thành lớp, giúp người sau chọn gia sư dễ hơn.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="home-section home-flow-section">
+        <div class="home-section-title">
+          <h2>Quy trình hoạt động</h2>
+          <p>Hai luồng chính giúp học viên và gia sư kết nối nhanh, rõ ràng.</p>
+        </div>
+        <div class="home-flow-grid">
+          <article class="home-flow-card">
+            <h3>Luồng 1: Học viên tìm gia sư</h3>
+            <div class="home-steps">
+              <div class="home-step"><span>1</span><strong>Học viên đăng nhu cầu</strong><p>Môn học, khối lớp, lịch học, khu vực và ngân sách.</p></div>
+              <div class="home-step"><span>2</span><strong>Gia sư ứng tuyển</strong><p>Gia sư phù hợp gửi lời nhắn và mức phí mong muốn.</p></div>
+              <div class="home-step"><span>3</span><strong>Học viên chấp nhận</strong><p>Học viên xem hồ sơ và chọn gia sư phù hợp nhất.</p></div>
+              <div class="home-step"><span>4</span><strong>Quản lý lớp học</strong><p>Hai bên theo dõi trạng thái, hoàn thành hoặc hủy lớp.</p></div>
+            </div>
+          </article>
+          <article class="home-flow-card">
+            <h3>Luồng 2: Gia sư mở lớp học</h3>
+            <div class="home-steps">
+              <div class="home-step"><span>1</span><strong>Gia sư mở lớp</strong><p>Tạo lớp với môn học, khối lớp, lịch học và học phí.</p></div>
+              <div class="home-step"><span>2</span><strong>Học viên đăng ký</strong><p>Học viên xem lớp phù hợp và gửi đăng ký tham gia.</p></div>
+              <div class="home-step"><span>3</span><strong>Gia sư xác nhận</strong><p>Gia sư duyệt học viên và quản lý danh sách đăng ký.</p></div>
+              <div class="home-step"><span>4</span><strong>Quản lý lớp học</strong><p>Hai bên bắt đầu lớp học và đánh giá sau khi hoàn thành.</p></div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+    </footer>
+    <div class="toast-container" id="toastContainer">
     </div>
-  </section>
-
-  <div class="toast-container" id="toastContainer"></div>
-
-  <script src="assets/js/app.js"></script>
-  <script src="assets/js/api-client.js"></script>
-  <script>
-    document.getElementById('headerRight').innerHTML = renderUtilityHeaderRight();
-    renderHeaderExtras();
-  </script>
-</body>
+    <script src="assets/js/format-utils.js">
+    </script>
+    <script src="assets/js/dom-utils.js">
+    </script>
+    <script src="assets/js/ui-utils.js">
+    </script>
+    <script src="assets/js/app.js">
+    </script>
+    <script src="assets/js/api-client.js">
+    </script>
+    <script src="assets/js/auth-guard.js">
+    </script>
+    <script>
+      document.getElementById('headerRight').innerHTML = renderUtilityHeaderRight();
+      renderHeaderExtras();
+    </script>
+  </body>
 </html>
-

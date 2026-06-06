@@ -14,7 +14,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Entity
 @Table(
     name = "course_enrollments",
-    uniqueConstraints = @UniqueConstraint(name = "uq_course_enrollment", columnNames = {"course_id", "learner_user_id"})
+    uniqueConstraints = @UniqueConstraint(name = "uq_course_enrollment", columnNames = {"course_id", "learner_user_id"}),
+    indexes = {
+        @Index(name = "idx_course_enrollments_course_status_created_at", columnList = "course_id, status, created_at"),
+        @Index(name = "idx_course_enrollments_learner_created_at", columnList = "learner_user_id, created_at")
+    }
 )
 public class CourseEnrollment {
     @Id

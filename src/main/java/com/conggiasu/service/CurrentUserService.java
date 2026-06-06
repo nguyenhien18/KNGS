@@ -13,7 +13,7 @@ public class CurrentUserService {
     public AppUserPrincipal principal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof AppUserPrincipal principal)) {
-            throw new AppException(HttpStatus.UNAUTHORIZED, "Chua dang nhap");
+            throw new AppException(HttpStatus.UNAUTHORIZED, "Chưa đăng nhập");
         }
         return principal;
     }
@@ -28,7 +28,7 @@ public class CurrentUserService {
 
     public void requireRole(UserRole expected) {
         if (role() != expected) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Khong du quyen");
+            throw new AppException(HttpStatus.FORBIDDEN, "Không đủ quyền");
         }
     }
 }

@@ -1,18 +1,8 @@
-﻿(function () {
-  function ensureLearner() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'LEARNER') {
-      alert('Ban can dang nhap tai khoan hoc vien.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname);
-      return false;
-    }
-    return true;
-  }
-
-  if (!ensureLearner()) return;
+(function () {
+  if (!AuthGuard.requireLearner()) return;
 
   const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') headerRight.innerHTML = renderUtilityHeaderRight();
+  if (headerRight && typeof renderUtilityHeaderRight === 'function') DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
 
   const listEl = document.getElementById('classesList');
@@ -21,29 +11,20 @@
 
   let allRows = [];
   let currentFilter = 'ALL';
-
-  function safe(value) {
-    return String(value == null ? '' : value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
-
-  function formatDate(value) {
-    if (!value) return '---';
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return safe(value);
-    return d.toLocaleDateString('vi-VN');
-  }
+  const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'learnerClassesPagination');
+  let currentPage = 0;
+  const pageSize = 10;
+  let totalPages = 1;
+  let totalElements = 0;
 
   function statusMeta(status) {
     const map = {
-      ASSIGNED: { text: 'Cho bat dau', badgeClass: 'badge-warning' },
-      IN_PROGRESS: { text: 'Dang hoc', badgeClass: 'badge-primary' },
-      COMPLETED: { text: 'Da hoan thanh', badgeClass: 'badge-success' },
-      CANCELLED: { text: 'Da huy', badgeClass: 'badge-danger' }
+      ASSIGNED: { text: 'Cho bắt đầu', badgeClass: 'badge-warning' },
+      IN_PROGRESS: { text: 'Đang học', badgeClass: 'badge-primary' },
+      COMPLETION_REQUESTED: { text: 'Cho xác nhận hoàn thành', badgeClass: 'badge-warning' },
+      COMPLETED: { text: 'Đã hoàn thành', badgeClass: 'badge-success' },
+      CANCELLATION_REQUESTED: { text: 'Chờ xác nhận hủy', badgeClass: 'badge-warning' },
+      CANCELLED: { text: 'Đã hủy', badgeClass: 'badge-danger' }
     };
     return map[String(status || 'ASSIGNED')] || map.ASSIGNED;
   }
@@ -53,7 +34,8 @@
     if (currentFilter === 'ACTIVE') {
       return rows.filter(function (item) {
         const s = String(item.status || 'ASSIGNED');
-        return s === 'ASSIGNED' || s === 'IN_PROGRESS';
+        return s === 'ASSIGNED' || s === 'IN_PROGRESS'
+          || s === 'COMPLETION_REQUESTED' || s === 'CANCELLATION_REQUESTED';
       });
     }
     if (currentFilter === 'COMPLETED') {
@@ -65,31 +47,53 @@
   }
 
   function helperText(status) {
-    if (status === 'ASSIGNED') return 'Lop da ghep gia su, chua bat dau buoi hoc dau tien.';
-    if (status === 'IN_PROGRESS') return 'Lop dang trong qua trinh hoc. Co the danh dau hoan thanh khi ket thuc.';
-    if (status === 'COMPLETED') return 'Lop da hoan thanh. Ban co the de lai danh gia gia su.';
-    return 'Lop da duoc huy.';
+    if (status === 'ASSIGNED') return 'Lớp đã ghép gia sư, chưa bắt đầu buổi học đầu tiên.';
+    if (status === 'IN_PROGRESS') return 'Lớp đang trong quá trình học. Có thể đánh dấu hoàn thành khi kết thúc.';
+    if (status === 'COMPLETION_REQUESTED') return 'Một bên đã yêu cầu hoàn thành lớp. Cần bên còn lại xác nhận.';
+    if (status === 'CANCELLATION_REQUESTED') return 'Một bên đã yêu cầu hủy lớp. Cần bên còn lại xác nhận.';
+    if (status === 'COMPLETED') return 'Lớp đã hoàn thành. Bạn có thể để lại đánh giá gia sư.';
+    return 'Lớp đã được hủy.';
   }
 
   function actions(row) {
     const id = safe(row.classId || '-');
     const status = String(row.status || 'ASSIGNED');
     if (status === 'ASSIGNED') {
-      return '<button class="btn btn-outline" data-status="IN_PROGRESS" data-id="' + id + '">Bat dau hoc</button>' +
-        '<button class="btn btn-outline" data-status="CANCELLED" data-id="' + id + '">Huy lop</button>';
+      return '<button class="btn btn-outline" data-status="IN_PROGRESS" data-id="' + id + '">Bắt đầu học</button>' +
+        '<button class="btn btn-outline" data-status="CANCELLED" data-current-status="' + safe(status) + '" data-id="' + id + '">Yêu cầu hủy lớp</button>';
     }
     if (status === 'IN_PROGRESS') {
-      return '<button class="btn btn-primary" data-status="COMPLETED" data-id="' + id + '">Hoan thanh</button>' +
-        '<button class="btn btn-outline" data-status="CANCELLED" data-id="' + id + '">Huy lop</button>';
+      return '<button class="btn btn-primary" data-status="COMPLETED" data-current-status="' + safe(status) + '" data-id="' + id + '">Yêu cầu hoàn thành</button>' +
+        '<button class="btn btn-outline" data-status="CANCELLED" data-current-status="' + safe(status) + '" data-id="' + id + '">Yêu cầu hủy lớp</button>';
     }
-    return '<a class="btn btn-soft" href="/hoc-vien/learner-notifications.html">Xem thong bao</a>';
+    if (status === 'COMPLETION_REQUESTED') {
+      if (row.waitingForMyConfirmation) {
+        return '<button class="btn btn-primary" data-status="COMPLETED" data-current-status="' + safe(status) + '" data-id="' + id + '">Xác nhận hoàn thành</button>';
+      }
+      return '<span class="muted">Đang chờ gia sư xác nhận hoàn thành</span>';
+    }
+    if (status === 'CANCELLATION_REQUESTED') {
+      if (row.waitingForMyConfirmation) {
+        return '<button class="btn btn-outline" data-status="CANCELLED" data-current-status="' + safe(status) + '" data-id="' + id + '">Xác nhận hủy</button>';
+      }
+      return '<span class="muted">Đang chờ gia sư xác nhận hủy</span>';
+    }
+    return '<a class="btn btn-soft" href="/hoc-vien/learner-notifications.html">Xem thông báo</a>';
   }
 
-  async function updateStatus(id, status) {
-    let message = 'Cap nhat trang thai lop?';
-    if (status === 'IN_PROGRESS') message = 'Xac nhan bat dau lop hoc nay?';
-    if (status === 'COMPLETED') message = 'Xac nhan lop da hoan thanh?';
-    if (status === 'CANCELLED') message = 'Ban chac chan muon huy lop nay?';
+  async function updateStatus(id, status, currentStatus) {
+    let message = 'Cập nhật trạng thái lớp?';
+    if (status === 'IN_PROGRESS') message = 'Xác nhận bắt đầu lớp học này?';
+    if (status === 'COMPLETED') {
+      message = currentStatus === 'COMPLETION_REQUESTED'
+        ? 'Xác nhận lớp đã hoàn thành?'
+        : 'Gửi yêu cầu hoàn thành lớp nay?';
+    }
+    if (status === 'CANCELLED') {
+      message = currentStatus === 'CANCELLATION_REQUESTED'
+        ? 'Xác nhận hủy lớp này?'
+        : 'Gửi yêu cầu hủy lớp này?';
+    }
     if (!confirm(message)) return;
 
     await ApiClient.patch('/api/learner/classes/' + encodeURIComponent(id) + '/status', { status: status });
@@ -98,56 +102,72 @@
 
   function render() {
     const rows = filterRows(allRows);
-    if (countEl) countEl.textContent = rows.length + ' lop';
+    if (countEl) countEl.textContent = totalElements + ' lớp';
 
     if (!rows.length) {
       const emptyText = currentFilter === 'ACTIVE'
-        ? 'Khong co lop dang hoc.'
+        ? 'Không có lớp đang học.'
         : currentFilter === 'COMPLETED'
-          ? 'Khong co lop da hoan thanh.'
-          : 'Ban chua co lop nao duoc ghep.';
-      listEl.innerHTML = '<div class="mini-item"><h4>Khong co lop</h4><p>' + emptyText + '</p></div>';
+          ? 'Không có lớp đã hoàn thành.'
+          : 'Bạn chưa có lớp nào được ghép.';
+      DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có lớp</h4><p>' + emptyText + '</p></div>');
+      UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
       return;
     }
 
-    listEl.innerHTML = rows.map(function (c) {
+    DomUtils.setHtml(listEl, rows.map(function (c) {
       const meta = statusMeta(c.status);
       return '' +
         '<article class="list-card">' +
           '<div class="badge-row">' +
-            '<span class="badge badge-primary">Lop 1-1</span>' +
+            '<span class="badge badge-primary">Lớp 1-1</span>' +
             '<span class="badge ' + meta.badgeClass + '">' + meta.text + '</span>' +
           '</div>' +
-          '<h3 class="card-title">' + safe(c.postTitle || 'Lop hoc da ghep') + '</h3>' +
-          '<p class="muted">Gia su: ' + safe(c.tutorName || '---') + ' • ' + safe(c.tutorPhone || c.tutorEmail || 'Chua co thong tin') + '</p>' +
+          '<h3 class="card-title">' + safe(c.postTitle || 'Lớp học đã ghép') + '</h3>' +
+          '<p class="muted">Gia sư: ' + safe(c.tutorName || '---') + ' • ' + safe(c.tutorPhone || c.tutorEmail || 'Chưa có thông tin') + '</p>' +
           '<div class="info-grid">' +
-            '<div class="info-box"><strong>Ma lop</strong><span>#' + safe(c.classId || '-') + '</span></div>' +
-            '<div class="info-box"><strong>Ngay bat dau</strong><span>' + formatDate(c.startDate || c.assignedAt) + '</span></div>' +
-            '<div class="info-box"><strong>Ngay ket thuc</strong><span>' + formatDate(c.endDate) + '</span></div>' +
-            '<div class="info-box"><strong>Trang thai</strong><span>' + meta.text + '</span></div>' +
+            '<div class="info-box"><strong>Ma lớp</strong><span>#' + safe(c.classId || '-') + '</span></div>' +
+            '<div class="info-box"><strong>Ngay bắt đầu</strong><span>' + formatDate(c.startDate || c.assignedAt) + '</span></div>' +
+            '<div class="info-box"><strong>Ngay kết thúc</strong><span>' + formatDate(c.endDate) + '</span></div>' +
+            '<div class="info-box"><strong>Trạng thái</strong><span>' + meta.text + '</span></div>' +
           '</div>' +
           '<div class="card-actions">' +
             '<span class="muted">' + helperText(String(c.status || 'ASSIGNED')) + '</span>' +
             '<div class="manage-action-group">' + actions(c) + '</div>' +
           '</div>' +
         '</article>';
-    }).join('');
+    }).join(''));
+
+    UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
 
     listEl.querySelectorAll('button[data-status][data-id]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        updateStatus(btn.getAttribute('data-id'), btn.getAttribute('data-status'));
+        UiUtils.withButtonLoading(btn, 'Đang xử lý...', function () {
+          return updateStatus(
+            btn.getAttribute('data-id'),
+            btn.getAttribute('data-status'),
+            btn.getAttribute('data-current-status') || ''
+          );
+        }).catch(function (err) {
+          alert(err.message || 'Không cập nhật được trạng thái lớp.');
+        });
       });
     });
   }
 
   async function load() {
     try {
-      allRows = await ApiClient.get('/api/learner/classes');
-      if (!Array.isArray(allRows)) allRows = [];
+      const page = await ApiClient.get('/api/learner/classes', { page: currentPage, size: pageSize });
+      const info = UiUtils.pageInfo(page);
+      allRows = info.content;
+      currentPage = info.page;
+      totalPages = info.totalPages;
+      totalElements = info.totalElements;
       render();
     } catch (err) {
-      if (countEl) countEl.textContent = 'Khong tai duoc du lieu';
-      listEl.innerHTML = '<div class="mini-item"><h4>Loi</h4><p>' + safe(err.message || 'Khong tai duoc du lieu lop') + '</p></div>';
+      if (countEl) countEl.textContent = 'Không tải được dữ liệu';
+      UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
+      DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được dữ liệu lớp') + '</p></div>');
     }
   }
 
@@ -156,7 +176,8 @@
       tabs.forEach(function (t) { t.classList.remove('active'); });
       tab.classList.add('active');
       currentFilter = tab.getAttribute('data-filter') || 'ALL';
-      render();
+      currentPage = 0;
+      load();
     });
   });
 

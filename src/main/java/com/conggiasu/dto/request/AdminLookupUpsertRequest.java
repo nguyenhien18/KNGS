@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdminLookupUpsertRequest {
-    @NotBlank(message = "Ten khong duoc de trong")
-    @Size(max = 100, message = "Ten toi da 100 ky tu")
+    @NotBlank(message = "Tên không được để trống")
+    @Size(max = 100, message = "Tên tối đa 100 ký tự")
     private String name;
 }
 

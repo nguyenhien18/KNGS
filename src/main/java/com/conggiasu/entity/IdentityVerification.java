@@ -12,7 +12,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Getter
 @Setter
 @Entity
-@Table(name = "identity_verifications")
+@Table(
+    name = "identity_verifications",
+    indexes = {
+        @Index(name = "idx_identity_verifications_status_created_at", columnList = "status, created_at")
+    }
+)
 public class IdentityVerification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

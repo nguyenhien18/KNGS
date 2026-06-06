@@ -34,7 +34,7 @@ public class AuthLoginService {
 
     @Transactional(readOnly = true)
     public LoginResponse authenticate(LoginRequest request) {
-        String email = authValueNormalizer.normalizeRequired(request.getEmail(), "Email khong duoc trong");
+        String email = authValueNormalizer.normalizeRequired(request.getEmail(), "Email không được trống");
         try {
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, request.getPassword())
@@ -44,10 +44,10 @@ public class AuthLoginService {
         } catch (AuthenticationServiceException ex) {
             throw new AppException(HttpStatus.UNAUTHORIZED, ex.getMessage());
         } catch (AuthenticationException ex) {
-            throw new AppException(HttpStatus.UNAUTHORIZED, "Sai email hoac mat khau");
+            throw new AppException(HttpStatus.UNAUTHORIZED, "Sai email hoặc mật khẩu");
         }
         User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new AppException(HttpStatus.UNAUTHORIZED, "Sai email hoac mat khau"));
+            .orElseThrow(() -> new AppException(HttpStatus.UNAUTHORIZED, "Sai email hoặc mật khẩu"));
 
         Long tutorId = null;
         if (user.getRole() == UserRole.TUTOR) {

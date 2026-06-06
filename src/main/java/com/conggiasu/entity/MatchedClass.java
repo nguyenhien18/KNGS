@@ -1,6 +1,7 @@
 package com.conggiasu.entity;
 
 import com.conggiasu.entity.enums.MatchedClassStatus;
+import com.conggiasu.entity.enums.UserRole;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,8 +34,21 @@ public class MatchedClass {
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 30)
     private MatchedClassStatus status = MatchedClassStatus.ASSIGNED;
+
+    @Column(name = "status_requested_by_user_id")
+    private Long statusRequestedByUserId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_requested_by_role", length = 20)
+    private UserRole statusRequestedByRole;
+
+    @Column(name = "status_requested_at")
+    private LocalDateTime statusRequestedAt;
+
+    @Column(name = "status_request_reason", columnDefinition = "TEXT")
+    private String statusRequestReason;
 
     @Column(name = "assigned_at")
     private LocalDateTime assignedAt;

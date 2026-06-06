@@ -1,8 +1,4 @@
-﻿(function () {
-  function esc(v) {
-    return String(v ?? '').replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-  }
-
+(function () {
   function readAuth() {
     try {
       const token = localStorage.getItem('accessToken');
@@ -65,16 +61,16 @@
 
     const desktopNav = header.querySelector('.desktop-nav');
     if (desktopNav) {
-      desktopNav.innerHTML = `
+      DomUtils.setHtml(desktopNav, `
         <a href="/index.html" class="${homeActive}">Trang chủ</a>
         <a href="/tim-gia-su.html" class="${tutorActive}">Tìm gia sư</a>
         <div class="nav-dropdown ${classActive}">
           <a href="#" class="nav-dropdown-trigger ${classActive}" aria-haspopup="true" aria-expanded="false">Tìm lớp học <i class="fas fa-chevron-down"></i></a>
           <div class="nav-dropdown-menu">
             <a href="/lop-gia-su.html">Lớp gia sư mở</a>
-            <a href="/bai-dang-phu-huynh.html">Lớp phụ huynh đăng</a>
+            <a href="/bai-dang-phu-huynh.html">Lớp học viên đăng</a>
           </div>
-        </div>`;
+        </div>`);
 
       const trigger = desktopNav.querySelector('.nav-dropdown-trigger');
       if (trigger) {
@@ -86,16 +82,16 @@
 
     const mobile = document.getElementById('mobileMenu');
     if (mobile) {
-      mobile.innerHTML = `
+      DomUtils.setHtml(mobile, `
         <a href="/index.html" class="${homeActive}">Trang chủ</a>
         <a href="/tim-gia-su.html" class="${tutorActive}">Tìm gia sư</a>
         <div class="mobile-submenu">
           <span class="mobile-submenu-title">Tìm lớp học</span>
           <div class="mobile-submenu-links">
             <a href="/lop-gia-su.html">Lớp gia sư mở</a>
-            <a href="/bai-dang-phu-huynh.html">Lớp phụ huynh đăng</a>
+            <a href="/bai-dang-phu-huynh.html">Lớp học viên đăng</a>
           </div>
-        </div>`;
+        </div>`);
     }
   }
 
@@ -103,30 +99,26 @@
     const footer = document.querySelector('.site-footer');
     if (!footer) return;
 
-    footer.innerHTML = `
-      <div class="container footer-grid">
-        <div>
-          <div class="logo footer-logo">
-            <div class="logo-box"><i class="fas fa-graduation-cap"></i></div>
-            <span>Gia Sư Việt</span>
-          </div>
-          <p>Nền tảng kết nối gia sư và học viên toàn quốc.</p>
-          <p>Hà Nội, Việt Nam</p>
-        </div>
-        <div>
-          <h3>Đi nhanh</h3>
+    const path = window.location.pathname || '';
+    const isWorkspacePage = path.startsWith('/admin/')
+      || path.startsWith('/hoc-vien/')
+      || path.startsWith('/gia-su/');
+
+    if (isWorkspacePage) {
+      footer.remove();
+      return;
+    }
+
+    DomUtils.setHtml(footer, `
+      <div class="container footer-inner">
+        <span>Gia Sư Việt</span>
+        <nav>
           <a href="/index.html">Trang chủ</a>
           <a href="/tim-gia-su.html">Tìm gia sư</a>
-          <a href="/lop-gia-su.html">Tìm lớp học</a>
-        </div>
-        <div>
-          <h3>Hỗ trợ</h3>
-          <a href="#">Liên hệ</a>
-          <a href="#">Điều khoản</a>
-          <a href="#">Chính sách bảo mật</a>
-        </div>
-      </div>
-      <div class="footer-bottom">© 2025 Gia Sư Việt. Tất cả quyền được bảo lưu.</div>`;
+          <a href="/lop-gia-su.html">Lớp gia sư mở</a>
+          <a href="/bai-dang-phu-huynh.html">Lớp học viên đăng</a>
+        </nav>
+      </div>`);
   }
 
   window.formatVND = function (value) {
@@ -258,7 +250,7 @@
       if (!ApiClient.getToken || !ApiClient.getToken()) return;
       try {
         const rows = await ApiClient.get('/api/notifications');
-        const allRows = Array.isArray(rows) ? rows : [];
+        const allRows = ApiClient.asArray(rows);
         const items = allRows
           .slice()
           .sort(function (a, b) { return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(); })
@@ -276,10 +268,10 @@
 
         notificationLists.forEach(function (list) {
           if (!items.length) {
-            list.innerHTML = '<div class="dropdown-content">Không có thông báo mới.</div>';
+            DomUtils.setHtml(list, '<div class="dropdown-content">Không có thông báo mới.</div>');
             return;
           }
-          list.innerHTML = items.map(function (n) {
+          DomUtils.setHtml(list, items.map(function (n) {
             return '' +
               '<article class="notification-quick-item">' +
                 '<div class="notification-quick-top">' +
@@ -289,11 +281,11 @@
                 '<p>' + esc(n.content || '') + '</p>' +
                 '<time>' + esc(safeDateTime(n.createdAt)) + '</time>' +
               '</article>';
-          }).join('');
+          }).join(''));
         });
       } catch (_) {
         notificationLists.forEach(function (list) {
-          list.innerHTML = '<div class="dropdown-content">Không tải được thông báo.</div>';
+          DomUtils.setHtml(list, '<div class="dropdown-content">Không tải được thông báo.</div>');
         });
       }
     }

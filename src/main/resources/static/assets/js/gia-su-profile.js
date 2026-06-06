@@ -1,7 +1,7 @@
 (function () {
   const headerRight = document.getElementById('headerRight');
   if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-    headerRight.innerHTML = renderUtilityHeaderRight();
+    DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   }
   if (typeof renderHeaderExtras === 'function') {
     renderHeaderExtras();
@@ -14,11 +14,6 @@
   function starString(rating) {
     const full = Math.max(0, Math.min(5, Math.round(Number(rating || 0))));
     return '★'.repeat(full) + '☆'.repeat(5 - full);
-  }
-
-  function safe(v, fallback = 'Chưa cập nhật') {
-    if (v === null || v === undefined || v === '') return fallback;
-    return v;
   }
 
   function statusMeta(status) {
@@ -39,9 +34,9 @@
     const isRejected = tutor.profileStatus === 'REJECTED';
 
     box.classList.remove('hidden');
-    box.innerHTML = `
+    DomUtils.setHtml(box, `
       <h3 class="detail-sidebar-title">Trạng thái hồ sơ</h3>
-      <div class="approval-banner ${meta.cls}" style="margin-top:12px">
+      <div class="approval-banner ${meta.cls} mt-12">
         <i class="fas ${meta.icon}"></i>
         <div>
           <strong>${meta.label}</strong>
@@ -51,11 +46,11 @@
         </div>
       </div>
       ${isRejected ? `
-        <details style="margin-top:14px">
-          <summary style="cursor:pointer;font-weight:700">Xem lý do và sửa</summary>
-          <div class="helper-text" style="margin-top:10px;white-space:pre-wrap">${safe(tutor.rejectedReason, 'Chưa có lý do cụ thể từ quản trị viên.')}</div>
-          <a href="/gia-su/profile.html#personal-info" class="btn btn-outline-primary" style="margin-top:12px;display:inline-flex">Sửa hồ sơ</a>
-        </details>` : ''}`;
+        <details class="mt-14">
+          <summary class="summary-link">Xem lý do và sửa</summary>
+          <div class="helper-text mt-10 pre-wrap">${safe(tutor.rejectedReason, 'Chưa có lý do cụ thể từ quản trị viên.')}</div>
+          <a href="/gia-su/profile.html#personal-info" class="btn btn-outline-primary mt-12 inline-flex">Sửa hồ sơ</a>
+        </details>` : ''}`);
   }
 
   function renderTutorHeader(t) {
@@ -66,9 +61,9 @@
     const profileHeader = document.getElementById('profileHeader');
     if (!profileHeader) return;
 
-    profileHeader.innerHTML = `
+    DomUtils.setHtml(profileHeader, `
       <div class="public-profile-header">
-        <img src="${avatar}" alt="${safe(t.fullName)}" class="public-profile-avatar" />
+        <img src="${safe(avatar, '')}" alt="${safe(t.fullName)}" class="public-profile-avatar" />
         <div class="flex-1">
           <h1 class="public-profile-name">${safe(t.fullName)}</h1>
           <div class="public-profile-sub">${safe(subjects)}</div>
@@ -78,7 +73,7 @@
             <span class="detail-meta-pill"><i class="fas fa-star"></i> ${Number(t.averageRating || 0).toFixed(1)}</span>
           </div>
         </div>
-      </div>`;
+      </div>`);
 
     const tutorIntro = document.getElementById('tutorIntro');
     if (tutorIntro) {
@@ -87,17 +82,17 @@
 
     const ratingOverview = document.getElementById('ratingOverview');
     if (ratingOverview) {
-      ratingOverview.innerHTML = `
+      DomUtils.setHtml(ratingOverview, `
         <div class="rating-summary-box">
           <div class="rating-summary-score">${Number(t.averageRating || 0).toFixed(1)}</div>
           <div class="rating-summary-stars">${starString(t.averageRating)}</div>
           <div class="rating-summary-count">${t.reviewCount || 0} đánh giá</div>
-        </div>`;
+        </div>`);
     }
 
     const detailInfo = document.getElementById('detailInfo');
     if (detailInfo) {
-      detailInfo.innerHTML = `
+      DomUtils.setHtml(detailInfo, `
         <div class="info-list">
           <div class="info-item"><strong>Khu vực</strong><span>${safe(region)}</span></div>
           <div class="info-item"><strong>Trình độ</strong><span>${safe(t.qualification)}</span></div>
@@ -106,7 +101,7 @@
           <div class="info-item"><strong>Học phí/giờ</strong><span>${t.hourlyRate ? window.formatVND(t.hourlyRate) : 'Chưa cập nhật'}</span></div>
           <div class="info-item"><strong>Các môn dạy</strong><span>${safe((t.subjects || []).join(', '))}</span></div>
           <div class="info-item"><strong>Khối lớp</strong><span>${safe((t.grades || []).join(', '))}</span></div>
-        </div>`;
+        </div>`);
     }
   }
 
@@ -115,11 +110,11 @@
     if (!box) return;
 
     if (!courses.length) {
-      box.innerHTML = `<div class="empty-state" style="min-height:120px"><div><h3>Gia sư chưa mở lớp nào.</h3></div></div>`;
+      DomUtils.setHtml(box, `<div class="empty-state empty-state-sm"><div><h3>Gia sư chưa mở lớp nào.</h3></div></div>`);
       return;
     }
 
-    box.innerHTML = courses.map((c) => `
+    DomUtils.setHtml(box, courses.map((c) => `
       <article class="class-card">
         <div class="class-card-top">
           <div>
@@ -137,7 +132,7 @@
           <a class="btn btn-outline-dark" href="lop-chi-tiet.html?id=${encodeURIComponent(c.courseId)}">Xem chi tiết</a>
         </div>
       </article>
-    `).join('');
+    `).join(''));
   }
 
   function renderReviews(reviews) {
@@ -145,17 +140,17 @@
     if (!list) return;
 
     if (!reviews.length) {
-      list.innerHTML = `<div class="empty-state" style="min-height:180px"><div><i class="fas fa-star-half-alt"></i><h3>Chưa có đánh giá nào.</h3></div></div>`;
+      DomUtils.setHtml(list, `<div class="empty-state empty-state-md"><div><i class="fas fa-star-half-alt"></i><h3>Chưa có đánh giá nào.</h3></div></div>`);
       return;
     }
 
-    list.innerHTML = reviews.map((r) => `
+    DomUtils.setHtml(list, reviews.map((r) => `
       <div class="mini-item">
         <h4>${safe(r.learnerName, 'Học viên')}</h4>
-        <p style="color:#f59e0b">${starString(r.rating)} • ${new Date(r.createdAt).toLocaleDateString('vi-VN')}</p>
+        <p class="rating-stars">${starString(r.rating)} • ${new Date(r.createdAt).toLocaleDateString('vi-VN')}</p>
         <p>${safe(r.comment, '(Không có nhận xét)')}</p>
       </div>
-    `).join('');
+    `).join(''));
   }
 
   async function load() {
@@ -163,7 +158,7 @@
     if (!tutorId) {
       const profileHeader = document.getElementById('profileHeader');
       if (profileHeader) {
-        profileHeader.innerHTML = `<div class="empty-state"><div><h3>Thiếu tutor id</h3></div></div>`;
+        DomUtils.setHtml(profileHeader, `<div class="empty-state"><div><h3>Thiếu tutor id</h3></div></div>`);
       }
       return;
     }
@@ -181,8 +176,8 @@
       ]);
 
       renderTutorHeader(tutor || {});
-      renderCourses(Array.isArray(courses) ? courses : []);
-      renderReviews(Array.isArray(reviews) ? reviews : []);
+      renderCourses(ApiClient.asArray(courses));
+      renderReviews(ApiClient.asArray(reviews));
 
       if (isOwner) {
         renderOwnerStatus(myTutor);
@@ -191,7 +186,7 @@
       console.error(e);
       const profileHeader = document.getElementById('profileHeader');
       if (profileHeader) {
-        profileHeader.innerHTML = `<div class="empty-state"><div><h3>Không tải được thông tin gia sư</h3></div></div>`;
+        DomUtils.setHtml(profileHeader, `<div class="empty-state"><div><h3>Không tải được thông tin gia sư</h3></div></div>`);
       }
     }
   }

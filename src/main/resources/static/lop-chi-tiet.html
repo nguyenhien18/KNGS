@@ -1,7 +1,144 @@
-﻿<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Chi tiết lớp học</title><link rel="stylesheet" href="assets/css/style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></head><body class="page-bg"><header class="site-header"><div class="container header-inner"><div class="header-left"><a href="index.html" class="logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Cổng Gia Sư</span></a><nav class="desktop-nav"><a href="index.html">Trang chủ</a><a href="tim-gia-su.html">Tìm gia sư</a><a href="tim-lop.html">Tìm lớp học</a></nav></div><div class="header-right" id="headerRight"></div><button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button></div><div id="mobileMenu" class="mobile-menu hidden"><a href="index.html">Trang chủ</a><a href="tim-gia-su.html">Tìm gia sư</a><a href="tim-lop.html">Tìm lớp học</a></div></header><main class="class-detail-page"><div class="container"><div class="detail-back-link"><a href="javascript:history.back()"><i class="fas fa-arrow-left"></i> Quay lại</a></div><div class="class-detail-layout"><section id="classDetails" class="class-detail-main"><div id="classHeader" class="card-box"></div><div class="card-box"><h2 class="detail-section-title">Mô tả lớp học</h2><div id="classDescription" class="detail-text-block"></div></div><div class="card-box"><h2 class="detail-section-title">Yêu cầu học viên</h2><div id="requirementsContent" class="detail-text-block"></div></div><div id="bidSection" class="card-box"></div><div id="reviewSection" class="card-box"><h2 class="detail-section-title">Lịch sử chào giá</h2><div id="reviewHistoryList" class="review-list"></div></div></section><aside class="class-detail-sidebar"><div class="detail-sticky"><div class="card-box"><h3 class="detail-sidebar-title">Thông tin gia sư</h3><div id="tutorProfile"></div></div><div class="card-box"><h3 class="detail-sidebar-title">Thông tin lớp học</h3><div id="classInfo"></div></div><div class="safety-box"><h3><i class="fas fa-shield-alt"></i> Lưu ý an toàn</h3><ul><li>Không chuyển tiền trước khi bắt đầu học</li><li>Gặp mặt tại nơi công cộng lần đầu</li><li>Báo cáo ngay nếu có hành vi đáng ngờ</li><li>Kiểm tra thông tin gia sư trước khi học</li></ul></div></div></aside></div></div></main><footer class="site-footer"><div class="container footer-grid"><div><div class="logo footer-logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Cổng Gia Sư</span></div><p>Nền tảng kết nối gia sư và học viên hàng đầu Việt Nam</p><p>Địa chỉ: 122 Hoàng Quốc Việt, Cầu Giấy, Hà Nội</p></div><div><h3>Dành cho học viên</h3><a href="tim-lop.html">Tìm gia sư</a><a href="#">Cách thức hoạt động</a><a href="#">Bảng giá</a><a href="#">Câu hỏi thường gặp</a></div><div><h3>Dành cho gia sư</h3><a href="#">Trở thành gia sư</a><a href="#">Hướng dẫn đăng lớp</a><a href="#">Chính sách hoa hồng</a><a href="#">Công cụ gia sư</a></div><div><h3>Hỗ trợ</h3><a href="#">Trung tâm trợ giúp</a><a href="#">Liên hệ</a><a href="#">Điều khoản sử dụng</a><a href="#">Chính sách bảo mật</a></div></div><div class="footer-bottom">© 2025 Cổng Gia Sư. Tất cả quyền được bảo lưu.</div></footer><script src="assets/js/app.js"></script><script src="assets/js/api-client.js"></script><script src="assets/js/class-detail.js?v=20260421-1"></script></body></html>
-
-
-
-
-
-
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Chi tiết lớp học</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  </head>
+  <body class="page-bg">
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="header-left">
+          <a href="index.html" class="logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap">
+              </i>
+            </div>
+            <span>Cổng Gia Sư</span>
+          </a>
+          <nav class="desktop-nav">
+            <a href="index.html">Trang chủ</a>
+            <a href="tim-gia-su.html">Tìm gia sư</a>
+            <a href="tim-lop.html">Tìm lớp học</a>
+          </nav>
+        </div>
+        <div class="header-right" id="headerRight">
+        </div>
+        <button id="mobileMenuButton" class="mobile-menu-btn">
+          <i class="fas fa-bars">
+          </i>
+        </button>
+      </div>
+      <div id="mobileMenu" class="mobile-menu hidden">
+        <a href="index.html">Trang chủ</a>
+        <a href="tim-gia-su.html">Tìm gia sư</a>
+        <a href="tim-lop.html">Tìm lớp học</a>
+      </div>
+    </header>
+    <main class="class-detail-page">
+      <div class="container">
+        <div class="detail-back-link">
+          <a href="javascript:history.back()">
+            <i class="fas fa-arrow-left">
+            </i> Quay lại</a>
+        </div>
+        <div class="class-detail-layout">
+          <section id="classDetails" class="class-detail-main">
+            <div id="classHeader" class="card-box">
+            </div>
+            <div class="card-box">
+              <h2 class="detail-section-title">Mô tả lớp học</h2>
+              <div id="classDescription" class="detail-text-block">
+              </div>
+            </div>
+            <div class="card-box">
+              <h2 class="detail-section-title">Yêu cầu học viên</h2>
+              <div id="requirementsContent" class="detail-text-block">
+              </div>
+            </div>
+            <div id="bidSection" class="card-box">
+            </div>
+          </section>
+          <aside class="class-detail-sidebar">
+            <div class="detail-sticky">
+              <div class="card-box">
+                <h3 class="detail-sidebar-title">Thông tin gia sư</h3>
+                <div id="tutorProfile">
+                </div>
+              </div>
+              <div class="card-box">
+                <h3 class="detail-sidebar-title">Thông tin lớp học</h3>
+                <div id="classInfo">
+                </div>
+              </div>
+              <div class="safety-box">
+                <h3>
+                  <i class="fas fa-shield-alt">
+                  </i> Lưu ý an toàn</h3>
+                <ul>
+                  <li>Không chuyển tiền trước khi bắt đầu học</li>
+                  <li>Gặp mặt tại nơi công cộng lần đầu</li>
+                  <li>Báo cáo ngay nếu có hành vi đáng ngờ</li>
+                  <li>Kiểm tra thông tin gia sư trước khi học</li>
+                </ul>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="logo footer-logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap">
+              </i>
+            </div>
+            <span>Cổng Gia Sư</span>
+          </div>
+          <p>Nền tảng kết nối gia sư và học viên hàng đầu Việt Nam</p>
+          <p>Địa chỉ: 122 Hoàng Quốc Việt, Cầu Giấy, Hà Nội</p>
+        </div>
+        <div>
+          <h3>Dành cho học viên</h3>
+          <a href="tim-lop.html">Tìm gia sư</a>
+          <a href="#">Cách thức hoạt động</a>
+          <a href="#">Bảng giá</a>
+          <a href="#">Câu hỏi thường gặp</a>
+        </div>
+        <div>
+          <h3>Dành cho gia sư</h3>
+          <a href="#">Trở thành gia sư</a>
+          <a href="#">Hướng dẫn đăng lớp</a>
+          <a href="#">Chính sách hoa hồng</a>
+          <a href="#">Công cụ gia sư</a>
+        </div>
+        <div>
+          <h3>Hỗ trợ</h3>
+          <a href="#">Trung tâm trợ giúp</a>
+          <a href="#">Liên hệ</a>
+          <a href="#">Điều khoản sử dụng</a>
+          <a href="#">Chính sách bảo mật</a>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2025 Cổng Gia Sư. Tất cả quyền được bảo lưu.</div>
+    </footer>
+    <script src="assets/js/format-utils.js">
+    </script>
+    <script src="assets/js/dom-utils.js">
+    </script>
+    <script src="assets/js/ui-utils.js">
+    </script>
+    <script src="assets/js/app.js">
+    </script>
+    <script src="assets/js/api-client.js">
+    </script>
+    <script src="assets/js/auth-guard.js">
+    </script>
+    <script src="assets/js/class-detail.js?v=20260421-1">
+    </script>
+  </body>
+</html>

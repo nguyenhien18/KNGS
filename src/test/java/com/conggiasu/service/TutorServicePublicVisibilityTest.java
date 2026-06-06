@@ -71,15 +71,24 @@ class TutorServicePublicVisibilityTest {
             gradeRepository,
             tutorTeachingRepository
         );
-        TutorSummaryMapper tutorSummaryMapper = new TutorSummaryMapper(reviewRepository);
-        tutorService = new TutorService(
+        TutorSummaryMapper tutorSummaryMapper = new TutorSummaryMapper(reviewRepository, tutorTeachingRepository);
+        TutorPublicQueryService publicQueryService = new TutorPublicQueryService(
             tutorRepository,
-            tutorCertificateRepository,
-            userRepository,
             specBuilder,
+            tutorSummaryMapper
+        );
+        TutorCertificateSyncService certificateSyncService = new TutorCertificateSyncService(tutorCertificateRepository);
+        TutorProfileService profileService = new TutorProfileService(
+            tutorRepository,
+            userRepository,
             mutationService,
+            certificateSyncService,
             notificationService,
             tutorSummaryMapper
+        );
+        tutorService = new TutorService(
+            publicQueryService,
+            profileService
         );
     }
 
@@ -133,8 +142,6 @@ class TutorServicePublicVisibilityTest {
         Tutor tutor = tutor(TutorProfileStatus.APPROVED, UserStatus.ACTIVE);
         when(tutorRepository.findAll(org.mockito.ArgumentMatchers.<Specification<Tutor>>any(), org.mockito.ArgumentMatchers.<Pageable>any()))
             .thenReturn(new PageImpl<>(List.of(tutor)));
-        when(reviewRepository.countByTutorId(anyLong())).thenReturn(0L);
-        when(reviewRepository.findAverageRatingByTutorId(anyLong())).thenReturn(0D);
 
         PageResponse<TutorSummaryResponse> result = tutorService.searchTutors(
             null,

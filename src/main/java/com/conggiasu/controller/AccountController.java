@@ -37,7 +37,7 @@ public class AccountController {
     public ApiResponse<UserProfileResponse> getMyProfile() {
         return ApiResponse.<UserProfileResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(accountService.getMyProfile(currentUserService.userId()))
             .build();
     }
@@ -46,7 +46,7 @@ public class AccountController {
     public ApiResponse<UserProfileResponse> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
         return ApiResponse.<UserProfileResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(accountService.updateProfile(currentUserService.userId(), request))
             .build();
     }
@@ -55,7 +55,7 @@ public class AccountController {
     public ApiResponse<FileUploadResponse> uploadAvatar(@RequestPart("file") MultipartFile file) {
         return ApiResponse.<FileUploadResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(accountService.uploadAvatar(currentUserService.userId(), file))
             .build();
     }
@@ -64,7 +64,7 @@ public class AccountController {
     public ApiResponse<FileUploadResponse> uploadIdentityImage(@RequestPart("file") MultipartFile file) {
         return ApiResponse.<FileUploadResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(accountService.uploadIdentityImage(currentUserService.userId(), file))
             .build();
     }
@@ -74,7 +74,7 @@ public class AccountController {
         accountService.changePassword(currentUserService.userId(), request);
         return ApiResponse.<Void>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .build();
     }
 
@@ -82,7 +82,7 @@ public class AccountController {
     public ApiResponse<IdentityVerificationResponse> getMyIdentityVerification() {
         return ApiResponse.<IdentityVerificationResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(identityVerificationService.getMyVerification(currentUserService.userId()))
             .build();
     }
@@ -93,7 +93,7 @@ public class AccountController {
     ) {
         return ApiResponse.<IdentityVerificationResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(identityVerificationService.upsertMyVerification(currentUserService.userId(), request))
             .build();
     }

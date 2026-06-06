@@ -1,104 +1,148 @@
 <!DOCTYPE html>
 <html lang="vi">
-
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>H&#7891; s&#417; gia s&#432;</title>
+    <title>Hồ sơ gia sư</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
-
-<body class="page-bg">
+  </head>
+  <body class="page-bg">
     <header class="site-header">
-        <div class="container header-inner">
-            <div class="header-left"><a href="index.html" class="logo">
-                    <div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>C&#7893;ng Gia S&#432;</span>
-                </a>
-                <nav class="desktop-nav"><a href="index.html">Trang ch&#7911;</a><a href="tim-gia-su.html">T&#236;m gia s&#432;</a><a
-                        href="tim-lop.html">T&#236;m l&#7899;p h&#7885;c</a></nav>
+      <div class="container header-inner">
+        <div class="header-left">
+          <a href="index.html" class="logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap"></i>
             </div>
-            <div class="header-right" id="headerRight"></div><button id="mobileMenuButton" class="mobile-menu-btn"><i
-                    class="fas fa-bars"></i></button>
+            <span>Cổng Gia Sư</span>
+          </a>
+          <nav class="desktop-nav">
+            <a href="index.html">Trang chủ</a>
+            <a href="tim-gia-su.html">Tìm gia sư</a>
+            <a href="tim-lop.html">Tìm lớp học</a>
+          </nav>
         </div>
-        <div id="mobileMenu" class="mobile-menu hidden"><a href="index.html">Trang ch&#7911;</a><a href="tim-gia-su.html">T&#236;m
-                gia s&#432;</a><a href="tim-lop.html">T&#236;m l&#7899;p h&#7885;c</a></div>
+        <div class="header-right" id="headerRight"></div>
+        <button id="mobileMenuButton" class="mobile-menu-btn">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      <div id="mobileMenu" class="mobile-menu hidden">
+        <a href="index.html">Trang chủ</a>
+        <a href="tim-gia-su.html">Tìm gia sư</a>
+        <a href="tim-lop.html">Tìm lớp học</a>
+      </div>
     </header>
+
     <main class="tutor-public-page">
-        <div class="container">
-            <div class="tutor-public-back"><a href="javascript:history.back()"><i class="fas fa-arrow-left"></i> Quay
-                    l&#7841;i</a></div>
-            <div class="tutor-public-layout">
-                <section class="tutor-public-main">
-                    <div id="profileHeader" class="card-box"></div>
-                    <div class="card-box">
-                        <h2 class="detail-section-title">Gi&#7899;i thi&#7879;u</h2>
-                        <div id="tutorIntro" class="detail-text-block"></div>
-                    </div>
-                    <div id="achievementsSection" class="card-box hidden">
-                        <h2 class="detail-section-title">Th&#224;nh t&#237;ch n&#7893;i b&#7853;t</h2>
-                        <div class="achievement-simple-slider"><button id="prevAchievement" class="slider-nav-btn"><i
-                                    class="fas fa-chevron-left"></i></button>
-                            <div class="achievement-track-wrap">
-                                <div id="achievementsContainer" class="achievement-track"></div>
-                            </div><button id="nextAchievement" class="slider-nav-btn"><i
-                                    class="fas fa-chevron-right"></i></button>
-                        </div>
-                    </div>
-                    <div class="card-box">
-                        <div class="section-heading-split">
-                            <h2 class="detail-section-title no-mb">L&#7899;p h&#7885;c m&#7899;i nh&#7845;t</h2><a href="tim-lop.html"
-                                class="text-link">Xem t&#7845;t c&#7843; <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                        <div id="classOfTutor" class="public-class-grid mt-20"></div>
-                    </div>
-                    <div class="card-box">
-                        <h2 class="detail-section-title">&#272;&#225;nh gi&#225; t&#7915; h&#7885;c vi&#234;n</h2>
-                        <div id="ratingOverview" class="rating-overview-grid"></div>
-                        <div id="reviewList" class="review-list mt-20"></div>
-                    </div>
-                </section>
-                <aside class="tutor-public-sidebar">
-                    <div class="detail-sticky">
-                        <div id="ownerStatusCard" class="card-box hidden"></div>
-                        <div class="card-box">
-                            <h3 class="detail-sidebar-title">Th&#244;ng tin chi ti&#7871;t</h3>
-                            <div id="detailInfo"></div>
-                        </div>
-                    </div>
-                </aside>
-            </div>
+      <div class="container">
+        <div class="tutor-public-back">
+          <a href="javascript:history.back()">
+            <i class="fas fa-arrow-left"></i> Quay lại
+          </a>
         </div>
-    </main>
-    <footer class="site-footer">
-        <div class="container footer-grid">
-            <div>
-                <div class="logo footer-logo">
-                    <div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>C&#7893;ng Gia S&#432;</span>
+
+        <div class="tutor-public-layout">
+          <section class="tutor-public-main">
+            <div id="profileHeader" class="card-box"></div>
+
+            <div class="card-box">
+              <h2 class="detail-section-title">Giới thiệu</h2>
+              <div id="tutorIntro" class="detail-text-block"></div>
+            </div>
+
+            <div id="achievementsSection" class="card-box hidden">
+              <h2 class="detail-section-title">Thành tích nổi bật</h2>
+              <div class="achievement-simple-slider">
+                <button id="prevAchievement" class="slider-nav-btn">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="achievement-track-wrap">
+                  <div id="achievementsContainer" class="achievement-track"></div>
                 </div>
-                <p>N&#7873;n t&#7843;ng k&#7871;t n&#7889;i gia s&#432; v&#224; h&#7885;c vi&#234;n h&#224;ng &#273;&#7847;u Vi&#7879;t Nam</p>
-                <p>&#272;&#7883;a ch&#7881;: 122 Ho&#224;ng Qu&#7889;c Vi&#7879;t, C&#7847;u Gi&#7845;y, H&#224; N&#7897;i</p>
+                <button id="nextAchievement" class="slider-nav-btn">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
             </div>
-            <div>
-                <h3>D&#224;nh cho h&#7885;c vi&#234;n</h3><a href="tim-lop.html">T&#236;m gia s&#432;</a><a href="#">C&#225;ch th&#7913;c ho&#7841;t &#273;&#7897;ng</a><a
-                    href="#">C&#226;u h&#7887;i th&#432;&#7901;ng g&#7863;p</a>
+
+            <div class="card-box">
+              <div class="section-heading-split">
+                <h2 class="detail-section-title no-mb">Lớp học mới nhất</h2>
+                <a href="tim-lop.html" class="text-link">
+                  Xem tất cả <i class="fas fa-arrow-right"></i>
+                </a>
+              </div>
+              <div id="classOfTutor" class="public-class-grid mt-20"></div>
             </div>
-            <div>
-                <h3>D&#224;nh cho gia s&#432;</h3><a href="/gia-su/profile.html">Tr&#7903; th&#224;nh gia s&#432;</a><a href="#">H&#432;&#7899;ng d&#7851;n &#273;&#259;ng
-                    l&#7899;p</a><a href="#">C&#244;ng c&#7909; gia s&#432;</a>
+
+            <div class="card-box">
+              <h2 class="detail-section-title">Đánh giá từ học viên</h2>
+              <div id="ratingOverview" class="rating-overview-grid"></div>
+              <div id="reviewList" class="review-list mt-20"></div>
             </div>
-            <div>
-                <h3>H&#7895; tr&#7907;</h3><a href="#">Trung t&#226;m tr&#7907; gi&#250;p</a><a href="#">Li&#234;n h&#7879;</a><a href="#">&#272;i&#7873;u kho&#7843;n s&#7917;
-                    d&#7909;ng</a><a href="#">Ch&#237;nh s&#225;ch b&#7843;o m&#7853;t</a>
+          </section>
+
+          <aside class="tutor-public-sidebar">
+            <div class="detail-sticky">
+              <div id="ownerStatusCard" class="card-box hidden"></div>
+              <div class="card-box">
+                <h3 class="detail-sidebar-title">Thông tin chi tiết</h3>
+                <div id="detailInfo"></div>
+              </div>
             </div>
+          </aside>
         </div>
-        <div class="footer-bottom">&#169; 2025 C&#7893;ng Gia S&#432;. T&#7845;t c&#7843; quy&#7873;n &#273;&#432;&#7907;c b&#7843;o l&#432;u.</div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="logo footer-logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <span>Cổng Gia Sư</span>
+          </div>
+          <p>Nền tảng kết nối gia sư và học viên hàng đầu Việt Nam</p>
+          <p>Địa chỉ: 122 Hoàng Quốc Việt, Cầu Giấy, Hà Nội</p>
+        </div>
+        <div>
+          <h3>Dành cho học viên</h3>
+          <a href="tim-lop.html">Tìm gia sư</a>
+          <a href="#">Cách thức hoạt động</a>
+          <a href="#">Câu hỏi thường gặp</a>
+        </div>
+        <div>
+          <h3>Dành cho gia sư</h3>
+          <a href="/gia-su/profile.html">Trở thành gia sư</a>
+          <a href="#">Hướng dẫn đăng lớp</a>
+          <a href="#">Công cụ gia sư</a>
+        </div>
+        <div>
+          <h3>Hỗ trợ</h3>
+          <a href="#">Trung tâm trợ giúp</a>
+          <a href="#">Liên hệ</a>
+          <a href="#">Điều khoản sử dụng</a>
+          <a href="#">Chính sách bảo mật</a>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2025 Cổng Gia Sư. Tất cả quyền được bảo lưu.</div>
     </footer>
-    <div id="imageLightbox" class="lightbox hidden"><span id="closeLightbox" class="lightbox-close">&times;</span><img
-            id="lightboxImage" src="" alt="Achievement"></div>
+
+    <div id="imageLightbox" class="lightbox hidden">
+      <span id="closeLightbox" class="lightbox-close">×</span>
+      <img id="lightboxImage" src="" alt="Thành tích">
+    </div>
+
+    <script src="assets/js/format-utils.js"></script>
+    <script src="assets/js/dom-utils.js"></script>
+    <script src="assets/js/ui-utils.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/api-client.js"></script>
+    <script src="assets/js/auth-guard.js"></script>
     <script src="assets/js/gia-su-profile.js?v=20260421-6"></script>
-</body>
-
+  </body>
 </html>

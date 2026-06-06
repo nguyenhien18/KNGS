@@ -10,7 +10,12 @@ import org.hibernate.annotations.CreationTimestamp;
 @Getter
 @Setter
 @Entity
-@Table(name = "reviews")
+@Table(
+    name = "reviews",
+    indexes = {
+        @Index(name = "idx_reviews_tutor_created_at", columnList = "tutor_id, created_at")
+    }
+)
 @Check(constraints = "((class_id is not null and course_enrollment_id is null) or (class_id is null and course_enrollment_id is not null))")
 public class Review {
     @Id

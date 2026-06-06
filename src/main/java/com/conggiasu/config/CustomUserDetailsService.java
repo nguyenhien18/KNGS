@@ -19,12 +19,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByEmail(username)
-            .orElseThrow(() -> new UsernameNotFoundException("Khong tim thay tai khoan"));
+            .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản"));
         if (user.getStatus() == UserStatus.BLOCKED) {
-            throw new LockedException("Tai khoan da bi khoa");
+            throw new LockedException("Tài khoản đã bị khóa");
         }
         if (user.getStatus() == UserStatus.INACTIVE) {
-            throw new DisabledException("Tai khoan chua kich hoat");
+            throw new DisabledException("Tài khoản chưa kích hoạt");
         }
         return new AppUserPrincipal(user);
     }

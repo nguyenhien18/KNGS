@@ -1,49 +1,39 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Đăng nhập gia sư</title>
-  <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
-<body class="page-bg">
-  <header class="site-header">
-    <div class="container header-inner">
-      <div class="header-left">
-        <a href="/index.html" class="logo">
-          <div class="logo-box"><i class="fas fa-graduation-cap"></i></div>
-          <span>Cổng Gia Sư</span>
-        </a>
-        <nav class="desktop-nav">
-          <a href="/index.html">Trang chủ</a>
-          <a href="/tim-gia-su.html">Tìm gia sư</a>
-          <a href="/lop-gia-su.html">Tìm lớp học</a>
-        </nav>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Đăng nhập gia sư</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  </head>
+  <body class="page-bg">
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="header-left">
+          <a href="/index.html" class="logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <span>Gia Sư Việt</span>
+          </a>
+          <nav class="desktop-nav">
+            <a href="/index.html">Trang chủ</a>
+            <a href="/tim-gia-su.html">Tìm gia sư</a>
+            <a href="/lop-gia-su.html">Tìm lớp học</a>
+          </nav>
+        </div>
       </div>
-    </div>
-  </header>
-
-  <main class="container page-section" style="max-width:560px">
-    <section class="card-box">
-      <h1 style="margin-bottom:8px">Đăng nhập gia sư</h1>
-      <p class="muted" style="margin-bottom:20px">Bản tạm để test frontend kết nối backend.</p>
-      <form id="tutorLoginForm" class="stack-md">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input id="email" type="email" placeholder="nhap-email@example.com" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Mật khẩu</label>
-          <input id="password" type="password" placeholder="Nhập mật khẩu" required>
-        </div>
-        <div id="loginError" class="notice-inline danger hidden"></div>
-        <button type="submit" class="btn btn-primary btn-lg full-btn"><i class="fas fa-right-to-bracket"></i> Đăng nhập</button>
-      </form>
-    </section>
-  </main>
-
-  <script src="../assets/js/api-client.js"></script>
-  <script src="../assets/js/tutor-login.js"></script>
-</body>
+    </header>
+    <main class="container page-section auth-redirect-page">
+      <section class="card-box stack-md">
+        <h1>Đăng nhập gia sư</h1>
+        <p class="muted">Trang đăng nhập gia sư đã được gộp vào trang đăng nhập chung.</p>
+        <a class="btn btn-primary btn-lg full-btn" href="/login.html?returnTo=/gia-su/profile.html">
+          <i class="fas fa-right-to-bracket"></i>
+          Đến trang đăng nhập
+        </a>
+      </section>
+    </main>
+  </body>
 </html>

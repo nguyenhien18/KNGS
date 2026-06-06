@@ -1,72 +1,97 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Duyet he thong</title>
-  <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
-<body class="page-bg">
-<header class="site-header">
-  <div class="container header-inner">
-    <div class="header-left">
-      <a href="/index.html" class="logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Gia Su Viet</span></a>
-      <nav class="desktop-nav"><a href="/index.html">Trang chu</a><a href="/tim-gia-su.html">Tim gia su</a><a href="/lop-gia-su.html">Tim lop hoc</a></nav>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Duyệt hệ thống</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  </head>
+  <body class="page-bg admin-reviews-page">
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="header-left">
+          <a href="/index.html" class="logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap">
+              </i>
+            </div>
+            <span>Gia Sư Việt</span>
+          </a>
+          <nav class="desktop-nav">
+            <a href="/index.html">Trang chủ</a>
+            <a href="/tim-gia-su.html">Tìm gia sư</a>
+            <a href="/lop-gia-su.html">Tìm lớp học</a>
+          </nav>
+        </div>
+        <div class="header-right" id="headerRight">
+        </div>
+        <button id="mobileMenuButton" class="mobile-menu-btn">
+          <i class="fas fa-bars">
+          </i>
+        </button>
+      </div>
+      <div id="mobileMenu" class="mobile-menu hidden">
+      </div>
+    </header>
+    <main class="container page-section">
+      <div class="heading">
+        <h1>Duyệt hệ thống</h1>
+        <p>Duyệt hồ sơ gia sư, bài đăng học viên và khóa học gia sư mở</p>
+      </div>
+      <div class="manage-tabs review-tabs" id="reviewTabs">
+        <button class="manage-tab active" data-kind="tutor">
+          Hồ sơ gia sư
+          <span id="countTutor" class="badge badge-warning tab-count">0</span>
+        </button>
+        <button class="manage-tab" data-kind="post">
+          Bài đăng học viên
+          <span id="countPost" class="badge badge-warning tab-count">0</span>
+        </button>
+        <button class="manage-tab" data-kind="course">
+          Lớp/khóa học gia sư
+          <span id="countCourse" class="badge badge-warning tab-count">0</span>
+        </button>
+        <button class="manage-tab" data-kind="identity">
+          Xác minh danh tính
+          <span id="countIdentity" class="badge badge-warning tab-count">0</span>
+        </button>
+      </div>
+      <div class="card-box">
+        <div class="section-heading-split review-section-header">
+          <h2 id="reviewSectionTitle" class="detail-section-title review-section-title">Hồ sơ gia sư chờ duyệt</h2>
+          <span id="reviewTotal" class="badge badge-primary">0 mục</span>
+        </div>
+        <div id="reviewList" class="list-grid">
+        </div>
+      </div>
+    </main>
+    <div id="tutorDetailModal" class="modal-backdrop hidden" data-close="true">
+      <div class="modal-box modal-lg review-detail-modal">
+        <div class="modal-header">
+          <h3 id="reviewDetailModalTitle">Chi tiết hồ sơ gia sư</h3>
+          <button class="modal-close" data-close="true">&times;</button>
+        </div>
+        <div class="modal-body" id="tutorDetailBody">
+        </div>
+      </div>
     </div>
-    <div class="header-right" id="headerRight"></div>
-    <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-  </div>
-  <div id="mobileMenu" class="mobile-menu hidden"></div>
-</header>
-<main class="container page-section">
-  <div class="heading">
-    <h1>Duyet he thong</h1>
-    <p>Duyet ho so gia su, bai dang hoc vien va khoa hoc gia su mo</p>
-  </div>
-
-  <div class="manage-tabs" id="reviewTabs" style="max-width:860px">
-    <button class="manage-tab active" data-kind="tutor">
-      Ho so gia su
-      <span id="countTutor" class="badge badge-warning" style="margin-left:8px">0</span>
-    </button>
-    <button class="manage-tab" data-kind="post">
-      Bai dang hoc vien
-      <span id="countPost" class="badge badge-warning" style="margin-left:8px">0</span>
-    </button>
-    <button class="manage-tab" data-kind="course">
-      Lop/khoa hoc gia su
-      <span id="countCourse" class="badge badge-warning" style="margin-left:8px">0</span>
-    </button>
-    <button class="manage-tab" data-kind="identity">
-      Xac minh danh tinh
-      <span id="countIdentity" class="badge badge-warning" style="margin-left:8px">0</span>
-    </button>
-  </div>
-
-  <div class="card-box">
-    <div class="section-heading-split" style="margin-bottom:12px">
-      <h2 id="reviewSectionTitle" class="detail-section-title" style="margin:0">Ho so gia su cho duyet</h2>
-      <span id="reviewTotal" class="badge badge-primary">0 muc</span>
-    </div>
-    <div id="reviewList" class="list-grid"></div>
-  </div>
-</main>
-
-<div id="tutorDetailModal" class="modal-backdrop hidden" data-close="true">
-  <div class="modal-box modal-lg" style="max-width:760px">
-    <div class="modal-header">
-      <h3 id="reviewDetailModalTitle">Chi tiet ho so gia su</h3>
-      <button class="modal-close" data-close="true">&times;</button>
-    </div>
-    <div class="modal-body" id="tutorDetailBody"></div>
-  </div>
-</div>
-
-<footer class="site-footer"></footer>
-<script src="../assets/js/app.js"></script>
-<script src="../assets/js/api-client.js"></script>
-<script src="../assets/js/admin-reviews.js?v=20260422-3"></script>
-</body>
+    <footer class="site-footer">
+    </footer>
+    <script src="../assets/js/format-utils.js">
+    </script>
+    <script src="../assets/js/dom-utils.js">
+    </script>
+    <script src="../assets/js/ui-utils.js">
+    </script>
+    <script src="../assets/js/app.js">
+    </script>
+    <script src="../assets/js/api-client.js">
+    </script>
+    <script src="../assets/js/auth-guard.js">
+    </script>
+    <script src="../assets/js/admin-reviews.js?v=20260422-3">
+    </script>
+  </body>
 </html>
-

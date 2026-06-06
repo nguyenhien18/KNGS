@@ -1,34 +1,66 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Thong bao admin</title>
-  <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
-<body class="page-bg">
-<header class="site-header">
-  <div class="container header-inner">
-    <div class="header-left">
-      <a href="/index.html" class="logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Gia Su Viet</span></a>
-      <nav class="desktop-nav"><a href="/index.html">Trang chu</a><a href="/tim-gia-su.html">Tim gia su</a><a href="/lop-gia-su.html">Tim lop hoc</a></nav>
-    </div>
-    <div class="header-right" id="headerRight"></div>
-    <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-  </div>
-  <div id="mobileMenu" class="mobile-menu hidden"></div>
-</header>
-<main class="container page-section">
-  <div class="heading split">
-    <div><h1>Thong bao</h1><p>Thong bao he thong danh cho quan tri</p></div>
-    <button id="markAllReadBtn" class="btn btn-outline">Danh dau da doc tat ca</button>
-  </div>
-  <div id="notificationList" class="list-grid"></div>
-</main>
-<footer class="site-footer"></footer>
-<script src="../assets/js/app.js"></script>
-<script src="../assets/js/api-client.js"></script>
-<script src="../assets/js/admin-notifications.js?v=20260415-2"></script>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Thông báo admin</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  </head>
+  <body class="page-bg admin-notifications-page">
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="header-left">
+          <a href="/index.html" class="logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap">
+              </i>
+            </div>
+            <span>Gia Sư Việt</span>
+          </a>
+          <nav class="desktop-nav">
+            <a href="/index.html">Trang chủ</a>
+            <a href="/tim-gia-su.html">Tìm gia sư</a>
+            <a href="/lop-gia-su.html">Tìm lớp học</a>
+          </nav>
+        </div>
+        <div class="header-right" id="headerRight">
+        </div>
+        <button id="mobileMenuButton" class="mobile-menu-btn">
+          <i class="fas fa-bars">
+          </i>
+        </button>
+      </div>
+      <div id="mobileMenu" class="mobile-menu hidden">
+      </div>
+    </header>
+    <main class="container page-section">
+      <div class="heading split">
+        <div>
+          <h1>Thông báo</h1>
+          <p>Thông báo hệ thống dành cho quản trị</p>
+        </div>
+        <button id="markAllReadBtn" class="btn btn-outline">Đánh dấu đã đọc tất cả</button>
+      </div>
+      <div id="notificationList" class="list-grid">
+      </div>
+    </main>
+    <footer class="site-footer">
+    </footer>
+    <script src="../assets/js/format-utils.js">
+    </script>
+    <script src="../assets/js/dom-utils.js">
+    </script>
+    <script src="../assets/js/ui-utils.js">
+    </script>
+    <script src="../assets/js/app.js">
+    </script>
+    <script src="../assets/js/api-client.js">
+    </script>
+    <script src="../assets/js/auth-guard.js">
+    </script>
+    <script src="../assets/js/admin-notifications.js?v=20260415-2">
+    </script>
+  </body>
 </html>

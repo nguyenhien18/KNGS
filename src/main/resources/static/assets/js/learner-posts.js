@@ -1,18 +1,8 @@
-﻿(function () {
-  function ensureLearner() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'LEARNER') {
-      alert('Bạn cần đăng nhập tài khoản học viên.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname + location.search);
-      return false;
-    }
-    return true;
-  }
-
-  if (!ensureLearner()) return;
+(function () {
+  if (!AuthGuard.requireLearner()) return;
 
   const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') headerRight.innerHTML = renderUtilityHeaderRight();
+  if (headerRight && typeof renderUtilityHeaderRight === 'function') DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
 
   const listEl = document.getElementById('postsList');
@@ -27,22 +17,11 @@
   let allRows = [];
   let currentFilter = 'ALL';
   let activePostId = null;
-
-  function safe(value) {
-    return String(value == null ? '' : value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
-
-  function formatDate(value) {
-    if (!value) return '---';
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return safe(value);
-    return d.toLocaleString('vi-VN');
-  }
+  const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'learnerPostsPagination');
+  let currentPage = 0;
+  const pageSize = 10;
+  let totalPages = 1;
+  let totalElements = 0;
 
   function modeText(value) {
     if (value === 'ONLINE') return 'Online';
@@ -123,15 +102,15 @@
   function renderApplications(rows) {
     const list = Array.isArray(rows) ? rows : [];
     if (!list.length) {
-      applicationsModalContent.innerHTML = '<div class="mini-item"><h4>Chưa có ứng tuyển</h4><p>Chưa có gia sư nào ứng tuyển vào bài đăng này.</p></div>';
+      DomUtils.setHtml(applicationsModalContent, '<div class="mini-item"><h4>Chưa có ứng tuyển</h4><p>Chưa có gia sư nào ứng tuyển vào bài đăng này.</p></div>');
       return;
     }
 
-    applicationsModalContent.innerHTML = list.map(function (a) {
+    DomUtils.setHtml(applicationsModalContent, list.map(function (a) {
       const meta = applicationStatusMeta(a.status);
       const canDecide = String(a.status || '') === 'PENDING';
-      return '<div class="student-item" style="margin-bottom:12px">' +
-        '<div class="student-row" style="align-items:flex-start;gap:16px">' +
+      return '<div class="student-item student-item-spaced">' +
+        '<div class="student-row student-row-start">' +
           '<div>' +
             '<h4>' + safe(a.tutorName || 'Gia sư') + '</h4>' +
             '<p>Email: ' + safe(a.tutorEmail || '---') + '</p>' +
@@ -147,12 +126,12 @@
           '</div>' +
         '</div>' +
       '</div>';
-    }).join('');
+    }).join(''));
   }
 
   async function loadApplications(postId) {
     const rows = await ApiClient.get('/api/learner/posts/' + encodeURIComponent(postId) + '/applications');
-    renderApplications(rows);
+    renderApplications(ApiClient.asArray(rows));
   }
 
   async function decideApplication(applicationId, accepted) {
@@ -178,25 +157,25 @@
 
   function render() {
     const rows = filterRows(allRows);
-    if (countEl) countEl.textContent = rows.length + ' bài đăng';
+    if (countEl) countEl.textContent = totalElements + ' bài đăng';
 
     if (!rows.length) {
-      listEl.innerHTML = '<div class="mini-item"><h4>Không có dữ liệu</h4><p>Không có bài đăng ở bộ lọc hiện tại.</p></div>';
+      DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có dữ liệu</h4><p>Không có bài đăng ở bộ lọc hiện tại.</p></div>');
+      UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
       return;
     }
 
-    listEl.innerHTML = rows.map(function (p) {
+    DomUtils.setHtml(listEl, rows.map(function (p) {
       const approvalStatus = String(p.approvalStatus || 'PENDING');
       const postStatus = String(p.status || 'OPEN');
       return '' +
         '<article class="list-card">' +
           '<div class="badge-row">' +
-            '<span class="badge badge-primary">' + safe(p.subject || '---') + '</span>' +
-            '<span class="badge badge-gray">' + safe(p.grade || '---') + '</span>' +
             '<span class="badge ' + approvalBadgeClass(approvalStatus) + '">' + approvalText(approvalStatus) + '</span>' +
             '<span class="badge ' + postStatusClass(postStatus) + '">' + postStatusText(postStatus) + '</span>' +
           '</div>' +
           '<h3 class="card-title">' + safe(p.title || 'Bài đăng') + '</h3>' +
+          '<p class="muted">' + safe(p.subject || '---') + ' · ' + safe(p.grade || '---') + ' · ' + modeText(p.teachingMode) + ' · ' + safe(([p.province, p.district].filter(Boolean).join(' - ') || '---')) + '</p>' +
           '<p class="muted">' + safe(p.description || 'Không có mô tả') + '</p>' +
           (p.rejectedReason ? '<div class="notice-inline danger">Lý do từ chối: ' + safe(p.rejectedReason) + '</div>' : '') +
           '<div class="info-grid">' +
@@ -214,7 +193,9 @@
             '</div>' +
           '</div>' +
         '</article>';
-    }).join('');
+    }).join(''));
+
+    UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
 
     listEl.querySelectorAll('button[data-cancel]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -231,12 +212,19 @@
 
   async function load() {
     try {
-      allRows = await ApiClient.get('/api/learner/posts');
-      if (!Array.isArray(allRows)) allRows = [];
+      const query = { page: currentPage, size: pageSize };
+      if (currentFilter !== 'ALL' && currentFilter !== 'CANCELLED') query.approvalStatus = currentFilter;
+      const page = await ApiClient.get('/api/learner/posts', query);
+      const info = UiUtils.pageInfo(page);
+      allRows = info.content;
+      currentPage = info.page;
+      totalPages = info.totalPages;
+      totalElements = info.totalElements;
       render();
     } catch (err) {
       if (countEl) countEl.textContent = 'Không tải được dữ liệu';
-      listEl.innerHTML = '<div class="mini-item"><h4>Lỗi tải dữ liệu</h4><p>' + safe(err.message || 'Vui lòng thử lại') + '</p></div>';
+      UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
+      DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Lỗi tải dữ liệu</h4><p>' + safe(err.message || 'Vui lòng thử lại') + '</p></div>');
     }
   }
 
@@ -267,7 +255,8 @@
   if (applyFilterButton) {
     applyFilterButton.addEventListener('click', function () {
       currentFilter = statusFilterSelect ? (statusFilterSelect.value || 'ALL') : 'ALL';
-      render();
+      currentPage = 0;
+      load();
     });
   }
 

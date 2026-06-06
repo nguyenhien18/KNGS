@@ -3,6 +3,7 @@ package com.conggiasu.service;
 import com.conggiasu.dto.request.AdminReviewRequest;
 import com.conggiasu.dto.request.IdentityVerificationUpsertRequest;
 import com.conggiasu.dto.response.IdentityVerificationResponse;
+import com.conggiasu.dto.response.PageResponse;
 import com.conggiasu.entity.IdentityVerification;
 import com.conggiasu.entity.User;
 import com.conggiasu.entity.enums.IdentityVerificationStatus;
@@ -31,7 +32,7 @@ public class IdentityVerificationService {
         IdentityVerification iv = identityVerificationRepository.findByUserId(userId).orElseGet(() -> {
             IdentityVerification empty = new IdentityVerification();
             User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay user"));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
             empty.setUser(user);
             empty.setStatus(IdentityVerificationStatus.NOT_SUBMITTED);
             return empty;
@@ -42,7 +43,7 @@ public class IdentityVerificationService {
     @Transactional
     public IdentityVerificationResponse upsertMyVerification(Long userId, IdentityVerificationUpsertRequest request) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay user"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
         IdentityVerification iv = identityVerificationRepository.findByUserId(userId).orElseGet(() -> {
             IdentityVerification created = new IdentityVerification();
             created.setUser(user);
@@ -75,8 +76,8 @@ public class IdentityVerificationService {
         if (submit) {
             notificationService.pushToRole(
                 UserRole.ADMIN,
-                "Co yeu cau xac minh danh tinh",
-                "Nguoi dung " + user.getFullName() + " vua gui yeu cau xac minh danh tinh.",
+                "Có yêu cầu xác minh danh tính",
+                "Người dùng " + user.getFullName() + " vừa gửi yêu cầu xác minh danh tính.",
                 "IDENTITY_VERIFICATION_PENDING",
                 "IDENTITY_VERIFICATION",
                 iv.getId()
@@ -86,12 +87,16 @@ public class IdentityVerificationService {
     }
 
     @Transactional(readOnly = true)
-    public List<IdentityVerificationResponse> getPendingVerifications(Long adminUserId) {
+    public PageResponse<IdentityVerificationResponse> getPendingVerifications(Long adminUserId, int page, int size) {
         validateAdmin(adminUserId);
-        return identityVerificationRepository.findByStatusOrderByCreatedAtDesc(IdentityVerificationStatus.PENDING)
-            .stream()
-            .map(this::toResponse)
-            .toList();
+        var verificationPage = identityVerificationRepository.findByStatusOrderByCreatedAtDesc(
+            IdentityVerificationStatus.PENDING,
+            PaginationSupport.pageRequest(page, size)
+        );
+        return PaginationSupport.toPageResponse(
+            verificationPage,
+            verificationPage.getContent().stream().map(this::toResponse).toList()
+        );
     }
 
     @Transactional(readOnly = true)
@@ -100,7 +105,7 @@ public class IdentityVerificationService {
         IdentityVerification iv = identityVerificationRepository.findByUserId(userId).orElseGet(() -> {
             IdentityVerification empty = new IdentityVerification();
             User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay user"));
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
             empty.setUser(user);
             empty.setStatus(IdentityVerificationStatus.NOT_SUBMITTED);
             return empty;
@@ -112,14 +117,14 @@ public class IdentityVerificationService {
     public IdentityVerificationResponse reviewVerification(Long adminUserId, Long verificationId, AdminReviewRequest request) {
         User admin = validateAdmin(adminUserId);
         IdentityVerification iv = identityVerificationRepository.findById(verificationId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay ho so xac minh"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy hồ sơ xác minh"));
         if (iv.getStatus() != IdentityVerificationStatus.PENDING) {
-            throw new AppException(HttpStatus.CONFLICT, "Ho so xac minh da duoc xu ly truoc do");
+            throw new AppException(HttpStatus.CONFLICT, "Hồ sơ xác minh đã được xử lý trước đó");
         }
 
         boolean approved = Boolean.TRUE.equals(request.getApproved());
         if (!approved && (request.getRejectedReason() == null || request.getRejectedReason().isBlank())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Vui long nhap ly do tu choi");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Vui lòng nhập lý do từ chối");
         }
         iv.setStatus(approved ? IdentityVerificationStatus.APPROVED : IdentityVerificationStatus.REJECTED);
         iv.setReviewedBy(admin);
@@ -129,10 +134,10 @@ public class IdentityVerificationService {
 
         notificationService.push(
             iv.getUser().getId(),
-            approved ? "Xac minh danh tinh da duoc duyet" : "Xac minh danh tinh bi tu choi",
+            approved ? "Xác minh danh tính đã được duyệt" : "Xác minh danh tính bị từ chối",
             approved
-                ? "Ho so xac minh danh tinh cua ban da duoc phe duyet."
-                : "Ho so xac minh danh tinh bi tu choi: " + iv.getRejectedReason(),
+                ? "Hồ sơ xác minh danh tính của bạn đã được phê duyệt."
+                : "Hồ sơ xác minh danh tính bị từ chối: " + iv.getRejectedReason(),
             "IDENTITY_VERIFICATION_REVIEW",
             "IDENTITY_VERIFICATION",
             iv.getId()
@@ -155,16 +160,16 @@ public class IdentityVerificationService {
             || iv.getSelfieImageUrl() == null) {
             throw new AppException(
                 HttpStatus.BAD_REQUEST,
-                "Can nhap du thong tin xac minh (ho ten, so giay to, anh mat truoc/sau, selfie)"
+                "Cần nhập đủ thông tin xác minh (họ tên, số giấy tờ, ảnh mặt trước/sau, selfie)"
             );
         }
     }
 
     private User validateAdmin(Long adminUserId) {
         User admin = userRepository.findById(adminUserId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay admin"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy quản trị viên"));
         if (admin.getRole() != UserRole.ADMIN) {
-            throw new AppException(HttpStatus.FORBIDDEN, "User khong phai admin");
+            throw new AppException(HttpStatus.FORBIDDEN, "Người dùng không phải quản trị viên");
         }
         return admin;
     }

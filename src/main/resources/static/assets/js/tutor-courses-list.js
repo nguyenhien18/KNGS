@@ -1,42 +1,77 @@
-﻿(function () {
-  const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-    headerRight.innerHTML = renderUtilityHeaderRight();
-  }
-  if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
+(function () {
+  UiUtils.renderHeader();
 
   const list = document.getElementById('courseList');
   const countEl = document.getElementById('resultCount');
+  const subjectSelect = document.getElementById('courseSubjectFilter');
+  const gradeSelect = document.getElementById('courseGradeFilter');
+  const modeSelect = document.getElementById('courseModeFilter');
+  const provinceInput = document.getElementById('courseProvinceFilter');
+  const districtInput = document.getElementById('courseDistrictFilter');
+  const searchButton = document.getElementById('courseSearchButton');
   if (!list || !countEl) return;
 
-  function esc(v) {
-    return String(v ?? '').replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+  const paginationEl = UiUtils.ensurePaginationAfter(list, 'coursePagination');
+  let currentPage = 0;
+  const pageSize = 10;
+  let totalPages = 1;
+
+  function appendOptions(selectEl, rows) {
+    if (!selectEl || !Array.isArray(rows)) return;
+    rows.forEach((item) => {
+      const id = Number(item && item.id);
+      const name = String((item && item.name) || '').trim();
+      if (!Number.isFinite(id) || !name) return;
+
+      const option = document.createElement('option');
+      option.value = String(id);
+      option.textContent = name;
+      selectEl.appendChild(option);
+    });
   }
 
-  function formatMoney(v) {
-    const n = Number(v || 0);
-    return new Intl.NumberFormat('vi-VN').format(n) + ' đ';
+  function parseOptionalId(raw) {
+    const value = Number(raw || 0);
+    return Number.isFinite(value) && value > 0 ? value : undefined;
   }
 
-  function formatDate(v) {
-    if (!v) return '-';
-    const d = new Date(v);
-    if (Number.isNaN(d.getTime())) return esc(v);
-    return d.toLocaleDateString('vi-VN');
+  async function loadLookups() {
+    try {
+      const [subjects, grades] = await Promise.all([
+        ApiClient.get('/api/lookups/subjects'),
+        ApiClient.get('/api/lookups/grades')
+      ]);
+      appendOptions(subjectSelect, subjects);
+      appendOptions(gradeSelect, grades);
+    } catch (err) {
+      console.error('Load course filters failed', err);
+    }
   }
 
   async function loadCourses() {
     try {
-      const rows = await ApiClient.get('/api/public/courses');
-      const courses = Array.isArray(rows) ? rows : [];
-      countEl.textContent = String(courses.length);
+      const rows = await ApiClient.get('/api/public/courses', {
+        subjectId: parseOptionalId(subjectSelect && subjectSelect.value),
+        gradeId: parseOptionalId(gradeSelect && gradeSelect.value),
+        teachingMode: modeSelect && modeSelect.value ? modeSelect.value : undefined,
+        province: provinceInput && provinceInput.value ? provinceInput.value.trim() : undefined,
+        district: districtInput && districtInput.value ? districtInput.value.trim() : undefined,
+        page: currentPage,
+        size: pageSize
+      });
+      const pageInfo = UiUtils.pageInfo(rows);
+      const courses = pageInfo.content;
+      currentPage = pageInfo.page;
+      totalPages = pageInfo.totalPages;
+      countEl.textContent = String(pageInfo.totalElements);
 
       if (!courses.length) {
-        list.innerHTML = '<div class="empty-state"><div><i class="fas fa-inbox"></i><h3>Chưa có dữ liệu lớp</h3><p>Hiện chưa có lớp gia sư mở nào.</p></div></div>';
+        DomUtils.setHtml(list, '<div class="empty-state"><div><i class="fas fa-inbox"></i><h3>Chưa có dữ liệu lớp</h3><p>Hiện chưa có lớp gia sư mở nào.</p></div></div>');
+        UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadCourses(); });
         return;
       }
 
-      list.innerHTML = courses.map((item) => {
+      DomUtils.setHtml(list, courses.map((item) => {
         const priceText = formatMoney(item.price);
         const tutorDisplayName = item.tutorName ? esc(item.tutorName) : `gia sư #${esc(item.tutorId)}`;
         return `
@@ -44,12 +79,10 @@
             <div class="post-head">
               <div>
                 <div class="manage-badge-row">
-                  <span class="badge badge-primary">${esc(item.subject)}</span>
-                  <span class="badge badge-gray">${esc(item.teachingMode)}</span>
                   <span class="badge badge-success">${esc(item.status || 'OPEN')}</span>
                 </div>
                 <h3 class="post-title">${esc(item.title)}</h3>
-                <div class="post-sub">Mở bởi ${tutorDisplayName} • ${esc(item.grade)}</div>
+                <div class="post-sub">${esc(item.subject || '-')} · ${esc(item.grade || '-')} · ${esc(item.teachingMode || '-')} · Mở bởi ${tutorDisplayName}</div>
               </div>
               <div class="manage-price">${priceText}</div>
             </div>
@@ -64,11 +97,26 @@
               <a class="btn btn-primary" href="lop-chi-tiet.html?id=${encodeURIComponent(item.courseId)}">Xem chi tiết</a>
             </div>
           </article>`;
-      }).join('');
+      }).join(''));
+      UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadCourses(); });
     } catch (err) {
-      list.innerHTML = `<div class="empty-state"><div><i class="fas fa-circle-exclamation"></i><h3>Lỗi tải dữ liệu</h3><p>${esc(err.message || 'Không thể tải danh sách lớp.')}</p></div></div>`;
+      DomUtils.setHtml(list, `<div class="empty-state"><div><i class="fas fa-circle-exclamation"></i><h3>Lỗi tải dữ liệu</h3><p>${esc(err.message || 'Không thể tải danh sách lớp.')}</p></div></div>`);
+      UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
     }
   }
 
+  function searchFromFirstPage() { currentPage = 0; loadCourses(); }
+  if (searchButton) searchButton.addEventListener('click', searchFromFirstPage);
+  [subjectSelect, gradeSelect, modeSelect].forEach((el) => {
+    if (el) el.addEventListener('change', searchFromFirstPage);
+  });
+  [provinceInput, districtInput].forEach((el) => {
+    if (!el) return;
+    el.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') searchFromFirstPage();
+    });
+  });
+
+  loadLookups();
   loadCourses();
 })();

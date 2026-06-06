@@ -1,18 +1,8 @@
-﻿(function () {
-  function ensureLearner() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'LEARNER') {
-      alert('Bạn cần đăng nhập tài khoản học viên.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname + location.search);
-      return false;
-    }
-    return true;
-  }
-
-  if (!ensureLearner()) return;
+(function () {
+  if (!AuthGuard.requireLearner()) return;
 
   const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') headerRight.innerHTML = renderUtilityHeaderRight();
+  if (headerRight && typeof renderUtilityHeaderRight === 'function') DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
 
   const listEl = document.getElementById('enrollmentsList');
@@ -22,22 +12,11 @@
 
   let allRows = [];
   let currentStatus = 'ALL';
-
-  function safe(value) {
-    return String(value == null ? '' : value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
-
-  function formatDate(value) {
-    if (!value) return '---';
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return safe(value);
-    return d.toLocaleString('vi-VN');
-  }
+  const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'learnerEnrollmentsPagination');
+  let currentPage = 0;
+  const pageSize = 10;
+  let totalPages = 1;
+  let totalElements = 0;
 
   function normalizeStatus(raw) {
     const s = String(raw || 'PENDING');
@@ -85,14 +64,15 @@
 
   function render() {
     const rows = filterRows(allRows);
-    if (countEl) countEl.textContent = rows.length + ' đăng ký';
+    if (countEl) countEl.textContent = totalElements + ' đăng ký';
 
     if (!rows.length) {
-      listEl.innerHTML = '<div class="mini-item"><h4>Không có đăng ký</h4><p>Không có dữ liệu ở bộ lọc hiện tại.</p></div>';
+      DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có đăng ký</h4><p>Không có dữ liệu ở bộ lọc hiện tại.</p></div>');
+      UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
       return;
     }
 
-    listEl.innerHTML = rows.map(function (e) {
+    DomUtils.setHtml(listEl, rows.map(function (e) {
       const normalized = normalizeStatus(e.status);
       const meta = statusMeta(normalized);
       const canCancel = normalized === 'PENDING';
@@ -120,7 +100,9 @@
             '</div>' +
           '</div>' +
         '</article>';
-    }).join('');
+    }).join(''));
+
+    UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
 
     listEl.querySelectorAll('button[data-cancel]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -131,12 +113,17 @@
 
   async function load() {
     try {
-      allRows = await ApiClient.get('/api/learner/enrollments');
-      if (!Array.isArray(allRows)) allRows = [];
+      const page = await ApiClient.get('/api/learner/enrollments', { page: currentPage, size: pageSize });
+      const info = UiUtils.pageInfo(page);
+      allRows = info.content;
+      currentPage = info.page;
+      totalPages = info.totalPages;
+      totalElements = info.totalElements;
       render();
     } catch (err) {
       if (countEl) countEl.textContent = 'Không tải được dữ liệu';
-      listEl.innerHTML = '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được đăng ký') + '</p></div>';
+      UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
+      DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được đăng ký') + '</p></div>');
     }
   }
 
@@ -144,7 +131,8 @@
   if (applyFilterButton) {
     applyFilterButton.addEventListener('click', function () {
       currentStatus = statusFilterSelect ? (statusFilterSelect.value || 'ALL') : 'ALL';
-      render();
+      currentPage = 0;
+      load();
     });
   }
 

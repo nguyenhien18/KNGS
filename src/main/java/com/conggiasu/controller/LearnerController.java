@@ -9,6 +9,7 @@ import com.conggiasu.dto.response.ApiResponse;
 import com.conggiasu.dto.response.CourseEnrollmentResponse;
 import com.conggiasu.dto.response.LearnerClassResponse;
 import com.conggiasu.dto.response.LearnerPostResponse;
+import com.conggiasu.dto.response.PageResponse;
 import com.conggiasu.dto.response.TutorApplicationResponse;
 import com.conggiasu.dto.response.TutorCourseResponse;
 import com.conggiasu.entity.enums.ApprovalStatus;
@@ -16,7 +17,6 @@ import com.conggiasu.entity.enums.TeachingMode;
 import com.conggiasu.service.CurrentUserService;
 import com.conggiasu.service.LearnerService;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +42,7 @@ public class LearnerController {
         request.setLearnerUserId(currentUserService.userId());
         return ApiResponse.<LearnerPostResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(learnerService.createPost(request))
             .build();
     }
@@ -52,7 +52,7 @@ public class LearnerController {
         request.setLearnerUserId(currentUserService.userId());
         return ApiResponse.<LearnerPostResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(learnerService.updatePost(postId, request))
             .build();
     }
@@ -61,26 +61,34 @@ public class LearnerController {
     public ApiResponse<LearnerPostResponse> cancelPost(@PathVariable Long postId) {
         return ApiResponse.<LearnerPostResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(learnerService.cancelPost(currentUserService.userId(), postId))
             .build();
     }
 
     @GetMapping("/posts")
-    public ApiResponse<List<LearnerPostResponse>> getPosts(@RequestParam(required = false) ApprovalStatus approvalStatus) {
-        return ApiResponse.<List<LearnerPostResponse>>builder()
+    public ApiResponse<PageResponse<LearnerPostResponse>> getPosts(
+        @RequestParam(required = false) ApprovalStatus approvalStatus,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<LearnerPostResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(learnerService.getPosts(currentUserService.userId(), approvalStatus))
+            .message("Thành công")
+            .result(learnerService.getPosts(currentUserService.userId(), approvalStatus, page, size))
             .build();
     }
 
     @GetMapping("/posts/{postId}/applications")
-    public ApiResponse<List<TutorApplicationResponse>> getPostApplications(@PathVariable Long postId) {
-        return ApiResponse.<List<TutorApplicationResponse>>builder()
+    public ApiResponse<PageResponse<TutorApplicationResponse>> getPostApplications(
+        @PathVariable Long postId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<TutorApplicationResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(learnerService.getPostApplications(currentUserService.userId(), postId))
+            .message("Thành công")
+            .result(learnerService.getPostApplications(currentUserService.userId(), postId, page, size))
             .build();
     }
 
@@ -92,17 +100,20 @@ public class LearnerController {
         request.setLearnerUserId(currentUserService.userId());
         return ApiResponse.<TutorApplicationResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(learnerService.decideApplication(applicationId, request))
             .build();
     }
 
     @GetMapping("/classes")
-    public ApiResponse<List<LearnerClassResponse>> getClasses() {
-        return ApiResponse.<List<LearnerClassResponse>>builder()
+    public ApiResponse<PageResponse<LearnerClassResponse>> getClasses(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<LearnerClassResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(learnerService.getClasses(currentUserService.userId()))
+            .message("Thành công")
+            .result(learnerService.getClasses(currentUserService.userId(), page, size))
             .build();
     }
 
@@ -111,23 +122,25 @@ public class LearnerController {
         request.setLearnerUserId(currentUserService.userId());
         return ApiResponse.<LearnerClassResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(learnerService.updateClassStatus(classId, request))
             .build();
     }
 
     @GetMapping("/courses/available")
-    public ApiResponse<List<TutorCourseResponse>> getAvailableCourses(
+    public ApiResponse<PageResponse<TutorCourseResponse>> getAvailableCourses(
             @RequestParam(required = false) Long subjectId,
             @RequestParam(required = false) Long gradeId,
             @RequestParam(required = false) TeachingMode teachingMode,
             @RequestParam(required = false) String province,
-            @RequestParam(required = false) String district
+            @RequestParam(required = false) String district,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        return ApiResponse.<List<TutorCourseResponse>>builder()
+        return ApiResponse.<PageResponse<TutorCourseResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(learnerService.availableCourses(subjectId, gradeId, teachingMode, province, district))
+            .message("Thành công")
+            .result(learnerService.availableCourses(subjectId, gradeId, teachingMode, province, district, page, size))
             .build();
     }
 
@@ -136,7 +149,7 @@ public class LearnerController {
         request.setLearnerUserId(currentUserService.userId());
         return ApiResponse.<CourseEnrollmentResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(learnerService.enrollCourse(courseId, request))
             .build();
     }
@@ -145,17 +158,20 @@ public class LearnerController {
     public ApiResponse<CourseEnrollmentResponse> cancelEnrollment(@PathVariable Long enrollmentId) {
         return ApiResponse.<CourseEnrollmentResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(learnerService.cancelEnrollment(enrollmentId, currentUserService.userId()))
             .build();
     }
 
     @GetMapping("/enrollments")
-    public ApiResponse<List<CourseEnrollmentResponse>> getMyEnrollments() {
-        return ApiResponse.<List<CourseEnrollmentResponse>>builder()
+    public ApiResponse<PageResponse<CourseEnrollmentResponse>> getMyEnrollments(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<CourseEnrollmentResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(learnerService.myEnrollments(currentUserService.userId()))
+            .message("Thành công")
+            .result(learnerService.myEnrollments(currentUserService.userId(), page, size))
             .build();
     }
 
@@ -165,7 +181,7 @@ public class LearnerController {
         learnerService.createReview(request);
         return ApiResponse.<Void>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .build();
     }
 }

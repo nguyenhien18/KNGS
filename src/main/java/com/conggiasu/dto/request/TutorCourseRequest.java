@@ -4,6 +4,7 @@ import com.conggiasu.entity.enums.TeachingMode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,8 +24,9 @@ public class TutorCourseRequest {
     @NotNull
     private TeachingMode teachingMode;
     private String studyTime;
+    @PositiveOrZero
     private BigDecimal price;
-    @Positive(message = "maxStudents phai lon hon 0")
+    @Positive(message = "maxStudents phải lớn hơn 0")
     private Integer maxStudents;
     private String province;
     private String district;

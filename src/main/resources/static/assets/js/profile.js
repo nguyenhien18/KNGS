@@ -1,21 +1,7 @@
-﻿(function () {
-  const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-    headerRight.innerHTML = renderUtilityHeaderRight();
-  }
-  if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
+(function () {
+  UiUtils.renderHeader();
 
-  function ensureTutorAuth() {
-    if (!window.ApiClient || !ApiClient.getToken || !ApiClient.getToken()) {
-      alert('Bạn cần đăng nhập tài khoản gia sư để sử dụng chức năng này.');
-      const returnTo = encodeURIComponent(location.pathname + location.search + location.hash);
-      location.href = '/login.html?returnTo=' + returnTo;
-      return false;
-    }
-    return true;
-  }
-
-  if (!ensureTutorAuth()) return;
+  if (!AuthGuard.requireTutor()) return;
 
   const tabs = document.querySelectorAll('.profile-tab');
   const sections = document.querySelectorAll('.profile-section');
@@ -98,6 +84,9 @@
   let avatarUrl = null;
   let imageLightbox = null;
   let lightboxImage = null;
+  const dom = DomUtils;
+  const escapeAttr = FormatUtils.escapeAttr;
+  const escapeHtml = FormatUtils.escapeHtml;
 
   function normalizeText(v) {
     return String(v || '')
@@ -137,22 +126,15 @@
     return true;
   }
 
-  function escapeAttr(value) {
-    return String(value || '')
-      .replace(/&/g, '&amp;')
-      .replace(/"/g, '&quot;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-  }
-
   function setTagList(container, items, kind) {
-    container.innerHTML = items.map((item, idx) => `
+    const html = items.map((item, idx) => `
       <span class="tag-pill">
-        ${kind === 'certificate' && item && typeof item === 'object' ? item.title : item}
+        ${escapeHtml(kind === 'certificate' && item && typeof item === 'object' ? item.title : item)}
         ${kind === 'certificate' && item && item.certificateImageUrl ? '<button type="button" class="text-link cert-preview-link" data-cert-url="' + escapeAttr(item.certificateImageUrl) + '">Ảnh</button>' : ''}
         <button type="button" data-kind="${kind}" data-idx="${idx}"><i class="fas fa-times"></i></button>
       </span>
     `).join('');
+    dom.setHtml(container, html);
 
     container.querySelectorAll('button[data-kind][data-idx]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -192,16 +174,10 @@
 
   function setSelectOptions(select, items, placeholder, getValue) {
     if (!select) return;
-    select.innerHTML = '';
-    const placeholderOption = document.createElement('option');
-    placeholderOption.value = '';
-    placeholderOption.textContent = placeholder;
-    select.appendChild(placeholderOption);
-    items.forEach((item) => {
-      const option = document.createElement('option');
-      option.value = String(getValue ? getValue(item) : item.id);
-      option.textContent = item.name;
-      select.appendChild(option);
+    dom.setOptions(select, items, {
+      placeholder: placeholder,
+      value: function (item) { return getValue ? getValue(item) : item.id; },
+      label: function (item) { return item.name; }
     });
   }
 
@@ -237,7 +213,7 @@
     setSelectOptions(subjectSelect, subjectLookup, 'Chọn môn dạy');
 
     if (gradeSelect) {
-      gradeSelect.innerHTML = '';
+      dom.clear(gradeSelect);
       const placeholderOption = document.createElement('option');
       placeholderOption.value = '';
       placeholderOption.textContent = 'Chọn khối lớp hoặc nhóm khối';
@@ -268,15 +244,12 @@
     }
   }
 
-  function showToast(message) {
-    alert(message);
-  }
-
   function ensureImageLightbox() {
     if (imageLightbox && lightboxImage) return;
     imageLightbox = document.createElement('div');
     imageLightbox.className = 'lightbox hidden';
-    imageLightbox.innerHTML = '<span class="lightbox-close" id="profileCloseLightbox">&times;</span><img id="profileLightboxImage" src="" alt="Preview">';
+    const lightboxHtml = '<span class="lightbox-close" id="profileCloseLightbox">&times;</span><img id="profileLightboxImage" src="" alt="Preview">';
+    dom.setHtml(imageLightbox, lightboxHtml);
     document.body.appendChild(imageLightbox);
     lightboxImage = imageLightbox.querySelector('#profileLightboxImage');
     const closeBtn = imageLightbox.querySelector('#profileCloseLightbox');
@@ -456,7 +429,7 @@
       return true;
     }
 
-    // Fallback: tu dong gan vao bang cap dau tien chua co anh (hoac bang cap duy nhat).
+    // Fallback: tự động gắn vào bằng cấp đầu tiên chưa có ảnh hoặc bằng cấp duy nhất.
     const firstMissingImageIndex = certificates.findIndex((item) => !String(item && item.certificateImageUrl || '').trim());
     if (firstMissingImageIndex >= 0) {
       certificates[firstMissingImageIndex].certificateImageUrl = cleanUrl;
@@ -476,28 +449,11 @@
   }
 
   async function uploadAvatarFile(file) {
-    const token = ApiClient.getToken ? ApiClient.getToken() : '';
     const formData = new FormData();
     formData.append('file', file);
-    const res = await fetch('/api/account/avatar', {
-      method: 'POST',
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-      body: formData
-    });
-    if (!res.ok) {
-      let message = 'Không thể tải ảnh lên.';
-      try {
-        const data = await res.json();
-        message = data.message || message;
-      } catch (_) {}
-      throw new Error(message);
-    }
-    const data = await res.json();
-    if (data && typeof data === 'object' && data.result && data.result.url) {
-      return data.result;
-    }
-    if (data && data.url) {
-      return data;
+    const uploaded = await ApiClient.upload('/api/account/avatar', formData);
+    if (uploaded && uploaded.url) {
+      return uploaded;
     }
     return null;
   }

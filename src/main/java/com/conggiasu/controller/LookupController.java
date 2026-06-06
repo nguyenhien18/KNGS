@@ -25,7 +25,7 @@ public class LookupController {
     public ApiResponse<List<Subject>> getSubjects() {
         return ApiResponse.<List<Subject>>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(subjectRepository.findAll())
             .build();
     }
@@ -34,7 +34,7 @@ public class LookupController {
     public ApiResponse<List<Grade>> getGrades() {
         return ApiResponse.<List<Grade>>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(gradeRepository.findAll())
             .build();
     }

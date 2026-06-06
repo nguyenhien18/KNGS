@@ -1,9 +1,5 @@
-﻿(function () {
-  const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-    headerRight.innerHTML = renderUtilityHeaderRight();
-  }
-  if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
+(function () {
+  UiUtils.renderHeader();
 
   const listEl = document.getElementById('applicationsList');
   if (!listEl) return;
@@ -11,38 +7,14 @@
   const tabEls = Array.from(document.querySelectorAll('#applicationTabs .manage-tab'));
   let activeStatus = 'all';
   let applications = [];
-
-  function ensureTutorAuth() {
-    const token = window.ApiClient && ApiClient.getToken ? ApiClient.getToken() : '';
-    const user = window.ApiClient && ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    const role = String((user && user.role) || '').toUpperCase();
-    if (!token || !user || role !== 'TUTOR') {
-      alert('Bạn cần đăng nhập tài khoản gia sư để sử dụng chức năng này.');
-      const returnTo = encodeURIComponent(location.pathname + location.search + location.hash);
-      location.href = '/login.html?returnTo=' + returnTo;
-      return false;
-    }
-    return true;
-  }
-
-  function asArray(value) {
-    if (Array.isArray(value)) return value;
-    if (value && Array.isArray(value.content)) return value.content;
-    if (value && Array.isArray(value.items)) return value.items;
-    return [];
-  }
-
-  function formatCurrency(value) {
+  const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'tutorApplicationsPagination');
+  let currentPage = 0;
+  const pageSize = 10;
+  let totalPages = 1;
+function formatCurrency(value) {
     const num = Number(value || 0);
     if (typeof window.formatVND === 'function') return window.formatVND(num);
     return new Intl.NumberFormat('vi-VN').format(num) + ' đ';
-  }
-
-  function formatDate(value) {
-    if (!value) return '';
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return String(value);
-    return d.toLocaleString('vi-VN');
   }
 
   function statusMeta(status) {
@@ -63,26 +35,30 @@
   }
 
   async function loadApplications() {
-    const query = activeStatus === 'all' ? undefined : { status: activeStatus };
+    const query = activeStatus === 'all' ? { page: currentPage, size: pageSize } : { status: activeStatus, page: currentPage, size: pageSize };
     const raw = await ApiClient.get('/api/tutor/applications', query);
-    applications = asArray(raw);
+    const info = UiUtils.pageInfo(raw);
+    applications = info.content;
+    currentPage = info.page;
+    totalPages = info.totalPages;
     render();
   }
 
   function render() {
     if (!applications.length) {
-      listEl.innerHTML = `
-        <div class="card-box empty-state" style="min-height:220px">
+      DomUtils.setHtml(listEl, `
+        <div class="card-box empty-state empty-state-lg">
           <div>
             <i class="fas fa-inbox"></i>
             <h3>Không có đơn ứng tuyển</h3>
             <p>Không có dữ liệu ở bộ lọc hiện tại.</p>
           </div>
-        </div>`;
+        </div>`);
+      UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadApplications(); });
       return;
     }
 
-    listEl.innerHTML = applications.map((item) => {
+    DomUtils.setHtml(listEl, applications.map((item) => {
       const meta = statusMeta(item.status);
       const canCancel = item.status === 'PENDING';
       const canViewClass = item.status === 'ACCEPTED';
@@ -91,30 +67,31 @@
         : '/gia-su/my-classes.html?source=MATCHED&postId=' + encodeURIComponent(item.postId);
 
       return `
-        <div class="list-card" data-app-id="${item.applicationId}">
+        <div class="list-card" data-app-id="${safe(item.applicationId)}">
           <div class="badge-row">
-            <span class="badge badge-primary">${item.subject || '-'}</span>
-            <span class="badge badge-gray">${item.grade || '-'}</span>
+            <span class="badge badge-primary">${safe(item.subject || '-')}</span>
+            <span class="badge badge-gray">${safe(item.grade || '-')}</span>
             <span class="badge ${meta.badgeClass}">${meta.label}</span>
           </div>
-          <h3 class="card-title">Ứng tuyển: ${item.postTitle || '-'}</h3>
-          <p class="muted">Lời nhắn: ${item.message || '(không có)'}</p>
+          <h3 class="card-title">Ứng tuyển: ${safe(item.postTitle || '-')}</h3>
+          <p class="muted">Lời nhắn: ${safe(item.message || '(không có)')}</p>
           <div class="info-grid">
             <div class="info-box"><strong>Phí đề xuất</strong><span>${formatCurrency(item.expectedFee)}</span></div>
-            <div class="info-box"><strong>Ngày gửi</strong><span>${formatDate(item.createdAt)}</span></div>
-            <div class="info-box"><strong>Khu vực</strong><span>${item.province || '-'}${item.district ? ` - ${item.district}` : ''}</span></div>
+            <div class="info-box"><strong>Ngày gửi</strong><span>${safe(formatDate(item.createdAt))}</span></div>
+            <div class="info-box"><strong>Khu vực</strong><span>${safe(item.province || '-')}${item.district ? ' - ' + safe(item.district) : ''}</span></div>
             <div class="info-box"><strong>Trạng thái</strong><span>${meta.label}</span></div>
           </div>
           <div class="card-actions">
             <span class="muted">${helperText(item.status)}</span>
             <div class="manage-action-group">
-              <a class="btn btn-soft" href="/bai-dang-chi-tiet.html?id=${item.postId}">Xem bài đăng</a>
+              <a class="btn btn-soft" href="/bai-dang-chi-tiet.html?id=${encodeURIComponent(item.postId)}">Xem bài đăng</a>
               ${canViewClass ? `<a class="btn btn-soft" href="${classHref}">Xem lớp học</a>` : ''}
               ${canCancel ? '<button class="btn btn-outline" data-action="cancel">Hủy đơn</button>' : ''}
             </div>
           </div>
         </div>`;
-    }).join('');
+    }).join(''));
+    UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadApplications(); });
   }
 
   tabEls.forEach((tab) => {
@@ -122,6 +99,7 @@
       tabEls.forEach((t) => t.classList.remove('active'));
       tab.classList.add('active');
       activeStatus = tab.dataset.status || 'all';
+      currentPage = 0;
       try {
         await loadApplications();
       } catch (err) {
@@ -150,7 +128,7 @@
   });
 
   (async function init() {
-    if (!ensureTutorAuth()) return;
+    if (!AuthGuard.requireTutor()) return;
     try {
       await loadApplications();
     } catch (err) {

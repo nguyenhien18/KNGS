@@ -69,25 +69,25 @@ public class FileStorageService {
 
         Object secureUrl = result.get("secure_url");
         if (secureUrl == null) {
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Khong nhan duoc URL anh");
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Không nhận được URL ảnh");
         }
         return String.valueOf(secureUrl);
     }
 
     private void validateImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Vui long chon anh de tai len");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Vui lòng chọn ảnh để tải lên");
         }
         if (file.getSize() > MAX_IMAGE_SIZE) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Anh qua lon. Toi da 5MB");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Ảnh qua lon. Toi da 5MB");
         }
         String contentType = file.getContentType();
         if (contentType == null || !contentType.toLowerCase().startsWith("image/")) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Chi chap nhan tep anh");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Chỉ chấp nhận tệp ảnh");
         }
         String extension = extractExtension(file.getOriginalFilename());
         if (!ALLOWED_EXTENSIONS.contains(extension)) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Dinh dang anh khong ho tro");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Định dạng ảnh không hỗ trợ");
         }
     }
 
@@ -95,7 +95,7 @@ public class FileStorageService {
         String original = filename == null ? "" : filename.trim();
         int dot = original.lastIndexOf('.');
         if (dot < 0 || dot == original.length() - 1) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Tep anh khong hop le");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Tệp ảnh không hợp lệ");
         }
         return original.substring(dot + 1).toLowerCase();
     }
@@ -144,14 +144,14 @@ public class FileStorageService {
             log.error("Cloudinary signature error while uploading image", ex);
             return new AppException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "Cau hinh Cloudinary khong hop le. Kiem tra CLOUDINARY_API_KEY va CLOUDINARY_API_SECRET"
+                "Cấu hình Cloudinary không hợp lệ. Kiểm tra CLOUDINARY_API_KEY và CLOUDINARY_API_SECRET"
             );
         }
         if (ex instanceof IOException) {
-            return new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Khong the luu tep anh");
+            return new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Không thể lưu tệp ảnh");
         }
         log.error("Unexpected cloud upload error", ex);
-        return new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Khong the luu tep anh");
+        return new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "Không thể lưu tệp ảnh");
     }
 }
 

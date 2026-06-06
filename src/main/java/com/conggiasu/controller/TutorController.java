@@ -42,15 +42,17 @@ public class TutorController {
             @RequestParam(required = false) Long subjectId,
             @RequestParam(required = false) Long gradeId,
             @RequestParam(required = false) TeachingMode teachingMode,
+            @RequestParam(required = false) String province,
+            @RequestParam(required = false) String district,
             @RequestParam(required = false) TutorProfileStatus profileStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         return ApiResponse.<PageResponse<TutorSummaryResponse>>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorService.searchTutors(
-                keyword, subjectId, gradeId, teachingMode, profileStatus, page, size
+                keyword, subjectId, gradeId, teachingMode, province, district, profileStatus, page, size
             ))
             .build();
     }
@@ -59,7 +61,7 @@ public class TutorController {
     public ApiResponse<TutorSummaryResponse> getTutorById(@PathVariable Long id) {
         return ApiResponse.<TutorSummaryResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorService.getTutorById(id))
             .build();
     }
@@ -68,7 +70,7 @@ public class TutorController {
     public ApiResponse<TutorSummaryResponse> getMyTutorProfile() {
         return ApiResponse.<TutorSummaryResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorService.getTutorProfileByUserId(currentUserService.userId()))
             .build();
     }
@@ -78,7 +80,7 @@ public class TutorController {
     public ApiResponse<TutorSummaryResponse> createTutorProfile(@Valid @RequestBody TutorUpsertRequest request) {
         return ApiResponse.<TutorSummaryResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorService.createTutorProfileForUserId(currentUserService.userId(), request))
             .build();
     }
@@ -88,7 +90,7 @@ public class TutorController {
     public ApiResponse<TutorSummaryResponse> updateTutorProfile(@PathVariable Long id, @Valid @RequestBody TutorUpsertRequest request) {
         return ApiResponse.<TutorSummaryResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorService.updateTutorByUserIdAndTutorId(currentUserService.userId(), id, request))
             .build();
     }
@@ -98,7 +100,7 @@ public class TutorController {
     public ApiResponse<TutorSummaryResponse> upsertMyTutorProfile(@Valid @RequestBody TutorUpsertRequest request) {
         return ApiResponse.<TutorSummaryResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorService.upsertTutorProfileByUserId(currentUserService.userId(), request))
             .build();
     }
@@ -112,7 +114,7 @@ public class TutorController {
         } else if (request.getProfileStatus() == TutorProfileStatus.REJECTED) {
             approved = Boolean.FALSE;
         } else {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Chi ho tro cap nhat trang thai APPROVED hoac REJECTED");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Chỉ hỗ trợ cập nhật trạng thái APPROVED hoặc REJECTED");
         }
         AdminReviewRequest reviewRequest = new AdminReviewRequest();
         reviewRequest.setAdminUserId(currentUserService.userId());
@@ -121,7 +123,7 @@ public class TutorController {
 
         return ApiResponse.<TutorSummaryResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(adminService.reviewTutor(id, reviewRequest))
             .build();
     }
