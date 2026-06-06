@@ -11,11 +11,14 @@
 
   let allRows = [];
   let currentFilter = 'ALL';
+<<<<<<< HEAD
   const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'learnerClassesPagination');
   let currentPage = 0;
   const pageSize = 10;
   let totalPages = 1;
   let totalElements = 0;
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
   function statusMeta(status) {
     const map = {
@@ -102,7 +105,11 @@
 
   function render() {
     const rows = filterRows(allRows);
+<<<<<<< HEAD
     if (countEl) countEl.textContent = totalElements + ' lớp';
+=======
+    if (countEl) countEl.textContent = rows.length + ' lớp';
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
     if (!rows.length) {
       const emptyText = currentFilter === 'ACTIVE'
@@ -111,7 +118,10 @@
           ? 'Không có lớp đã hoàn thành.'
           : 'Bạn chưa có lớp nào được ghép.';
       DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có lớp</h4><p>' + emptyText + '</p></div>');
+<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       return;
     }
 
@@ -137,8 +147,11 @@
           '</div>' +
         '</article>';
     }).join(''));
+<<<<<<< HEAD
 
     UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
     listEl.querySelectorAll('button[data-status][data-id]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -157,6 +170,7 @@
 
   async function load() {
     try {
+<<<<<<< HEAD
       const page = await ApiClient.get('/api/learner/classes', { page: currentPage, size: pageSize });
       const info = UiUtils.pageInfo(page);
       allRows = info.content;
@@ -167,6 +181,12 @@
     } catch (err) {
       if (countEl) countEl.textContent = 'Không tải được dữ liệu';
       UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
+=======
+      allRows = ApiClient.asArray(await ApiClient.get('/api/learner/classes'));
+      render();
+    } catch (err) {
+      if (countEl) countEl.textContent = 'Không tải được dữ liệu';
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được dữ liệu lớp') + '</p></div>');
     }
   }

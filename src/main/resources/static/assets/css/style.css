@@ -218,6 +218,264 @@ img{max-width:100%;display:block}
   .split{align-items:stretch}
   .card-actions{align-items:stretch}
   .myclass-filter-grid{grid-template-columns:1fr}
+<<<<<<< HEAD
+=======
+}
+
+/* Simplified UI tone for project demo */
+.site-header,
+.card-box,
+.search-box,
+.tutor-card,
+.filter-card,
+.class-card,
+.profile-sidebar,
+.manage-card,
+.choice-card,
+.hero-mini,
+.post-card,
+.form-section,
+.kpi,
+.list-card,
+.course-card,
+.dropdown-panel,
+.user-dropdown,
+.nav-dropdown-menu,
+.modal-box {
+  box-shadow:none !important;
+}
+
+.card-box,
+.tutor-card,
+.filter-card,
+.class-card,
+.profile-sidebar,
+.manage-card,
+.choice-card,
+.hero-mini,
+.post-card,
+.form-section,
+.list-card,
+.course-card,
+.info-box,
+.mini-item,
+.student-item,
+.bid-item,
+.review-item {
+  border:1px solid #e5e7eb !important;
+  border-radius:10px !important;
+  background:#fff !important;
+}
+
+.feature-card:hover,
+.tutor-card:hover,
+.class-card:hover,
+.manage-card:hover,
+.choice-card:hover {
+  transform:none !important;
+  box-shadow:none !important;
+  border-color:#cbd5e1 !important;
+}
+
+.hero,
+.page-hero,
+.banner,
+.welcome-section,
+.list-shell,
+.class-hub-page,
+.create-page {
+  background:#f8fafc !important;
+  background-image:none !important;
+}
+
+.hero::before,
+.hero-illu,
+.feature-icon,
+.choice-icon,
+.decor-icon,
+.float-card,
+.hero-badge {
+  display:none !important;
+}
+
+.btn,
+button {
+  box-shadow:none !important;
+}
+
+.btn-primary,
+.primary-btn {
+  background:#2563eb !important;
+  background-image:none !important;
+  color:#fff !important;
+  border:1px solid #2563eb !important;
+}
+
+.badge,
+.status-chip,
+.tag,
+.tag-pill,
+.subject-tag,
+.detail-meta-pill {
+  font-size:12px !important;
+  padding:3px 8px !important;
+  border-radius:999px !important;
+  font-weight:600 !important;
+}
+
+.badge-row,
+.manage-badge-row,
+.class-badge-row,
+.detail-header-badges {
+  gap:6px !important;
+  margin-bottom:8px !important;
+}
+
+.notice-inline,
+.notice-inline.warn,
+.notice-inline.success,
+.notice-inline.danger {
+  background:#fff !important;
+  border:1px solid #e5e7eb !important;
+  color:#64748b !important;
+}
+
+.section-heading p,
+.panel-subtitle,
+.card-description,
+.helper-text,
+.muted,
+.muted-text,
+.tutor-desc,
+.post-sub,
+.manage-card-sub {
+  color:#6b7280 !important;
+  font-size:14px !important;
+}
+
+.hero-content h1,
+.hero-title,
+.hero-mini h1,
+.search-panel h1,
+.page-title,
+.section-heading h1,
+.manage-header h1,
+.detail-header-title,
+.post-title,
+.card-title {
+  letter-spacing:0 !important;
+}
+
+/* Final low-template UI override */
+body,
+.hero,
+.page-hero,
+.hero-mini,
+.auth-page,
+.banner,
+.welcome-section,
+.list-shell,
+.class-hub-page,
+.create-page {
+  background-image:none !important;
+}
+
+.card,
+.card-box,
+.tutor-card,
+.course-card,
+.post-card,
+.class-card,
+.choice-card,
+.feature-card,
+.stat-card,
+.panel,
+.form-section,
+.filter-card,
+.profile-sidebar,
+.hero-mini,
+.admin-filter-card,
+.lookup-panel,
+.lookup-item,
+.kpi,
+.list-card,
+.manage-card,
+.dropdown-panel,
+.user-dropdown,
+.nav-dropdown-menu,
+.modal-box {
+  box-shadow:none !important;
+  border:1px solid #e5e7eb !important;
+  border-radius:10px !important;
+}
+
+.card:hover,
+.card-box:hover,
+.tutor-card:hover,
+.course-card:hover,
+.post-card:hover,
+.class-card:hover,
+.choice-card:hover,
+.feature-card:hover,
+.stat-card:hover,
+.form-section:hover,
+.filter-card:hover,
+.manage-card:hover,
+.list-card:hover {
+  transform:none !important;
+  box-shadow:none !important;
+  border-color:#cbd5e1 !important;
+}
+
+.feature-icon,
+.icon-circle,
+.float-card,
+.decor-icon,
+.hero-badge,
+.choice-icon {
+  display:none !important;
+}
+
+.btn,
+.btn-primary,
+.btn-outline,
+.btn-outline-primary,
+.btn-outline-dark,
+button {
+  box-shadow:none !important;
+  background-image:none !important;
+}
+
+.badge,
+.status-chip,
+.tag,
+.tag-pill {
+  border-radius:999px !important;
+  font-size:12px !important;
+  padding:3px 8px !important;
+}
+
+/* Compact public footer */
+.site-footer {
+  background:#0f172a !important;
+  border-top:1px solid #1e293b !important;
+  color:#e5e7eb !important;
+}
+
+.site-footer .footer-inner span {
+  color:#ffffff !important;
+}
+
+.site-footer .footer-inner nav a,
+.site-footer a {
+  color:#e5e7eb !important;
+  font-weight:600;
+}
+
+.site-footer .footer-inner nav a:hover,
+.site-footer a:hover {
+  color:#bfdbfe !important;
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 }
 
 /* Simplified UI tone for project demo */

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 (function () {
+=======
+﻿(function () {
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   if (!AuthGuard.requireLearner()) return;
 
   UiUtils.renderHeader();
@@ -307,7 +311,10 @@
 
     if (!rows.length) {
       setHtml(listEl, '<div class="mini-item"><h4>Không có lớp</h4><p>Không có dữ liệu ở bộ lọc hiện tại.</p></div>');
+<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; render(); });
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       return;
     }
 
@@ -338,8 +345,11 @@
         '<div class="card-actions"><span class="muted">Trạng thái học tập: ' + safe(item.statusText) + '</span><div class="manage-action-group">' + actionsHtml + '</div></div>' +
       '</article>';
     }).join(''));
+<<<<<<< HEAD
 
     UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; render(); });
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
     const focusItem = findFocusItem();
     if (focusItem) {

@@ -9,10 +9,13 @@
 
   const listEl = document.getElementById('notificationList');
   const markAllBtn = document.getElementById('markAllReadBtn');
+<<<<<<< HEAD
   const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'notificationPagination');
   let currentPage = 0;
   const pageSize = 10;
   let totalPages = 1;
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
   function dt(v) {
     if (!v) return '---';
@@ -42,16 +45,23 @@
 
   async function load() {
     try {
+<<<<<<< HEAD
       const page = await ApiClient.get('/api/notifications', { page: currentPage, size: pageSize });
       const info = UiUtils.pageInfo(page);
       currentPage = info.page;
       totalPages = info.totalPages;
       const rows = info.content;
+=======
+      const rows = ApiClient.asArray(await ApiClient.get('/api/notifications'));
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       rows.sort(function (a, b) { return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(); });
       render(rows);
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
     } catch (err) {
+<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Lỗi tải thông báo</h4><p>' + safe(err.message || 'Vui lòng thử lại sau') + '</p></div>');
     }
   }

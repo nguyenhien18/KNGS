@@ -70,7 +70,11 @@ public class LearnerController {
     public ApiResponse<PageResponse<LearnerPostResponse>> getPosts(
         @RequestParam(required = false) ApprovalStatus approvalStatus,
         @RequestParam(defaultValue = "0") int page,
+<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
+=======
+        @RequestParam(defaultValue = "20") int size
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<LearnerPostResponse>>builder()
             .code(200)
@@ -83,7 +87,11 @@ public class LearnerController {
     public ApiResponse<PageResponse<TutorApplicationResponse>> getPostApplications(
         @PathVariable Long postId,
         @RequestParam(defaultValue = "0") int page,
+<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
+=======
+        @RequestParam(defaultValue = "20") int size
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<TutorApplicationResponse>>builder()
             .code(200)
@@ -108,7 +116,11 @@ public class LearnerController {
     @GetMapping("/classes")
     public ApiResponse<PageResponse<LearnerClassResponse>> getClasses(
         @RequestParam(defaultValue = "0") int page,
+<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
+=======
+        @RequestParam(defaultValue = "20") int size
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<LearnerClassResponse>>builder()
             .code(200)
@@ -135,7 +147,11 @@ public class LearnerController {
             @RequestParam(required = false) String province,
             @RequestParam(required = false) String district,
             @RequestParam(defaultValue = "0") int page,
+<<<<<<< HEAD
             @RequestParam(defaultValue = "10") int size
+=======
+            @RequestParam(defaultValue = "20") int size
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<TutorCourseResponse>>builder()
             .code(200)
@@ -166,7 +182,11 @@ public class LearnerController {
     @GetMapping("/enrollments")
     public ApiResponse<PageResponse<CourseEnrollmentResponse>> getMyEnrollments(
         @RequestParam(defaultValue = "0") int page,
+<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
+=======
+        @RequestParam(defaultValue = "20") int size
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<CourseEnrollmentResponse>>builder()
             .code(200)

@@ -79,7 +79,11 @@ public class TutorFeatureController {
     public ApiResponse<PageResponse<TutorApplicationResponse>> getApplications(
         @RequestParam(required = false) ApplicationStatus status,
         @RequestParam(defaultValue = "0") int page,
+<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
+=======
+        @RequestParam(defaultValue = "20") int size
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<TutorApplicationResponse>>builder()
             .code(200)
@@ -91,7 +95,11 @@ public class TutorFeatureController {
     @GetMapping("/matched-classes")
     public ApiResponse<PageResponse<TutorMatchedClassResponse>> getMatchedClasses(
         @RequestParam(defaultValue = "0") int page,
+<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
+=======
+        @RequestParam(defaultValue = "20") int size
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<TutorMatchedClassResponse>>builder()
             .code(200)
@@ -146,7 +154,11 @@ public class TutorFeatureController {
     public ApiResponse<PageResponse<TutorCourseResponse>> getCourses(
         @RequestParam(required = false) CourseStatus status,
         @RequestParam(defaultValue = "0") int page,
+<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
+=======
+        @RequestParam(defaultValue = "20") int size
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<TutorCourseResponse>>builder()
             .code(200)
@@ -159,7 +171,11 @@ public class TutorFeatureController {
     public ApiResponse<PageResponse<CourseEnrollmentResponse>> getEnrollments(
         @PathVariable Long courseId,
         @RequestParam(defaultValue = "0") int page,
+<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
+=======
+        @RequestParam(defaultValue = "20") int size
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<CourseEnrollmentResponse>>builder()
             .code(200)
@@ -183,7 +199,11 @@ public class TutorFeatureController {
     @GetMapping("/reviews")
     public ApiResponse<PageResponse<TutorReviewResponse>> getReviews(
         @RequestParam(defaultValue = "0") int page,
+<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
+=======
+        @RequestParam(defaultValue = "20") int size
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<TutorReviewResponse>>builder()
             .code(200)

@@ -12,10 +12,13 @@
   const roleFilter = document.getElementById('roleFilter');
   const statusFilter = document.getElementById('statusFilter');
   const filterBtn = document.getElementById('filterBtn');
+<<<<<<< HEAD
   const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'adminUsersPagination');
   let currentPage = 0;
   const pageSize = 10;
   let totalPages = 1;
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
   function normalizeStatus(status) {
     return String(status || '').toUpperCase() === 'BLOCKED' ? 'BLOCKED' : 'ACTIVE';
@@ -42,19 +45,30 @@
         size: pageSize
       };
       const page = await ApiClient.get('/api/admin/users', query);
+<<<<<<< HEAD
       const info = UiUtils.pageInfo(page);
       const rows = info.content;
       currentPage = info.page;
       totalPages = info.totalPages;
+=======
+      const rows = ApiClient.asArray(page);
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
       if (!rows || !rows.length) {
         if (usersCountText) usersCountText.textContent = '0 tài khoản phù hợp bộ lọc';
         DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có dữ liệu</h4><p>Không tìm thấy tài khoản phù hợp bộ lọc.</p></div>');
+<<<<<<< HEAD
         UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
         return;
       }
 
       if (usersCountText) usersCountText.textContent = info.totalElements + ' tài khoản';
+=======
+        return;
+      }
+
+      if (usersCountText) usersCountText.textContent = (page && page.totalElements != null ? page.totalElements : rows.length) + ' tài khoản';
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       DomUtils.setHtml(listEl, rows.map(function (u) {
         const id = safe(u.id || '-');
         const role = safe(String(u.role || 'USER').toUpperCase());
@@ -80,8 +94,11 @@
           '<button class="btn btn-outline user-action" data-status="' + nextStatus + '" data-id="' + id + '">' + (nextStatus === 'BLOCKED' ? 'Khóa tài khoản' : 'Mở khóa') + '</button>' +
         '</article>';
       }).join(''));
+<<<<<<< HEAD
 
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
       listEl.querySelectorAll('button[data-status][data-id]').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -90,7 +107,10 @@
       });
     } catch (err) {
       if (usersCountText) usersCountText.textContent = 'Không tải được danh sách';
+<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được danh sách người dùng') + '</p></div>');
     }
   }

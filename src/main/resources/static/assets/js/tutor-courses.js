@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 (function () {
+=======
+﻿(function () {
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   UiUtils.renderHeader();
   if (!AuthGuard.requireTutor()) return;
 
@@ -33,7 +37,10 @@
   function renderCourses(rows) {
     if (!rows || !rows.length) {
       DomUtils.setHtml(courseList, '<div class="mini-item"><h4>Không có dữ liệu</h4><p>Chưa có lớp/khóa học ở trạng thái này.</p></div>');
+<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadCourses(); });
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       return;
     }
 
@@ -64,8 +71,11 @@
           '</div>' +
         '</div>';
     }).join(''));
+<<<<<<< HEAD
 
     UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadCourses(); });
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
     courseList.querySelectorAll('button[data-enroll]').forEach(function (btn) {
       btn.addEventListener('click', async function () {
@@ -82,6 +92,7 @@
 
   async function loadCourses() {
     try {
+<<<<<<< HEAD
       const query = currentStatus ? { status: currentStatus, page: currentPage, size: pageSize } : { page: currentPage, size: pageSize };
       const page = await ApiClient.get('/api/tutor/courses', query);
       const info = UiUtils.pageInfo(page);
@@ -90,6 +101,12 @@
       renderCourses(info.content);
     } catch (err) {
       UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
+=======
+      const query = currentStatus ? { status: currentStatus } : {};
+      const rows = await ApiClient.get('/api/tutor/courses', query);
+      renderCourses(ApiClient.asArray(rows));
+    } catch (err) {
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       DomUtils.setHtml(courseList, '<div class="mini-item"><h4>Lỗi tải dữ liệu</h4><p>' + safe(err.message || 'Vui lòng thử lại sau') + '</p></div>');
     }
   }

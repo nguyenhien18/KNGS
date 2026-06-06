@@ -11,11 +11,14 @@
   const searchButton = document.getElementById('postSearchButton');
   if (!list || !countEl) return;
 
+<<<<<<< HEAD
   const paginationEl = UiUtils.ensurePaginationAfter(list, 'postPagination');
   let currentPage = 0;
   const pageSize = 10;
   let totalPages = 1;
 
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   function resolvePageItems(page) {
     if (page && Array.isArray(page.items)) return page.items;
     if (page && Array.isArray(page.content)) return page.content;
@@ -62,6 +65,7 @@
         teachingMode: modeSelect && modeSelect.value ? modeSelect.value : undefined,
         province: provinceInput && provinceInput.value ? provinceInput.value.trim() : undefined,
         district: districtInput && districtInput.value ? districtInput.value.trim() : undefined,
+<<<<<<< HEAD
         page: currentPage,
         size: pageSize
       });
@@ -74,6 +78,16 @@
       if (!posts.length) {
         DomUtils.setHtml(list, '<div class="empty-state"><div><i class="fas fa-inbox"></i><h3>Chưa có bài đăng</h3><p>Hiện chưa có bài đăng học viên nào.</p></div></div>');
         UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadPosts(); });
+=======
+        page: 0,
+        size: 50
+      });
+      const posts = resolvePageItems(page);
+      countEl.textContent = String(posts.length);
+
+      if (!posts.length) {
+        DomUtils.setHtml(list, '<div class="empty-state"><div><i class="fas fa-inbox"></i><h3>Chưa có bài đăng</h3><p>Hiện chưa có bài đăng học viên nào.</p></div></div>');
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
         return;
       }
 
@@ -99,6 +113,7 @@
             <a class="btn btn-primary" href="bai-dang-chi-tiet.html?id=${encodeURIComponent(item.postId)}">Xem chi tiết & ứng tuyển</a>
           </div>
         </article>`).join(''));
+<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadPosts(); });
     } catch (err) {
       DomUtils.setHtml(list, `<div class="empty-state"><div><i class="fas fa-circle-exclamation"></i><h3>Lỗi tải dữ liệu</h3><p>${esc(err.message || 'Không thể tải danh sách bài đăng.')}</p></div></div>`);
@@ -110,11 +125,25 @@
   if (searchButton) searchButton.addEventListener('click', searchFromFirstPage);
   [subjectSelect, gradeSelect, modeSelect].forEach((el) => {
     if (el) el.addEventListener('change', searchFromFirstPage);
+=======
+    } catch (err) {
+      DomUtils.setHtml(list, `<div class="empty-state"><div><i class="fas fa-circle-exclamation"></i><h3>Lỗi tải dữ liệu</h3><p>${esc(err.message || 'Không thể tải danh sách bài đăng.')}</p></div></div>`);
+    }
+  }
+
+  if (searchButton) searchButton.addEventListener('click', loadPosts);
+  [subjectSelect, gradeSelect, modeSelect].forEach((el) => {
+    if (el) el.addEventListener('change', loadPosts);
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   });
   [provinceInput, districtInput].forEach((el) => {
     if (!el) return;
     el.addEventListener('keydown', (event) => {
+<<<<<<< HEAD
       if (event.key === 'Enter') searchFromFirstPage();
+=======
+      if (event.key === 'Enter') loadPosts();
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     });
   });
 

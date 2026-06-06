@@ -26,7 +26,11 @@ public class NotificationController {
     public ApiResponse<PageResponse<NotificationResponse>> getMyNotifications(
         @RequestParam(required = false) Boolean unreadOnly,
         @RequestParam(defaultValue = "0") int page,
+<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
+=======
+        @RequestParam(defaultValue = "20") int size
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<NotificationResponse>>builder()
             .code(200)

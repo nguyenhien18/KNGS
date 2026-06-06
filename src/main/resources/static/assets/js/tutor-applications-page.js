@@ -7,10 +7,13 @@
   const tabEls = Array.from(document.querySelectorAll('#applicationTabs .manage-tab'));
   let activeStatus = 'all';
   let applications = [];
+<<<<<<< HEAD
   const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'tutorApplicationsPagination');
   let currentPage = 0;
   const pageSize = 10;
   let totalPages = 1;
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 function formatCurrency(value) {
     const num = Number(value || 0);
     if (typeof window.formatVND === 'function') return window.formatVND(num);
@@ -37,10 +40,14 @@ function formatCurrency(value) {
   async function loadApplications() {
     const query = activeStatus === 'all' ? { page: currentPage, size: pageSize } : { status: activeStatus, page: currentPage, size: pageSize };
     const raw = await ApiClient.get('/api/tutor/applications', query);
+<<<<<<< HEAD
     const info = UiUtils.pageInfo(raw);
     applications = info.content;
     currentPage = info.page;
     totalPages = info.totalPages;
+=======
+    applications = ApiClient.asArray(raw);
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     render();
   }
 
@@ -54,7 +61,10 @@ function formatCurrency(value) {
             <p>Không có dữ liệu ở bộ lọc hiện tại.</p>
           </div>
         </div>`);
+<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadApplications(); });
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       return;
     }
 
@@ -91,7 +101,10 @@ function formatCurrency(value) {
           </div>
         </div>`;
     }).join(''));
+<<<<<<< HEAD
     UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadApplications(); });
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   }
 
   tabEls.forEach((tab) => {

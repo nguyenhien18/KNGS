@@ -84,6 +84,7 @@
     return { element: lightbox, image: image, open: open, close: close };
   }
 
+<<<<<<< HEAD
 
   function ensurePaginationAfter(anchor, id) {
     if (!anchor || !anchor.parentNode) return null;
@@ -149,15 +150,21 @@
     };
   }
 
+=======
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   window.UiUtils = {
     renderHeader: renderHeader,
     showToast: showToast,
     withButtonLoading: withButtonLoading,
+<<<<<<< HEAD
     ensureLightbox: ensureLightbox,
     ensurePaginationAfter: ensurePaginationAfter,
     renderSimplePagination: renderSimplePagination,
     pageItems: pageItems,
     pageInfo: pageInfo
+=======
+    ensureLightbox: ensureLightbox
+>>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   };
 
   window.showToast = window.showToast || showToast;
