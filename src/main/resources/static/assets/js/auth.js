@@ -15,8 +15,8 @@ function switchTab(tab) {
   const isLogin = tab === 'login';
   document.getElementById('tabLogin').classList.toggle('active', isLogin);
   document.getElementById('tabRegister').classList.toggle('active', !isLogin);
-  document.getElementById('loginCard').style.display = isLogin ? 'block' : 'none';
-  document.getElementById('registerCard').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('loginCard').classList.toggle('hidden', !isLogin);
+  document.getElementById('registerCard').classList.toggle('hidden', isLogin);
 }
 
 function togglePwd(inputId, iconEl) {
@@ -172,6 +172,33 @@ async function handleRegister(e) {
 (function init() {
   const params = new URLSearchParams(location.search);
   if (params.get('tab') === 'register') switchTab('register');
+  document.querySelectorAll('[data-auth-tab]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      switchTab(el.getAttribute('data-auth-tab'));
+    });
+    el.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        switchTab(el.getAttribute('data-auth-tab'));
+      }
+    });
+  });
+  document.querySelectorAll('[data-auth-role]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      setRole(el.getAttribute('data-auth-role'));
+    });
+    el.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        setRole(el.getAttribute('data-auth-role'));
+      }
+    });
+  });
+  document.querySelectorAll('[data-toggle-password]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      togglePwd(el.getAttribute('data-toggle-password'), el);
+    });
+  });
   document.getElementById('loginForm').addEventListener('submit', handleLogin);
   document.getElementById('registerForm').addEventListener('submit', handleRegister);
 })();

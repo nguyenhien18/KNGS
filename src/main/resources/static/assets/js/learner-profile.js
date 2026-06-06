@@ -1,19 +1,9 @@
-﻿(function () {
-  function ensureLearner() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'LEARNER') {
-      alert('Bạn cần đăng nhập tài khoản học viên.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname + location.search);
-      return false;
-    }
-    return true;
-  }
-
-  if (!ensureLearner()) return;
+(function () {
+  if (!AuthGuard.requireLearner()) return;
 
   const headerRight = document.getElementById('headerRight');
   if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-    headerRight.innerHTML = renderUtilityHeaderRight();
+    DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   }
   if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
 
@@ -110,7 +100,7 @@
     if (imageLightbox && lightboxImage) return;
     imageLightbox = document.createElement('div');
     imageLightbox.className = 'lightbox hidden';
-    imageLightbox.innerHTML = '<span class="lightbox-close" id="learnerCloseLightbox">&times;</span><img id="learnerLightboxImage" src="" alt="Preview">';
+    DomUtils.setHtml(imageLightbox, '<span class="lightbox-close" id="learnerCloseLightbox">&times;</span><img id="learnerLightboxImage" src="" alt="Preview">');
     document.body.appendChild(imageLightbox);
     lightboxImage = imageLightbox.querySelector('#learnerLightboxImage');
     const closeBtn = imageLightbox.querySelector('#learnerCloseLightbox');
@@ -277,7 +267,7 @@
         });
       }
       if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-        headerRight.innerHTML = renderUtilityHeaderRight();
+        DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
         if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
       }
       alert('Cập nhật hồ sơ thành công.');

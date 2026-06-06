@@ -1,67 +1,140 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
-
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Bài đăng học viên</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
-
-<body class="page-bg">
+  </head>
+  <body class="page-bg">
     <header class="site-header">
-        <div class="container header-inner">
-            <div class="header-left"><a href="index.html" class="logo">
-                    <div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Cổng Gia Sư</span>
-                </a>
-                <nav class="desktop-nav"><a href="index.html">Trang chủ</a><a href="tim-gia-su.html">Tìm gia sư</a><a
-                        href="tim-lop.html" class="active">Tìm lớp học</a></nav>
+      <div class="container header-inner">
+        <div class="header-left">
+          <a href="index.html" class="logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap">
+              </i>
             </div>
-            <div class="header-right" id="headerRight"></div><button id="mobileMenuButton" class="mobile-menu-btn"><i
-                    class="fas fa-bars"></i></button>
+            <span>Cổng Gia Sư</span>
+          </a>
+          <nav class="desktop-nav">
+            <a href="index.html">Trang chủ</a>
+            <a href="tim-gia-su.html">Tìm gia sư</a>
+            <a
+            href="tim-lop.html" class="active">Tìm lớp học</a>
+        </nav>
+      </div>
+      <div class="header-right" id="headerRight">
+      </div>
+      <button id="mobileMenuButton" class="mobile-menu-btn">
+        <i
+        class="fas fa-bars">
+      </i>
+    </button>
+  </div>
+  <div id="mobileMenu" class="mobile-menu hidden">
+    <a href="index.html">Trang chủ</a>
+    <a href="tim-gia-su.html">Tìm
+      gia sư</a>
+    <a href="tim-lop.html" class="active">Tìm lớp học</a>
+  </div>
+</header>
+<main class="list-shell">
+  <div class="container">
+    <div class="hero-mini">
+      <h1>Bài đăng do  học viên đăng</h1>
+      <p>Gia sư có thể theo dõi nhu cầu tìm gia sư, đọc yêu cầu học tập và ứng tuyển với mức phí đề xuất phù
+        hợp.</p>
+    </div>
+    <section class="search-panel card-box list-filter-panel">
+      <div class="search-grid">
+        <div class="search-field">
+          <label for="postSubjectFilter">Môn học</label>
+          <select id="postSubjectFilter">
+            <option value="">Tất cả môn học</option>
+          </select>
         </div>
-        <div id="mobileMenu" class="mobile-menu hidden"><a href="index.html">Trang chủ</a><a href="tim-gia-su.html">Tìm
-                gia sư</a><a href="tim-lop.html" class="active">Tìm lớp học</a></div>
-    </header>
-    <main class="list-shell">
-        <div class="container">
-            <div class="hero-mini">
-                <h1>Bài đăng do  học viên đăng</h1>
-                <p>Gia sư có thể theo dõi nhu cầu tìm gia sư, đọc yêu cầu học tập và ứng tuyển với mức phí đề xuất phù
-                    hợp.</p>
-            </div>
-            <div class="toolbar-split">
-                <p class="result-text-big">Tìm thấy <strong id="resultCount">0</strong> bài đăng phù hợp</p>
-            </div>
-            <div id="postList" class="manage-list"></div>
+        <div class="search-field">
+          <label for="postGradeFilter">Khối lớp</label>
+          <select id="postGradeFilter">
+            <option value="">Tất cả khối lớp</option>
+          </select>
         </div>
-    </main>
-    <footer class="site-footer">
-        <div class="container footer-grid">
-            <div>
-                <div class="logo footer-logo">
-                    <div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Cổng Gia Sư</span>
-                </div>
-                <p>Nền tảng kết nối gia sư và học viên hàng đầu Việt Nam</p>
-                <p>Địa chỉ: 122 Hoàng Quốc Việt, Cầu Giấy, Hà Nội</p>
-            </div>
-            <div>
-                <h3>Dành cho học viên</h3><a href="tim-lop.html">Tìm gia sư</a><a href="#">Cách thức hoạt động</a>
-            </div>
-            <div>
-                <h3>Dành cho gia sư</h3><a href="/gia-su/dang-lop.html">Đăng lớp mới</a><a
-                    href="/gia-su/quan-ly-lop.html">Quản lý lớp</a>
-            </div>
-            <div>
-                <h3>Hỗ trợ</h3><a href="#">Trung tâm trợ giúp</a><a href="#">Liên hệ</a>
-            </div>
+        <div class="search-field">
+          <label for="postModeFilter">Hình thức học</label>
+          <select id="postModeFilter">
+            <option value="">Tất cả hình thức</option>
+            <option value="ONLINE">Online</option>
+            <option value="OFFLINE">Offline</option>
+            <option value="BOTH">Online và Offline</option>
+          </select>
         </div>
-        <div class="footer-bottom">© 2025 Cổng Gia Sư. Tất cả quyền được bảo lưu.</div>
-    </footer>
-    <script src="assets/js/app.js"></script>
-    <script src="assets/js/api-client.js"></script>
-    <script src="assets/js/parent-posts.js?v=20260415-3"></script>
+        <div class="search-field">
+          <label for="postProvinceFilter">Tỉnh/thành</label>
+          <input id="postProvinceFilter" placeholder="Ví dụ: Hà Nội">
+        </div>
+        <div class="search-field">
+          <label for="postDistrictFilter">Quận/huyện</label>
+          <input id="postDistrictFilter" placeholder="Ví dụ: Cầu Giấy">
+        </div>
+        <button id="postSearchButton" class="btn btn-primary full-btn">
+          <i class="fas fa-search"></i> Lọc bài
+        </button>
+      </div>
+    </section>
+    <div class="toolbar-split">
+      <p class="result-text-big">Tìm thấy <strong id="resultCount">0</strong> bài đăng phù hợp</p>
+    </div>
+    <div id="postList" class="manage-list">
+    </div>
+  </div>
+</main>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="logo footer-logo">
+        <div class="logo-box">
+          <i class="fas fa-graduation-cap">
+          </i>
+        </div>
+        <span>Cổng Gia Sư</span>
+      </div>
+      <p>Nền tảng kết nối gia sư và học viên hàng đầu Việt Nam</p>
+      <p>Địa chỉ: 122 Hoàng Quốc Việt, Cầu Giấy, Hà Nội</p>
+    </div>
+    <div>
+      <h3>Dành cho học viên</h3>
+      <a href="tim-lop.html">Tìm gia sư</a>
+      <a href="#">Cách thức hoạt động</a>
+    </div>
+    <div>
+      <h3>Dành cho gia sư</h3>
+      <a href="/gia-su/dang-lop.html">Đăng lớp mới</a>
+      <a
+      href="/gia-su/quan-ly-lop.html">Quản lý lớp</a>
+  </div>
+  <div>
+    <h3>Hỗ trợ</h3>
+    <a href="#">Trung tâm trợ giúp</a>
+    <a href="#">Liên hệ</a>
+  </div>
+</div>
+<div class="footer-bottom">© 2025 Cổng Gia Sư. Tất cả quyền được bảo lưu.</div>
+</footer>
+<script src="assets/js/format-utils.js">
+</script>
+<script src="assets/js/dom-utils.js">
+</script>
+<script src="assets/js/ui-utils.js">
+</script>
+<script src="assets/js/app.js">
+</script>
+<script src="assets/js/api-client.js">
+</script>
+<script src="assets/js/auth-guard.js">
+</script>
+<script src="assets/js/parent-posts.js?v=20260606-filter-1">
+</script>
 </body>
-
 </html>

@@ -14,11 +14,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String SYSTEM_ERROR_MESSAGE = "Lỗi hệ thống. Vui lòng thử lại sau.";
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<Void>> handleAppException(AppException exception) {
         if (exception.getErrorCode() != null) {
             ErrorCode errorCode = exception.getErrorCode();
+            if (errorCode.getStatusCode().is5xxServerError()) {
+                log.error("Application exception occurred", exception);
+                return systemErrorResponse();
+            }
             return ResponseEntity.status(errorCode.getStatusCode())
                     .body(ApiResponse.<Void>builder()
                             .code(errorCode.getCode())
@@ -27,6 +32,10 @@ public class GlobalExceptionHandler {
         }
 
         var status = exception.getStatus() == null ? ErrorCode.INVALID_KEY.getStatusCode() : exception.getStatus();
+        if (status.is5xxServerError()) {
+            log.error("Application exception occurred", exception);
+            return systemErrorResponse();
+        }
         return ResponseEntity.status(status)
                 .body(ApiResponse.<Void>builder()
                         .code(ErrorCode.INVALID_KEY.getCode())
@@ -64,7 +73,7 @@ public class GlobalExceptionHandler {
 
         String message = ErrorCode.DATA_INTEGRITY_VIOLATION.getMessage();
         if (rootMessage != null && rootMessage.contains("Data truncated for column 'status'")) {
-            message = "Database schema mismatch for status column.";
+            message = "Cấu trúc cơ sở dữ liệu chưa khớp với cột trạng thái.";
         }
 
         return ResponseEntity.status(ErrorCode.DATA_INTEGRITY_VIOLATION.getStatusCode())
@@ -77,10 +86,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception ex) {
         log.error("Unhandled exception occurred", ex);
+        return systemErrorResponse();
+    }
+
+    private ResponseEntity<ApiResponse<Void>> systemErrorResponse() {
         return ResponseEntity.internalServerError()
-                .body(ApiResponse.<Void>builder()
-                        .code(9999)
-                        .message(ex.getMessage())
-                        .build());
+            .body(ApiResponse.<Void>builder()
+                .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
+                .message(SYSTEM_ERROR_MESSAGE)
+                .build());
     }
 }

@@ -15,7 +15,14 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Getter
 @Setter
 @Entity
-@Table(name = "users")
+@Table(
+    name = "users",
+    indexes = {
+        @Index(name = "idx_users_role_created_at", columnList = "role, created_at"),
+        @Index(name = "idx_users_status_created_at", columnList = "status, created_at"),
+        @Index(name = "idx_users_role_status_created_at", columnList = "role, status, created_at")
+    }
+)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

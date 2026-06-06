@@ -29,14 +29,14 @@ public class AccountService {
     @Transactional(readOnly = true)
     public UserProfileResponse getMyProfile(Long userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay user"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
         return accountProfileMapper.toResponse(user);
     }
 
     @Transactional
     public UserProfileResponse updateProfile(Long userId, UpdateProfileRequest request) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay user"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
         accountProfileMutationService.applyProfileUpdate(user, request);
         user = userRepository.save(user);
         return accountProfileMapper.toResponse(user);
@@ -45,7 +45,7 @@ public class AccountService {
     @Transactional
     public FileUploadResponse uploadAvatar(Long userId, MultipartFile file) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay user"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
         String url = fileStorageService.storeAvatar(file, user.getAvatar());
         user.setAvatar(url);
         userRepository.save(user);
@@ -55,7 +55,7 @@ public class AccountService {
     @Transactional(readOnly = true)
     public FileUploadResponse uploadIdentityImage(Long userId, MultipartFile file) {
         if (!userRepository.existsById(userId)) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Khong tim thay user");
+            throw new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng");
         }
         String url = fileStorageService.storeIdentityImage(file);
         return FileUploadResponse.builder().url(url).build();
@@ -64,9 +64,9 @@ public class AccountService {
     @Transactional
     public void changePassword(Long userId, ChangePasswordRequest request) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay user"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Mat khau hien tai khong dung");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Mật khẩu hiện tại không đúng");
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);

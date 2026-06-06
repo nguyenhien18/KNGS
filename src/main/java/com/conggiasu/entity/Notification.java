@@ -9,7 +9,12 @@ import org.hibernate.annotations.CreationTimestamp;
 @Getter
 @Setter
 @Entity
-@Table(name = "notifications")
+@Table(
+    name = "notifications",
+    indexes = {
+        @Index(name = "idx_notifications_user_read_created_at", columnList = "user_id, is_read, created_at")
+    }
+)
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

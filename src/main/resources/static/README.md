@@ -1,4 +1,4 @@
-# Cong Gia Su Frontend Demo
+# Cổng Gia Sư Frontend Demo
 
 Dự án frontend tĩnh mô phỏng giao diện hệ thống Cổng Gia Sư theo bộ màn hình và luồng chức năng đã cung cấp.
 
@@ -8,7 +8,7 @@ Dự án frontend tĩnh mô phỏng giao diện hệ thống Cổng Gia Sư theo
 - tim-lop.html
 - profile.html
 - quan-ly-lop.html
-- lop-chi-tiet.html
+- lớp-chi-tiet.html
 - gia-su-profile.html
 - tutor-dashboard.html
 - tutor-posts.html

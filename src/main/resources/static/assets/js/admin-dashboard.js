@@ -1,26 +1,16 @@
 (function () {
-  function ensureAdmin() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'ADMIN') {
-      alert('Ban can dang nhap tai khoan admin.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname);
-      return false;
-    }
-    return true;
-  }
-
-  if (!ensureAdmin()) return;
+  if (!AuthGuard.requireAdmin()) return;
 
   const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') headerRight.innerHTML = renderUtilityHeaderRight();
+  if (headerRight && typeof renderUtilityHeaderRight === 'function') DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
 
   function renderMini(el, rows, mapper, emptyText) {
     if (!rows || !rows.length) {
-      el.innerHTML = '<div class="mini-item"><p>' + emptyText + '</p></div>';
+      DomUtils.setHtml(el, '<div class="mini-item"><p>' + safe(emptyText) + '</p></div>');
       return;
     }
-    el.innerHTML = rows.map(mapper).join('');
+    DomUtils.setHtml(el, rows.map(mapper).join(''));
   }
 
   async function init() {
@@ -37,11 +27,11 @@
       document.getElementById('kpiPendingPosts').textContent = String(stats.pendingPosts || 0);
       document.getElementById('kpiPendingCourses').textContent = String(stats.pendingCourses || 0);
 
-      renderMini(document.getElementById('pendingTutors'), pendingTutors, function (t) { return '<div class="mini-item"><h4>' + (t.fullName || 'Gia su') + '</h4><p>' + (t.email || '---') + '</p></div>'; }, 'Khong co ho so cho duyet.');
-      renderMini(document.getElementById('pendingPosts'), pendingPosts, function (p) { return '<div class="mini-item"><h4>' + (p.title || 'Bai dang') + '</h4><p>' + (p.subject || '---') + ' • ' + (p.grade || '---') + '</p></div>'; }, 'Khong co bai dang cho duyet.');
-      renderMini(document.getElementById('pendingCourses'), pendingCourses, function (c) { return '<div class="mini-item"><h4>' + (c.title || 'Khoa hoc') + '</h4><p>' + (c.tutorName || '---') + '</p></div>'; }, 'Khong co khoa hoc cho duyet.');
+      renderMini(document.getElementById('pendingTutors'), ApiClient.asArray(pendingTutors), function (t) { return '<div class="mini-item"><h4>' + safe(t.fullName || 'Gia sư') + '</h4><p>' + safe(t.email || '---') + '</p></div>'; }, 'Không có hồ sơ chờ duyệt.');
+      renderMini(document.getElementById('pendingPosts'), ApiClient.asArray(pendingPosts), function (p) { return '<div class="mini-item"><h4>' + safe(p.title || 'Bài đăng') + '</h4><p>' + safe(p.subject || '---') + ' • ' + safe(p.grade || '---') + '</p></div>'; }, 'Không có bài đăng chờ duyệt.');
+      renderMini(document.getElementById('pendingCourses'), ApiClient.asArray(pendingCourses), function (c) { return '<div class="mini-item"><h4>' + safe(c.title || 'Khóa học') + '</h4><p>' + safe(c.tutorName || '---') + '</p></div>'; }, 'Không có khóa học chờ duyệt.');
     } catch (err) {
-      document.getElementById('pendingTutors').innerHTML = '<div class="mini-item"><p>' + (err.message || 'Khong tai duoc dashboard admin') + '</p></div>';
+      DomUtils.setHtml(document.getElementById('pendingTutors'), '<div class="mini-item"><p>' + safe(err.message || 'Không tải được dashboard admin') + '</p></div>');
     }
   }
 

@@ -1,9 +1,6 @@
 ﻿(function () {
-  const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-    headerRight.innerHTML = renderUtilityHeaderRight();
-  }
-  if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
+  UiUtils.renderHeader();
+  if (!AuthGuard.requireTutor()) return;
 
   const keywordInput = document.getElementById('keywordInput');
   const searchBtn = document.getElementById('searchBtn');
@@ -16,37 +13,34 @@
   }
 
   function dateText(v) {
-    if (!v) return '---';
-    const d = new Date(v);
-    if (Number.isNaN(d.getTime())) return String(v);
-    return d.toLocaleDateString('vi-VN');
+    return FormatUtils.formatDate(v);
   }
 
   function render(rows) {
     if (!rows || !rows.length) {
-      postsList.innerHTML = '<div class="mini-item"><h4>Không có bài đăng</h4><p>Không tìm thấy bài đăng phù hợp.</p></div>';
+      DomUtils.setHtml(postsList, '<div class="mini-item"><h4>Không có bài đăng</h4><p>Không tìm thấy bài đăng phù hợp.</p></div>');
       return;
     }
 
-    postsList.innerHTML = rows.map(function (p) {
+    DomUtils.setHtml(postsList, rows.map(function (p) {
       return '' +
         '<div class="post-card">' +
           '<div class="badge-row">' +
-            '<span class="badge badge-primary">' + (p.subject || '---') + '</span>' +
-            '<span class="badge badge-gray">' + (p.grade || '---') + '</span>' +
+            '<span class="badge badge-primary">' + safe(p.subject || '---') + '</span>' +
+            '<span class="badge badge-gray">' + safe(p.grade || '---') + '</span>' +
             '<span class="badge badge-success">Đã duyệt</span>' +
           '</div>' +
-          '<h3 class="card-title">' + (p.title || 'Bài đăng tìm gia sư') + '</h3>' +
-          '<p class="muted">' + (p.description || 'Không có mô tả') + '</p>' +
+          '<h3 class="card-title">' + safe(p.title || 'Bài đăng tìm gia sư') + '</h3>' +
+          '<p class="muted">' + safe(p.description || 'Không có mô tả') + '</p>' +
           '<div class="info-grid">' +
             '<div class="info-box"><strong>Ngân sách</strong><span>' + (p.budget ? formatVND(p.budget) + '/buổi' : 'Thỏa thuận') + '</span></div>' +
-            '<div class="info-box"><strong>Khu vực</strong><span>' + ([p.province, p.district].filter(Boolean).join(', ') || '---') + '</span></div>' +
+            '<div class="info-box"><strong>Khu vực</strong><span>' + safe([p.province, p.district].filter(Boolean).join(', ') || '---') + '</span></div>' +
             '<div class="info-box"><strong>Hình thức</strong><span>' + modeText(p.teachingMode) + '</span></div>' +
-            '<div class="info-box"><strong>Thời gian</strong><span>' + (p.studyTime || '---') + '</span></div>' +
+            '<div class="info-box"><strong>Thời gian</strong><span>' + safe(p.studyTime || '---') + '</span></div>' +
           '</div>' +
-          '<div class="card-actions"><span class="muted">Đăng: ' + dateText(p.createdAt) + '</span><a class="btn btn-primary" href="/bai-dang-chi-tiet.html?id=' + p.postId + '">Xem chi tiết</a></div>' +
+          '<div class="card-actions"><span class="muted">Đăng: ' + safe(dateText(p.createdAt)) + '</span><a class="btn btn-primary" href="/bai-dang-chi-tiet.html?id=' + encodeURIComponent(p.postId) + '">Xem chi tiết</a></div>' +
         '</div>';
-    }).join('');
+    }).join(''));
   }
 
   async function load() {
@@ -59,7 +53,7 @@
       });
       render((page && page.content) || []);
     } catch (err) {
-      postsList.innerHTML = '<div class="mini-item"><h4>Lỗi tải dữ liệu</h4><p>' + (err.message || 'Vui lòng thử lại sau') + '</p></div>';
+      DomUtils.setHtml(postsList, '<div class="mini-item"><h4>Lỗi tải dữ liệu</h4><p>' + safe(err.message || 'Vui lòng thử lại sau') + '</p></div>');
     }
   }
 

@@ -1,40 +1,86 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Bài đăng tìm gia sư</title>
-  <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
-<body class="page-bg">
-<header class="site-header">
-  <div class="container header-inner">
-    <div class="header-left">
-      <a href="/index.html" class="logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Cổng Gia Sư</span></a>
-      <nav class="desktop-nav"><a href="/index.html">Trang chủ</a><a href="/tim-gia-su.html">Tìm gia sư</a><a href="/lop-gia-su.html">Tìm lớp học</a></nav>
-    </div>
-    <div class="header-right" id="headerRight"></div>
-    <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-  </div>
-  <div id="mobileMenu" class="mobile-menu hidden"><a href="/index.html">Trang chủ</a><a href="/tim-gia-su.html">Tìm gia sư</a><a href="/lop-gia-su.html">Tìm lớp học</a></div>
-</header>
-
-<main class="container page-section">
-  <div class="heading"><h1>Bài đăng tìm gia sư</h1><p>Xem và ứng tuyển vào các bài đăng phù hợp</p></div>
-
-  <div class="search-grid" style="margin-bottom:20px">
-    <div class="field"><label>Tìm kiếm</label><input id="keywordInput" placeholder="Môn học, khu vực, khối lớp..."></div>
-    <button id="searchBtn" class="btn btn-primary full"><i class="fas fa-search"></i> Tìm kiếm</button>
-  </div>
-
-  <div id="postsList" class="list-grid"></div>
-</main>
-
-<footer class="site-footer"><div class="container footer-grid"><div><div class="logo footer-logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Cổng Gia Sư</span></div></div></div><div class="footer-bottom">© 2025 Cổng Gia Sư.</div></footer>
-
-<script src="../assets/js/app.js"></script>
-<script src="../assets/js/api-client.js"></script>
-<script src="../assets/js/tutor-posts.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Bài đăng tìm gia sư</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  </head>
+  <body class="page-bg">
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="header-left">
+          <a href="/index.html" class="logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap">
+              </i>
+            </div>
+            <span>Cổng Gia Sư</span>
+          </a>
+          <nav class="desktop-nav">
+            <a href="/index.html">Trang chủ</a>
+            <a href="/tim-gia-su.html">Tìm gia sư</a>
+            <a href="/lop-gia-su.html">Tìm lớp học</a>
+          </nav>
+        </div>
+        <div class="header-right" id="headerRight">
+        </div>
+        <button id="mobileMenuButton" class="mobile-menu-btn">
+          <i class="fas fa-bars">
+          </i>
+        </button>
+      </div>
+      <div id="mobileMenu" class="mobile-menu hidden">
+        <a href="/index.html">Trang chủ</a>
+        <a href="/tim-gia-su.html">Tìm gia sư</a>
+        <a href="/lop-gia-su.html">Tìm lớp học</a>
+      </div>
+    </header>
+    <main class="container page-section">
+      <div class="heading">
+        <h1>Bài đăng tìm gia sư</h1>
+        <p>Xem và ứng tuyển vào các bài đăng phù hợp</p>
+      </div>
+      <div class="search-grid mb-20">
+        <div class="field">
+          <label>Tìm kiếm</label>
+          <input id="keywordInput" placeholder="Môn học, khu vực, khối lớp...">
+        </div>
+        <button id="searchBtn" class="btn btn-primary full">
+          <i class="fas fa-search">
+          </i> Tìm kiếm</button>
+      </div>
+      <div id="postsList" class="list-grid">
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="logo footer-logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap">
+              </i>
+            </div>
+            <span>Cổng Gia Sư</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2025 Cổng Gia Sư.</div>
+    </footer>
+    <script src="../assets/js/format-utils.js">
+    </script>
+    <script src="../assets/js/dom-utils.js">
+    </script>
+    <script src="../assets/js/ui-utils.js">
+    </script>
+    <script src="../assets/js/app.js">
+    </script>
+    <script src="../assets/js/api-client.js">
+    </script>
+    <script src="../assets/js/auth-guard.js">
+    </script>
+    <script src="../assets/js/tutor-posts.js">
+    </script>
+  </body>
 </html>

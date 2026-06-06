@@ -1,19 +1,9 @@
-﻿(function () {
-  function ensureAdmin() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'ADMIN') {
-      alert('Bạn cần đăng nhập tài khoản admin.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname);
-      return false;
-    }
-    return true;
-  }
-
-  if (!ensureAdmin()) return;
+(function () {
+  if (!AuthGuard.requireAdmin()) return;
 
   const headerRight = document.getElementById('headerRight');
   if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-    headerRight.innerHTML = renderUtilityHeaderRight();
+    DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   }
   if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
 
@@ -22,15 +12,6 @@
   const roleFilter = document.getElementById('roleFilter');
   const statusFilter = document.getElementById('statusFilter');
   const filterBtn = document.getElementById('filterBtn');
-
-  function safe(value) {
-    return String(value == null ? '' : value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
 
   function normalizeStatus(status) {
     return String(status || '').toUpperCase() === 'BLOCKED' ? 'BLOCKED' : 'ACTIVE';
@@ -54,16 +35,17 @@
         role: roleFilter.value || undefined,
         status: statusFilter.value || undefined
       };
-      const rows = await ApiClient.get('/api/admin/users', query);
+      const page = await ApiClient.get('/api/admin/users', query);
+      const rows = ApiClient.asArray(page);
 
       if (!rows || !rows.length) {
         if (usersCountText) usersCountText.textContent = '0 tài khoản phù hợp bộ lọc';
-        listEl.innerHTML = '<div class="mini-item"><h4>Không có dữ liệu</h4><p>Không tìm thấy tài khoản phù hợp bộ lọc.</p></div>';
+        DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có dữ liệu</h4><p>Không tìm thấy tài khoản phù hợp bộ lọc.</p></div>');
         return;
       }
 
-      if (usersCountText) usersCountText.textContent = rows.length + ' tài khoản';
-      listEl.innerHTML = rows.map(function (u) {
+      if (usersCountText) usersCountText.textContent = (page && page.totalElements != null ? page.totalElements : rows.length) + ' tài khoản';
+      DomUtils.setHtml(listEl, rows.map(function (u) {
         const id = safe(u.id || '-');
         const role = safe(String(u.role || 'USER').toUpperCase());
         const status = normalizeStatus(u.status);
@@ -87,7 +69,7 @@
           '</div>' +
           '<button class="btn btn-outline user-action" data-status="' + nextStatus + '" data-id="' + id + '">' + (nextStatus === 'BLOCKED' ? 'Khóa tài khoản' : 'Mở khóa') + '</button>' +
         '</article>';
-      }).join('');
+      }).join(''));
 
       listEl.querySelectorAll('button[data-status][data-id]').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -96,7 +78,7 @@
       });
     } catch (err) {
       if (usersCountText) usersCountText.textContent = 'Không tải được danh sách';
-      listEl.innerHTML = '<div class="mini-item"><h4>Lỗi</h4><p>' + (err.message || 'Không tải được danh sách người dùng') + '</p></div>';
+      DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được danh sách người dùng') + '</p></div>');
     }
   }
 

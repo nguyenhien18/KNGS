@@ -1,31 +1,12 @@
-﻿(function () {
-  function ensureLearner() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'LEARNER') {
-      alert('Bạn cần đăng nhập tài khoản học viên.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname + location.search);
-      return false;
-    }
-    return true;
-  }
-
-  if (!ensureLearner()) return;
+(function () {
+  if (!AuthGuard.requireLearner()) return;
 
   const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') headerRight.innerHTML = renderUtilityHeaderRight();
+  if (headerRight && typeof renderUtilityHeaderRight === 'function') DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
 
   const listEl = document.getElementById('notificationList');
   const markAllBtn = document.getElementById('markAllReadBtn');
-
-  function safe(value) {
-    return String(value == null ? '' : value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
 
   function dt(v) {
     if (!v) return '---';
@@ -36,27 +17,27 @@
 
   function render(rows) {
     if (!rows || !rows.length) {
-      listEl.innerHTML = '<div class="mini-item"><h4>Không có thông báo</h4><p>Hiện tại bạn chưa có thông báo nào.</p></div>';
+      DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có thông báo</h4><p>Hiện tại bạn chưa có thông báo nào.</p></div>');
       return;
     }
 
-    listEl.innerHTML = rows.map(function (n) {
+    DomUtils.setHtml(listEl, rows.map(function (n) {
       return '<div class="mini-item notification-feed-item ' + (n.isRead ? 'is-read' : 'is-unread') + '" data-notification-id="' + safe(n.id) + '" data-unread="' + (n.isRead ? '0' : '1') + '">' +
         '<div class="notification-feed-main"><h4>' + safe(n.title || 'Thông báo') + '</h4>' +
-        '<p style="margin-top:6px">' + safe(n.content || '') + '</p>' +
-        '<span class="muted" style="margin-top:8px;display:inline-block">' + dt(n.createdAt) + '</span></div>' +
+        '<p class="notification-message">' + safe(n.content || '') + '</p>' +
+        '<span class="muted notification-time">' + dt(n.createdAt) + '</span></div>' +
         (n.isRead ? '' : '<span class="notification-unread-dot notification-feed-dot" title="Chưa đọc"></span>') +
         '</div>';
-    }).join('');
+    }).join(''));
   }
 
   async function load() {
     try {
-      const rows = await ApiClient.get('/api/notifications');
+      const rows = ApiClient.asArray(await ApiClient.get('/api/notifications'));
       rows.sort(function (a, b) { return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(); });
       render(rows);
     } catch (err) {
-      listEl.innerHTML = '<div class="mini-item"><h4>Lỗi tải thông báo</h4><p>' + safe(err.message || 'Vui lòng thử lại') + '</p></div>';
+      DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Lỗi tải thông báo</h4><p>' + safe(err.message || 'Vui lòng thử lại') + '</p></div>');
     }
   }
 

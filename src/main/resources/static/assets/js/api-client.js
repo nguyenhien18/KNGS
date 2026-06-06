@@ -52,7 +52,7 @@ window.ApiClient = (function () {
     });
 
     if (!res.ok) {
-      let message = "Yeu cau that bai";
+      let message = "Yêu cầu thất bại";
       const type = (res.headers.get("content-type") || "").toLowerCase();
       try {
         if (type.includes("application/json")) {
@@ -67,8 +67,8 @@ window.ApiClient = (function () {
       } catch (_) {
       }
 
-      if (message === "Yeu cau that bai" && (res.status === 401 || res.status === 403)) {
-        message = "Ban khong co quyen truy cap chuc nang nay hoac phien dang nhap da het han.";
+      if (message === "Yêu cầu thất bại" && (res.status === 401 || res.status === 403)) {
+        message = "Bạn không có quyền truy cập chức năng này hoặc phiên đăng nhập đã hết hạn.";
       }
 
       const error = new Error(message);
@@ -95,12 +95,20 @@ window.ApiClient = (function () {
     return s ? `?${s}` : "";
   }
 
+  function asArray(value) {
+    if (Array.isArray(value)) return value;
+    if (value && Array.isArray(value.content)) return value.content;
+    if (value && Array.isArray(value.items)) return value.items;
+    return [];
+  }
+
   return {
     getToken,
     setToken,
     clearAuth,
     getCurrentUser,
     setCurrentUser,
+    asArray,
     get(path, params) {
       return request(`${path}${encodeQuery(params)}`, { method: "GET" });
     },
@@ -113,6 +121,9 @@ window.ApiClient = (function () {
     patch(path, body) {
       return request(path, { method: "PATCH", body: JSON.stringify(body) });
     },
+    delete(path) {
+      return request(path, { method: "DELETE" });
+    },
     upload(path, formData) {
       const token = getToken();
       return fetch(API_BASE + path, {
@@ -121,7 +132,7 @@ window.ApiClient = (function () {
         body: formData
       }).then(async (res) => {
         if (!res.ok) {
-          let message = "Yeu cau that bai";
+          let message = "Yêu cầu thất bại";
           const type = (res.headers.get("content-type") || "").toLowerCase();
           try {
             if (type.includes("application/json")) {
@@ -134,8 +145,8 @@ window.ApiClient = (function () {
               }
             }
           } catch (_) {}
-          if (message === "Yeu cau that bai" && (res.status === 401 || res.status === 403)) {
-            message = "Ban khong co quyen truy cap chuc nang nay hoac phien dang nhap da het han.";
+          if (message === "Yêu cầu thất bại" && (res.status === 401 || res.status === 403)) {
+            message = "Bạn không có quyền truy cập chức năng này hoặc phiên đăng nhập đã hết hạn.";
           }
           const error = new Error(message);
           error.status = res.status;

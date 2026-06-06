@@ -1,86 +1,102 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Lớp học của tôi - Gia sư</title>
-  <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <style>
-    .myclass-filter-card { padding: 18px; margin-bottom: 24px; }
-    .myclass-filter-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 260px;
-      gap: 18px;
-      align-items: end;
-    }
-    .myclass-filter-grid .btn { height: 46px; }
-    @media (max-width: 1024px) {
-      .myclass-filter-grid { grid-template-columns: 1fr 1fr; }
-      .myclass-filter-grid .btn { grid-column: 1 / -1; }
-    }
-    @media (max-width: 768px) {
-      .myclass-filter-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body class="page-bg">
-<header class="site-header">
-  <div class="container header-inner">
-    <div class="header-left">
-      <a href="/index.html" class="logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Gia Sư Việt</span></a>
-      <nav class="desktop-nav"><a href="/index.html">Trang chủ</a><a href="/tim-gia-su.html">Tìm gia sư</a><a href="/lop-gia-su.html">Tìm lớp học</a></nav>
-    </div>
-    <div class="header-right" id="headerRight"></div>
-    <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-  </div>
-  <div id="mobileMenu" class="mobile-menu hidden"></div>
-</header>
-<main class="container page-section">
-  <div class="heading"><h1>Lớp học của tôi</h1><p>Quản lý lớp gia sư mở và lớp 1-1 ghép từ bài đăng học viên</p></div>
-
-  <section class="card-box myclass-filter-card">
-    <div class="myclass-filter-grid">
-      <div class="form-group">
-        <label for="sourceFilterSelect">Nguồn lớp</label>
-        <select id="sourceFilterSelect">
-          <option value="ALL">Tất cả</option>
-          <option value="COURSE">Lớp gia sư mở</option>
-          <option value="MATCHED">Lớp từ bài đăng</option>
-        </select>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Lớp học của tôi - Gia sư</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  </head>
+  <body class="page-bg">
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="header-left">
+          <a href="/index.html" class="logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap">
+              </i>
+            </div>
+            <span>Gia Sư Việt</span>
+          </a>
+          <nav class="desktop-nav">
+            <a href="/index.html">Trang chủ</a>
+            <a href="/tim-gia-su.html">Tìm gia sư</a>
+            <a href="/lop-gia-su.html">Tìm lớp học</a>
+          </nav>
+        </div>
+        <div class="header-right" id="headerRight">
+        </div>
+        <button id="mobileMenuButton" class="mobile-menu-btn">
+          <i class="fas fa-bars">
+          </i>
+        </button>
       </div>
-      <div class="form-group">
-        <label for="statusFilterSelect">Trạng thái</label>
-        <select id="statusFilterSelect">
-          <option value="ALL">Tất cả</option>
-          <option value="ACTIVE">Đang học</option>
-          <option value="COMPLETED">Đã hoàn thành</option>
-          <option value="CANCELLED">Đã hủy</option>
-        </select>
+      <div id="mobileMenu" class="mobile-menu hidden">
       </div>
-      <button id="applyFilterButton" class="btn btn-primary"><i class="fas fa-filter"></i> Lọc</button>
+    </header>
+    <main class="container page-section">
+      <div class="heading">
+        <h1>Lớp học của tôi</h1>
+        <p>Quản lý lớp gia sư mở và lớp 1-1 ghép từ bài đăng học viên</p>
+      </div>
+      <section class="card-box filter-panel-card">
+        <div class="myclass-filter-grid tutor-filter">
+          <div class="form-group">
+            <label for="sourceFilterSelect">Nguồn lớp</label>
+            <select id="sourceFilterSelect">
+              <option value="ALL">Tất cả</option>
+              <option value="COURSE">Lớp gia sư mở</option>
+              <option value="MATCHED">Lớp từ bài đăng</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="statusFilterSelect">Trạng thái</label>
+            <select id="statusFilterSelect">
+              <option value="ALL">Tất cả</option>
+              <option value="ACTIVE">Đang học</option>
+              <option value="COMPLETED">Đã hoàn thành</option>
+              <option value="CANCELLED">Đã hủy</option>
+            </select>
+          </div>
+          <button id="applyFilterButton" class="btn btn-primary">
+            <i class="fas fa-filter">
+            </i> Lọc</button>
+        </div>
+      </section>
+      <div class="toolbar-split">
+        <div class="result-text-big" id="myClassesCount">0 lớp</div>
+      </div>
+      <div id="myClassesList" class="list-grid">
+      </div>
+    </main>
+    <div id="studentsModal" class="modal-backdrop hidden">
+      <div class="modal-box modal-lg">
+        <div class="modal-header">
+          <h3>Danh sách học viên lớp học</h3>
+          <button id="closeStudentsModalButton" class="modal-close">
+            <i class="fas fa-times">
+            </i>
+          </button>
+        </div>
+        <div id="studentsModalContent" class="modal-body">
+        </div>
+      </div>
     </div>
-  </section>
-
-  <div class="toolbar-split"><div class="result-text-big" id="myClassesCount">0 lớp</div></div>
-  <div id="myClassesList" class="list-grid"></div>
-</main>
-
-<div id="studentsModal" class="modal-backdrop hidden">
-  <div class="modal-box modal-lg">
-    <div class="modal-header">
-      <h3>Danh sách học viên lớp học</h3>
-      <button id="closeStudentsModalButton" class="modal-close"><i class="fas fa-times"></i></button>
-    </div>
-    <div id="studentsModalContent" class="modal-body"></div>
-  </div>
-</div>
-
-<footer class="site-footer"></footer>
-<script src="../assets/js/app.js"></script>
-<script src="../assets/js/api-client.js"></script>
-<script src="../assets/js/tutor-my-classes.js?v=20260415-2"></script>
-</body>
+    <footer class="site-footer">
+    </footer>
+    <script src="../assets/js/format-utils.js">
+    </script>
+    <script src="../assets/js/dom-utils.js">
+    </script>
+    <script src="../assets/js/ui-utils.js">
+    </script>
+    <script src="../assets/js/app.js">
+    </script>
+    <script src="../assets/js/api-client.js">
+    </script>
+    <script src="../assets/js/auth-guard.js">
+    </script>
+    <script src="../assets/js/tutor-my-classes.js?v=20260415-2">
+    </script>
+  </body>
 </html>
-
-

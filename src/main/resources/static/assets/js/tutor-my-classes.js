@@ -1,19 +1,7 @@
 (function () {
-  function ensureTutor() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'TUTOR') {
-      alert('Bạn cần đăng nhập tài khoản gia sư.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname + location.search);
-      return false;
-    }
-    return true;
-  }
+  if (!AuthGuard.requireTutor()) return;
 
-  if (!ensureTutor()) return;
-
-  const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') headerRight.innerHTML = renderUtilityHeaderRight();
-  if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
+  UiUtils.renderHeader();
 
   const listEl = document.getElementById('myClassesList');
   const countEl = document.getElementById('myClassesCount');
@@ -34,21 +22,12 @@
   let allItems = [];
   let sourceFilter = 'ALL';
   let stateFilter = 'ALL';
+  const asArray = ApiClient.asArray;
+  const dom = DomUtils;
 
-  function safe(value) {
-    return String(value == null ? '' : value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
-
-  function asArray(value) {
-    if (Array.isArray(value)) return value;
-    if (value && Array.isArray(value.content)) return value.content;
-    if (value && Array.isArray(value.items)) return value.items;
-    return [];
+  function setHtml(element, html) {
+    if (!element) return;
+    dom.setHtml(element, html);
   }
 
   function hasAcceptedLearner(enrollments) {
@@ -59,10 +38,7 @@
   }
 
   function toDate(value) {
-    if (!value) return '---';
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return safe(value);
-    return d.toLocaleDateString('vi-VN');
+    return FormatUtils.formatDate(value);
   }
 
   function statusTextByCourse(raw) {
@@ -72,11 +48,20 @@
     return raw || '---';
   }
 
-  function statusTextByMatched(raw) {
+  function statusTextByMatched(raw, waitingForMyConfirmation) {
     if (raw === 'ASSIGNED' || raw === 'IN_PROGRESS') return 'Đang học';
+    if (raw === 'COMPLETION_REQUESTED') return waitingForMyConfirmation ? 'Cần xác nhận hoàn thành' : 'Chờ xác nhận hoàn thành';
     if (raw === 'COMPLETED') return 'Đã hoàn thành';
+    if (raw === 'CANCELLATION_REQUESTED') return waitingForMyConfirmation ? 'Cần xác nhận hủy' : 'Chờ xác nhận hủy';
     if (raw === 'CANCELLED') return 'Đã hủy';
     return raw || '---';
+  }
+
+  function statusBadgeByMatched(raw) {
+    if (raw === 'COMPLETED') return 'badge-success';
+    if (raw === 'CANCELLED') return 'badge-gray';
+    if (raw === 'COMPLETION_REQUESTED' || raw === 'CANCELLATION_REQUESTED') return 'badge-warning';
+    return 'badge-primary';
   }
 
   function buildFromTutorCourses(rows) {
@@ -88,7 +73,7 @@
         itemId: c.courseId || c.id,
         rawStatus: s,
         state: state,
-        title: c.title || ('Khoa hoc #' + (c.courseId || c.id || '-')),
+        title: c.title || ('Khóa học #' + (c.courseId || c.id || '-')),
         sub: 'Loại: Lớp gia sư mở',
         meta1: 'Môn học: ' + (c.subject || '---'),
         meta2: 'Khu vực: ' + ([c.province, c.district].filter(Boolean).join(' - ') || '---'),
@@ -103,22 +88,28 @@
     return asArray(rows).map(function (c) {
       const s = String(c.status || 'ASSIGNED');
       const state = (s === 'COMPLETED') ? 'COMPLETED' : ((s === 'CANCELLED') ? 'CANCELLED' : 'ACTIVE');
+      const waitingForMyConfirmation = Boolean(c.waitingForMyConfirmation);
       return {
         source: 'MATCHED',
         itemId: c.classId,
         postId: c.postId,
         rawStatus: s,
+        statusRequestedByUserId: c.statusRequestedByUserId,
+        statusRequestedByRole: c.statusRequestedByRole,
+        statusRequestedAt: c.statusRequestedAt,
+        statusRequestReason: c.statusRequestReason,
+        waitingForMyConfirmation: waitingForMyConfirmation,
         state: state,
         title: c.postTitle || 'Lớp từ bài đăng',
         sub: 'Học viên: ' + (c.learnerName || '---'),
         meta1: 'Mã lớp: #' + (c.classId || '-'),
         meta2: 'Bắt đầu: ' + toDate(c.startDate || c.assignedAt),
         meta3: 'Kết thúc: ' + toDate(c.endDate),
-        statusText: statusTextByMatched(s),
+        statusText: statusTextByMatched(s, waitingForMyConfirmation),
         learnerName: c.learnerName,
         learnerEmail: c.learnerEmail,
         learnerPhone: c.learnerPhone,
-        badgeClass: s === 'COMPLETED' ? 'badge-success' : 'badge-primary'
+        badgeClass: statusBadgeByMatched(s)
       };
     });
   }
@@ -198,28 +189,47 @@
   function actionButtons(item) {
     if (item.rawStatus === 'CANCELLED') {
       if (item.source === 'COURSE') {
-        return '<button class="btn btn-soft" data-course-id="' + item.itemId + '" data-action="students">Xem học viên</button>';
+        return '<button class="btn btn-soft" data-course-id="' + safe(item.itemId) + '" data-action="students">Xem học viên</button>';
       }
-      return '<button class="btn btn-soft" data-class-id="' + item.itemId + '" data-action="students">Xem học viên</button>';
+      return '<button class="btn btn-soft" data-class-id="' + safe(item.itemId) + '" data-action="students">Xem học viên</button>';
     }
 
     if (item.source === 'COURSE') {
       if (item.rawStatus === 'COMPLETED') {
-        return '<a class="btn btn-soft" href="/gia-su/tutor-reviews.html?courseId=' + item.itemId + '">Xem đánh giá của lớp</a>'
-          + '<button class="btn btn-soft" data-course-id="' + item.itemId + '" data-action="students">Xem học viên</button>';
+        return '<a class="btn btn-soft" href="/gia-su/tutor-reviews.html?courseId=' + encodeURIComponent(item.itemId) + '">Xem đánh giá của lớp</a>'
+          + '<button class="btn btn-soft" data-course-id="' + safe(item.itemId) + '" data-action="students">Xem học viên</button>';
       }
-      return '<button class="btn btn-primary" data-course-id="' + item.itemId + '" data-action="complete" data-raw-status="' + item.rawStatus + '">Hoàn thành lớp học</button>'
-        + '<button class="btn btn-outline" data-course-id="' + item.itemId + '" data-action="cancel">Hủy lớp học</button>'
-        + '<button class="btn btn-soft" data-course-id="' + item.itemId + '" data-action="students">Xem học viên</button>';
+      return '<button class="btn btn-primary" data-course-id="' + safe(item.itemId) + '" data-action="complete" data-raw-status="' + safe(item.rawStatus) + '">Hoàn thành lớp học</button>'
+        + '<button class="btn btn-outline" data-course-id="' + safe(item.itemId) + '" data-action="cancel">Hủy lớp học</button>'
+        + '<button class="btn btn-soft" data-course-id="' + safe(item.itemId) + '" data-action="students">Xem học viên</button>';
     }
 
     if (item.rawStatus === 'COMPLETED') {
-      return '<a class="btn btn-soft" href="/gia-su/tutor-reviews.html?classId=' + item.itemId + '">Xem đánh giá của lớp</a>'
-        + '<button class="btn btn-soft" data-class-id="' + item.itemId + '" data-action="students">Xem học viên</button>';
+      return '<a class="btn btn-soft" href="/gia-su/tutor-reviews.html?classId=' + encodeURIComponent(item.itemId) + '">Xem đánh giá của lớp</a>'
+        + '<button class="btn btn-soft" data-class-id="' + safe(item.itemId) + '" data-action="students">Xem học viên</button>';
     }
-    return '<button class="btn btn-primary" data-class-id="' + item.itemId + '" data-action="complete" data-raw-status="' + item.rawStatus + '">Hoàn thành lớp học</button>'
-      + '<button class="btn btn-outline" data-class-id="' + item.itemId + '" data-action="cancel">Hủy lớp học</button>'
-      + '<button class="btn btn-soft" data-class-id="' + item.itemId + '" data-action="students">Xem học viên</button>';
+
+    if (item.rawStatus === 'COMPLETION_REQUESTED') {
+      if (item.waitingForMyConfirmation) {
+        return '<button class="btn btn-primary" data-class-id="' + safe(item.itemId) + '" data-action="complete" data-raw-status="' + safe(item.rawStatus) + '">Xác nhận hoàn thành</button>'
+          + '<button class="btn btn-soft" data-class-id="' + safe(item.itemId) + '" data-action="students">Xem học viên</button>';
+      }
+      return '<span class="muted">Đang chờ học viên xác nhận hoàn thành</span>'
+        + '<button class="btn btn-soft" data-class-id="' + safe(item.itemId) + '" data-action="students">Xem học viên</button>';
+    }
+
+    if (item.rawStatus === 'CANCELLATION_REQUESTED') {
+      if (item.waitingForMyConfirmation) {
+        return '<button class="btn btn-outline" data-class-id="' + safe(item.itemId) + '" data-action="cancel" data-raw-status="' + safe(item.rawStatus) + '">Xác nhận hủy</button>'
+          + '<button class="btn btn-soft" data-class-id="' + safe(item.itemId) + '" data-action="students">Xem học viên</button>';
+      }
+      return '<span class="muted">Đang chờ học viên xác nhận hủy</span>'
+        + '<button class="btn btn-soft" data-class-id="' + safe(item.itemId) + '" data-action="students">Xem học viên</button>';
+    }
+
+    return '<button class="btn btn-primary" data-class-id="' + safe(item.itemId) + '" data-action="complete" data-raw-status="' + safe(item.rawStatus) + '">Yêu cầu hoàn thành lớp học</button>'
+      + '<button class="btn btn-outline" data-class-id="' + safe(item.itemId) + '" data-action="cancel" data-raw-status="' + safe(item.rawStatus) + '">Yêu cầu hủy lớp học</button>'
+      + '<button class="btn btn-soft" data-class-id="' + safe(item.itemId) + '" data-action="students">Xem học viên</button>';
   }
 
   async function updateCourseStatus(courseId, action, rawStatus) {
@@ -237,13 +247,15 @@
 
   async function updateMatchedClassStatus(classId, action, rawStatus) {
     if (action === 'cancel') {
-      if (!window.confirm('Bạn chắc chắn muốn hủy lớp này?')) return;
+      const confirming = rawStatus === 'CANCELLATION_REQUESTED';
+      if (!window.confirm(confirming ? 'Xác nhận hủy lớp này?' : 'Gửi yêu cầu hủy lớp này?')) return;
       await ApiClient.patch('/api/tutor/matched-classes/' + encodeURIComponent(classId) + '/status', { status: 'CANCELLED' });
       await load();
       return;
     }
 
-    if (!window.confirm('Xác nhận lớp đã hoàn thành?')) return;
+    const confirming = rawStatus === 'COMPLETION_REQUESTED';
+    if (!window.confirm(confirming ? 'Xác nhận hoàn thành lớp này?' : 'Gửi yêu cầu hoàn thành lớp này?')) return;
     await completeMatchedWithoutStartStep(classId, rawStatus);
     await load();
   }
@@ -268,34 +280,34 @@
     const rows = asArray(enrollmentsRaw);
 
     if (!rows.length) {
-      studentsModalContent.innerHTML = '<p>Chưa có học viên nào trong lớp này.</p>';
+      setHtml(studentsModalContent, '<p>Chưa có học viên nào trong lớp này.</p>');
       studentsModal.classList.remove('hidden');
       return;
     }
 
-    studentsModalContent.innerHTML = rows.map(function (enrollment) {
+    setHtml(studentsModalContent, rows.map(function (enrollment) {
       const showContact = canShowContact(String(enrollment.status || ''));
-      return '<div class="student-item" style="margin-bottom:12px">' +
-        '<div class="student-row" style="align-items:flex-start;gap:16px">' +
+      return '<div class="student-item student-item-spaced">' +
+        '<div class="student-row student-row-start">' +
           '<div>' +
             '<h4>' + safe(enrollment.learnerName || 'Học viên') + '</h4>' +
             '<p>Trạng thái: <strong>' + safe(enrollmentStatusText(enrollment.status)) + '</strong></p>' +
             '<p>Lời nhắn: ' + safe(enrollment.message || '(không có)') + '</p>' +
             '<p>Học phí: ' + (enrollment.agreedFee ? formatVND(enrollment.agreedFee) : 'Thỏa thuận') + '</p>' +
             (showContact
-              ? '<p>Email: ' + safe(enrollment.learnerEmail || '-') + '</p><p>So dien thoai: ' + safe(enrollment.learnerPhone || '-') + '</p>'
+              ? '<p>Email: ' + safe(enrollment.learnerEmail || '-') + '</p><p>Số điện thoại: ' + safe(enrollment.learnerPhone || '-') + '</p>'
               : '<p>Thông tin liên hệ sẽ hiển thị sau khi đơn đã được chấp nhận.</p>') +
           '</div>' +
         '</div>' +
       '</div>';
-    }).join('');
+    }).join(''));
 
     studentsModal.classList.remove('hidden');
   }
 
   function openStudentsModalByMatched(item) {
-    studentsModalContent.innerHTML = '<div class="student-item" style="margin-bottom:12px">' +
-      '<div class="student-row" style="align-items:flex-start;gap:16px">' +
+    setHtml(studentsModalContent, '<div class="student-item student-item-spaced">' +
+      '<div class="student-row student-row-start">' +
         '<div>' +
           '<h4>' + safe(item.learnerName || 'Học viên') + '</h4>' +
           '<p>Email: ' + safe(item.learnerEmail || '-') + '</p>' +
@@ -303,37 +315,37 @@
           '<p>Trạng thái lớp: <strong>' + safe(item.statusText || 'Đang học') + '</strong></p>' +
         '</div>' +
       '</div>' +
-    '</div>';
+    '</div>');
     studentsModal.classList.remove('hidden');
   }
 
   function render() {
     const rows = visibleItems();
-    if (countEl) countEl.textContent = rows.length + ' lop';
+    if (countEl) countEl.textContent = rows.length + ' lớp';
 
     if (!rows.length) {
       const emptyText = allItems.length
         ? 'Không có dữ liệu ở bộ lọc hiện tại.'
         : 'Chưa có học viên nào trong lớp học.';
       const emptyTitle = allItems.length ? 'Không có lớp' : 'Chưa có học viên';
-      listEl.innerHTML = '<div class="mini-item"><h4>' + emptyTitle + '</h4><p>' + emptyText + '</p></div>';
+      setHtml(listEl, '<div class="mini-item"><h4>' + safe(emptyTitle) + '</h4><p>' + safe(emptyText) + '</p></div>');
       return;
     }
 
-    listEl.innerHTML = rows.map(function (item) {
+    setHtml(listEl, rows.map(function (item) {
       const focusBySourceId = focusSource && focusId
         && String(item.source) === String(focusSource)
         && String(item.itemId) === String(focusId);
       const focusByCourseId = focusCourseId && item.source === 'COURSE' && String(item.itemId) === String(focusCourseId);
       const focusByClassId = focusClassId && item.source === 'MATCHED' && String(item.itemId) === String(focusClassId);
       const focusByPostId = focusPostId && item.source === 'MATCHED' && String(item.postId) === String(focusPostId);
-      const focusStyle = (focusBySourceId || focusByCourseId || focusByClassId || focusByPostId)
-        ? ' style="border:2px solid #2563eb"'
+      const focusClass = (focusBySourceId || focusByCourseId || focusByClassId || focusByPostId)
+        ? ' is-focused'
         : '';
-      return '<article class="list-card" data-source="' + item.source + '" data-item-id="' + item.itemId + '"' + focusStyle + '>' +
+      return '<article class="list-card' + focusClass + '" data-source="' + safe(item.source) + '" data-item-id="' + safe(item.itemId) + '">' +
         '<div class="badge-row">' +
-          '<span class="badge badge-gray">' + sourceText(item.source) + '</span>' +
-          '<span class="badge ' + item.badgeClass + '">' + item.statusText + '</span>' +
+          '<span class="badge badge-gray">' + safe(sourceText(item.source)) + '</span>' +
+          '<span class="badge ' + safe(item.badgeClass) + '">' + safe(item.statusText) + '</span>' +
         '</div>' +
         '<h3 class="card-title">' + safe(item.title) + '</h3>' +
         '<p class="muted">' + safe(item.sub) + '</p>' +
@@ -341,11 +353,11 @@
           '<div class="info-box"><strong>Thông tin 1</strong><span>' + safe(item.meta1) + '</span></div>' +
           '<div class="info-box"><strong>Thông tin 2</strong><span>' + safe(item.meta2) + '</span></div>' +
           '<div class="info-box"><strong>Thông tin 3</strong><span>' + safe(item.meta3) + '</span></div>' +
-          '<div class="info-box"><strong>Nhóm lớp</strong><span>' + sourceText(item.source) + '</span></div>' +
+          '<div class="info-box"><strong>Nhóm lớp</strong><span>' + safe(sourceText(item.source)) + '</span></div>' +
         '</div>' +
-        '<div class="card-actions"><span class="muted">Trạng thái học tập: ' + item.statusText + '</span><div class="manage-action-group">' + actionButtons(item) + '</div></div>' +
+        '<div class="card-actions"><span class="muted">Trạng thái học tập: ' + safe(item.statusText) + '</span><div class="manage-action-group">' + actionButtons(item) + '</div></div>' +
       '</article>';
-    }).join('');
+    }).join(''));
 
     if (focusSource || focusId || focusCourseId || focusClassId || focusPostId) {
       let targetItem = null;
@@ -390,7 +402,9 @@
           return;
         }
 
-        updateMatchedClassStatus(classId, action, rawStatus)
+        UiUtils.withButtonLoading(button, 'Đang xử lý...', function () {
+          return updateMatchedClassStatus(classId, action, rawStatus);
+        })
           .catch(function (err) {
             alert(err.message || 'Không cập nhật được trạng thái lớp.');
           });
@@ -404,14 +418,18 @@
         const rawStatus = button.getAttribute('data-raw-status') || 'OPEN';
 
         if (action === 'students') {
-          openStudentsModalByCourse(courseId)
+          UiUtils.withButtonLoading(button, 'Đang tải...', function () {
+            return openStudentsModalByCourse(courseId);
+          })
             .catch(function (err) {
               alert(err.message || 'Không tải được danh sách học viên.');
             });
           return;
         }
 
-        updateCourseStatus(courseId, action, rawStatus)
+        UiUtils.withButtonLoading(button, 'Đang xử lý...', function () {
+          return updateCourseStatus(courseId, action, rawStatus);
+        })
           .catch(function (err) {
             alert(err.message || 'Không cập nhật được trạng thái lớp.');
           });
@@ -448,7 +466,7 @@
       applyFocusFiltersIfNeeded();
       render();
     } catch (err) {
-      listEl.innerHTML = '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được dữ liệu lớp học') + '</p></div>';
+      setHtml(listEl, '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được dữ liệu lớp học') + '</p></div>');
     }
   }
 
@@ -475,3 +493,4 @@
 
   load();
 })();
+

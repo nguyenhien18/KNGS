@@ -34,7 +34,7 @@ public class TutorCertificateController {
     public ApiResponse<List<TutorCertificateResponse>> getMyCertificates() {
         return ApiResponse.<List<TutorCertificateResponse>>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorCertificateService.getMyCertificates(currentUserService.userId()))
             .build();
     }
@@ -43,7 +43,7 @@ public class TutorCertificateController {
     public ApiResponse<TutorCertificateResponse> createMyCertificate(@Valid @RequestBody TutorCertificateUpsertRequest request) {
         return ApiResponse.<TutorCertificateResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorCertificateService.createMyCertificate(currentUserService.userId(), request))
             .build();
     }
@@ -52,7 +52,7 @@ public class TutorCertificateController {
     public ApiResponse<FileUploadResponse> uploadCertificateImage(@RequestPart("file") MultipartFile file) {
         return ApiResponse.<FileUploadResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorCertificateService.uploadMyCertificateImage(currentUserService.userId(), file))
             .build();
     }
@@ -64,7 +64,7 @@ public class TutorCertificateController {
     ) {
         return ApiResponse.<TutorCertificateResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorCertificateService.updateMyCertificate(currentUserService.userId(), certificateId, request))
             .build();
     }
@@ -74,7 +74,7 @@ public class TutorCertificateController {
         tutorCertificateService.deleteMyCertificate(currentUserService.userId(), certificateId);
         return ApiResponse.<Void>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .build();
     }
 }

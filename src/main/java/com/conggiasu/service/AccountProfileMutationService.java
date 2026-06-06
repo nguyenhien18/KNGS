@@ -17,7 +17,7 @@ public class AccountProfileMutationService {
         if (request.getFullName() != null) {
             String fullName = normalizeBlank(request.getFullName());
             if (fullName == null) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Ho ten khong duoc de trong");
+                throw new AppException(HttpStatus.BAD_REQUEST, "Họ tên không được để trống");
             }
             user.setFullName(fullName);
         }
@@ -25,7 +25,7 @@ public class AccountProfileMutationService {
         if (request.getPhone() != null) {
             String phone = normalizeBlank(request.getPhone());
             if (phone != null && userRepository.existsByPhoneAndIdNot(phone, user.getId())) {
-                throw new AppException(HttpStatus.CONFLICT, "So dien thoai da ton tai");
+                throw new AppException(HttpStatus.CONFLICT, "Số điện thoại da ton tai");
             }
             user.setPhone(phone);
         }

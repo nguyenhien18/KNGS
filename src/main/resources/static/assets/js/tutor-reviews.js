@@ -1,7 +1,9 @@
 (function () {
+  if (!AuthGuard.requireTutor()) return;
+
   const headerRight = document.getElementById('headerRight');
   if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-    headerRight.innerHTML = renderUtilityHeaderRight();
+    DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   }
   if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
 
@@ -28,13 +30,6 @@
     const v = Math.max(0, Math.min(5, Number(value || 0)));
     const full = Math.round(v);
     return '★★★★★'.slice(0, full) + '☆☆☆☆☆'.slice(0, 5 - full);
-  }
-
-  function formatDate(value) {
-    if (!value) return '';
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return String(value);
-    return d.toLocaleString('vi-VN');
   }
 
   function escapeHtml(value) {
@@ -72,26 +67,25 @@
     totalEl.textContent = count + ' đánh giá';
 
     if (!count) {
-      listEl.innerHTML =
-        '<div class="card-box empty-state"><div><i class="fas fa-star-half-alt"></i><h3>Chưa có đánh giá</h3><p>Đánh giá từ học viên sẽ hiển thị tại đây.</p></div></div>';
+      DomUtils.setHtml(listEl, '<div class="card-box empty-state"><div><i class="fas fa-star-half-alt"></i><h3>Chưa có đánh giá</h3><p>Đánh giá từ học viên sẽ hiển thị tại đây.</p></div></div>');
       return;
     }
 
-    listEl.innerHTML = reviews.map((review) =>
-      '<div class="card-box"><div class="mini-item" style="background:none;border:none;padding:0">'
+    DomUtils.setHtml(listEl, reviews.map((review) =>
+      '<div class="card-box"><div class="mini-item mini-item-plain">'
       + '<h4>' + escapeHtml(review.learnerName || 'Học viên') + '</h4>'
-      + '<p style="color:#f59e0b">' + renderStars(review.rating) + ' • ' + formatDate(review.createdAt) + '</p>'
+      + '<p class="rating-stars">' + renderStars(review.rating) + ' • ' + formatDate(review.createdAt) + '</p>'
       + '<p class="muted">' + escapeHtml(sourceLabel(review)) + '</p>'
       + '<p>' + escapeHtml(review.comment || '(Không có nhận xét)') + '</p>'
       + '</div></div>'
-    ).join('');
+    ).join(''));
   }
 
   (async function init() {
     if (!ensureTutorAuth()) return;
     try {
       const rows = await ApiClient.get('/api/tutor/reviews');
-      const reviews = filterReviews(Array.isArray(rows) ? rows : []);
+      const reviews = filterReviews(ApiClient.asArray(rows));
       render(reviews);
     } catch (err) {
       alert(err.message || 'Không tải được danh sách đánh giá.');

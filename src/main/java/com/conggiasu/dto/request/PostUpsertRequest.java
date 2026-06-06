@@ -3,6 +3,7 @@ package com.conggiasu.dto.request;
 import com.conggiasu.entity.enums.TeachingMode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +23,7 @@ public class PostUpsertRequest {
     @NotNull
     private TeachingMode teachingMode;
     private String studyTime;
+    @PositiveOrZero
     private BigDecimal budget;
     private String province;
     private String district;

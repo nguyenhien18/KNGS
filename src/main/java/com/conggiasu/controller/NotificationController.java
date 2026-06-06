@@ -2,6 +2,7 @@ package com.conggiasu.controller;
 
 import com.conggiasu.dto.response.ApiResponse;
 import com.conggiasu.dto.response.NotificationResponse;
+import com.conggiasu.dto.response.PageResponse;
 import com.conggiasu.service.CurrentUserService;
 import com.conggiasu.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
@@ -24,11 +23,15 @@ public class NotificationController {
     private final CurrentUserService currentUserService;
 
     @GetMapping
-    public ApiResponse<List<NotificationResponse>> getMyNotifications(@RequestParam(required = false) Boolean unreadOnly) {
-        return ApiResponse.<List<NotificationResponse>>builder()
+    public ApiResponse<PageResponse<NotificationResponse>> getMyNotifications(
+        @RequestParam(required = false) Boolean unreadOnly,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        return ApiResponse.<PageResponse<NotificationResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(notificationService.myNotifications(currentUserService.userId(), unreadOnly))
+            .message("Thành công")
+            .result(notificationService.myNotifications(currentUserService.userId(), unreadOnly, page, size))
             .build();
     }
 
@@ -36,7 +39,7 @@ public class NotificationController {
     public ApiResponse<NotificationResponse> markRead(@PathVariable Long id) {
         return ApiResponse.<NotificationResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(notificationService.markRead(currentUserService.userId(), id))
             .build();
     }
@@ -46,7 +49,7 @@ public class NotificationController {
         notificationService.markAllRead(currentUserService.userId());
         return ApiResponse.<Void>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .build();
     }
 }

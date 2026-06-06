@@ -6,6 +6,7 @@ import com.conggiasu.entity.enums.UserStatus;
 import com.conggiasu.entity.User;
 import com.conggiasu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -16,13 +17,28 @@ public class StartupDataSeeder implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.seed.default-admin.enabled:false}")
+    private boolean defaultAdminSeedEnabled;
+
+    @Value("${app.seed.default-admin.email:admin1@gmail.com}")
+    private String defaultAdminEmail;
+
+    @Value("${app.seed.default-admin.password:}")
+    private String defaultAdminPassword;
+
+    @Value("${app.seed.default-admin.phone:0900000000}")
+    private String defaultAdminPhone;
+
     @Override
     public void run(String... args) {
         seedUsers();
     }
 
     private void seedUsers() {
-        upsertUser("admin@gmail.com", "1234567890", "Administrator", UserRole.ADMIN, "0900000000");
+        if (!defaultAdminSeedEnabled || defaultAdminPassword == null || defaultAdminPassword.isBlank()) {
+            return;
+        }
+        upsertUser(defaultAdminEmail, defaultAdminPassword, "Administrator", UserRole.ADMIN, defaultAdminPhone);
     }
 
     private void upsertUser(String email, String password, String fullName, UserRole role, String phone) {

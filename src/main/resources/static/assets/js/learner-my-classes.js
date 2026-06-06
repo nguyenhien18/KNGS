@@ -1,19 +1,7 @@
 ﻿(function () {
-  function ensureLearner() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'LEARNER') {
-      alert('Bạn cần đăng nhập tài khoản học viên.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname + location.search);
-      return false;
-    }
-    return true;
-  }
+  if (!AuthGuard.requireLearner()) return;
 
-  if (!ensureLearner()) return;
-
-  const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') headerRight.innerHTML = renderUtilityHeaderRight();
-  if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
+  UiUtils.renderHeader();
 
   const listEl = document.getElementById('myClassesList');
   const countEl = document.getElementById('myClassesCount');
@@ -43,21 +31,15 @@
   let sourceFilter = 'ALL';
   let stateFilter = 'ALL';
   let pendingReviewTarget = null;
+  const dom = DomUtils;
 
-  function safe(value) {
-    return String(value == null ? '' : value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
+  function setHtml(element, html) {
+    if (!element) return;
+    dom.setHtml(element, html);
   }
 
   function toDate(value) {
-    if (!value) return '---';
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return safe(value);
-    return d.toLocaleDateString('vi-VN');
+    return FormatUtils.formatDate(value);
   }
 
   function enrollmentStatusText(status) {
@@ -71,25 +53,41 @@
     return map[String(status || 'PENDING')] || 'Đang học';
   }
 
-  function matchedStatusText(status) {
+  function matchedStatusText(status, waitingForMyConfirmation) {
     const map = {
       ASSIGNED: 'Đang học',
       IN_PROGRESS: 'Đang học',
+      COMPLETION_REQUESTED: waitingForMyConfirmation ? 'Cần xác nhận hoàn thành' : 'Chờ xác nhận hoàn thành',
       COMPLETED: 'Đã hoàn thành',
+      CANCELLATION_REQUESTED: waitingForMyConfirmation ? 'Cần xác nhận hủy' : 'Chờ xác nhận hủy',
       CANCELLED: 'Đã hủy'
     };
     return map[String(status || 'ASSIGNED')] || 'Đang học';
+  }
+
+  function matchedBadgeClass(status) {
+    const raw = String(status || 'ASSIGNED');
+    if (raw === 'COMPLETED') return 'badge-success';
+    if (raw === 'CANCELLED') return 'badge-gray';
+    if (raw === 'COMPLETION_REQUESTED' || raw === 'CANCELLATION_REQUESTED') return 'badge-warning';
+    return 'badge-primary';
   }
 
   function buildFromMatched(rows) {
     return (rows || []).map(function (c) {
       const raw = String(c.status || 'ASSIGNED');
       const state = raw === 'COMPLETED' ? 'COMPLETED' : (raw === 'CANCELLED' ? 'CANCELLED' : 'ACTIVE');
+      const waitingForMyConfirmation = Boolean(c.waitingForMyConfirmation);
       return {
         source: 'MATCHED',
         itemId: c.classId,
         postId: c.postId,
         rawStatus: raw,
+        statusRequestedByUserId: c.statusRequestedByUserId,
+        statusRequestedByRole: c.statusRequestedByRole,
+        statusRequestedAt: c.statusRequestedAt,
+        statusRequestReason: c.statusRequestReason,
+        waitingForMyConfirmation: waitingForMyConfirmation,
         state: state,
         title: c.postTitle || 'Lớp từ bài đăng',
         sub: 'Gia sư: ' + (c.tutorName || '---'),
@@ -99,8 +97,8 @@
         meta1: 'Mã lớp: #' + (c.classId || '-'),
         meta2: 'Bắt đầu: ' + toDate(c.startDate || c.assignedAt),
         meta3: 'Kết thúc: ' + toDate(c.endDate),
-        statusText: matchedStatusText(raw),
-        badgeClass: raw === 'COMPLETED' ? 'badge-success' : (raw === 'CANCELLED' ? 'badge-gray' : 'badge-primary'),
+        statusText: matchedStatusText(raw, waitingForMyConfirmation),
+        badgeClass: matchedBadgeClass(raw),
         link: '/hoc-vien/my-classes.html?classId=' + encodeURIComponent(c.classId || '')
       };
     });
@@ -193,17 +191,18 @@
   }
 
   function openTutorInfoModal(item) {
-    tutorInfoModalContent.innerHTML = '<div class="student-item">' +
+    setHtml(tutorInfoModalContent, '<div class="student-item">' +
       '<h4>' + safe(item.tutorName || 'Gia sư') + '</h4>' +
       '<p>Email: ' + safe(item.tutorEmail || 'Chưa có dữ liệu') + '</p>' +
       '<p>Số điện thoại: ' + safe(item.tutorPhone || 'Chưa có dữ liệu') + '</p>' +
       '<p>Trạng thái lớp: <strong>' + safe(item.statusText) + '</strong></p>' +
-    '</div>';
+    '</div>');
     tutorInfoModal.classList.remove('hidden');
   }
 
   async function completeMatchedClass(classId, rawStatus) {
-    if (!confirm('Xác nhận lớp đã hoàn thành?')) return;
+    const confirming = rawStatus === 'COMPLETION_REQUESTED';
+    if (!confirm(confirming ? 'Xác nhận hoàn thành lớp này?' : 'Gửi yêu cầu hoàn thành lớp này?')) return;
     if (rawStatus === 'ASSIGNED') {
       await ApiClient.patch('/api/learner/classes/' + encodeURIComponent(classId) + '/status', { status: 'IN_PROGRESS' });
     }
@@ -211,8 +210,9 @@
     await load();
   }
 
-  async function cancelMatchedClass(classId) {
-    if (!confirm('Bạn chắc chắn muốn hủy lớp này?')) return;
+  async function cancelMatchedClass(classId, rawStatus) {
+    const confirming = rawStatus === 'CANCELLATION_REQUESTED';
+    if (!confirm(confirming ? 'Xác nhận hủy lớp này?' : 'Gửi yêu cầu hủy lớp này?')) return;
     await ApiClient.patch('/api/learner/classes/' + encodeURIComponent(classId) + '/status', { status: 'CANCELLED' });
     await load();
   }
@@ -249,30 +249,48 @@
 
   function courseClassActions(item) {
     if (item.rawStatus === 'COMPLETED') {
-      return '<button class="btn btn-soft" data-action="view-tutor" data-course-id="' + item.itemId + '" data-enrollment-id="' + item.enrollmentId + '">Xem gia sư</button>' +
-        '<button class="btn btn-primary" data-action="review" data-course-id="' + item.itemId + '" data-enrollment-id="' + item.enrollmentId + '">Đánh giá gia sư</button>';
+      return '<button class="btn btn-soft" data-action="view-tutor" data-course-id="' + safe(item.itemId) + '" data-enrollment-id="' + safe(item.enrollmentId) + '">Xem gia sư</button>' +
+        '<button class="btn btn-primary" data-action="review" data-course-id="' + safe(item.itemId) + '" data-enrollment-id="' + safe(item.enrollmentId) + '">Đánh giá gia sư</button>';
     }
 
     if (item.rawStatus === 'ACCEPTED') {
-      return '<button class="btn btn-soft" data-action="view-tutor" data-course-id="' + item.itemId + '" data-enrollment-id="' + item.enrollmentId + '">Xem gia sư</button>';
+      return '<button class="btn btn-soft" data-action="view-tutor" data-course-id="' + safe(item.itemId) + '" data-enrollment-id="' + safe(item.enrollmentId) + '">Xem gia sư</button>';
     }
 
-    return '<a class="btn btn-soft" href="' + item.link + '">Xem chi tiết</a>';
+    return '<a class="btn btn-soft" href="' + safe(item.link) + '">Xem chi tiết</a>';
   }
 
   function matchedClassActions(item) {
     if (item.rawStatus === 'COMPLETED') {
-      return '<button class="btn btn-soft" data-action="view-tutor" data-class-id="' + item.itemId + '">Xem gia sư</button>' +
-        '<button class="btn btn-primary" data-action="review" data-class-id="' + item.itemId + '">Đánh giá gia sư</button>';
+      return '<button class="btn btn-soft" data-action="view-tutor" data-class-id="' + safe(item.itemId) + '">Xem gia sư</button>' +
+        '<button class="btn btn-primary" data-action="review" data-class-id="' + safe(item.itemId) + '">Đánh giá gia sư</button>';
     }
 
     if (item.rawStatus === 'CANCELLED') {
-      return '<button class="btn btn-soft" data-action="view-tutor" data-class-id="' + item.itemId + '">Xem gia sư</button>';
+      return '<button class="btn btn-soft" data-action="view-tutor" data-class-id="' + safe(item.itemId) + '">Xem gia sư</button>';
     }
 
-    return '<button class="btn btn-primary" data-action="complete" data-class-id="' + item.itemId + '" data-raw-status="' + item.rawStatus + '">Hoàn thành lớp</button>' +
-      '<button class="btn btn-outline" data-action="cancel" data-class-id="' + item.itemId + '">Hủy lớp</button>' +
-      '<button class="btn btn-soft" data-action="view-tutor" data-class-id="' + item.itemId + '">Xem gia sư</button>';
+    if (item.rawStatus === 'COMPLETION_REQUESTED') {
+      if (item.waitingForMyConfirmation) {
+        return '<button class="btn btn-primary" data-action="complete" data-class-id="' + safe(item.itemId) + '" data-raw-status="' + safe(item.rawStatus) + '">Xác nhận hoàn thành</button>' +
+          '<button class="btn btn-soft" data-action="view-tutor" data-class-id="' + safe(item.itemId) + '">Xem gia sư</button>';
+      }
+      return '<span class="muted">Đang chờ gia sư xác nhận hoàn thành</span>' +
+        '<button class="btn btn-soft" data-action="view-tutor" data-class-id="' + safe(item.itemId) + '">Xem gia sư</button>';
+    }
+
+    if (item.rawStatus === 'CANCELLATION_REQUESTED') {
+      if (item.waitingForMyConfirmation) {
+        return '<button class="btn btn-outline" data-action="cancel" data-class-id="' + safe(item.itemId) + '" data-raw-status="' + safe(item.rawStatus) + '">Xác nhận hủy</button>' +
+          '<button class="btn btn-soft" data-action="view-tutor" data-class-id="' + safe(item.itemId) + '">Xem gia sư</button>';
+      }
+      return '<span class="muted">Đang chờ gia sư xác nhận hủy</span>' +
+        '<button class="btn btn-soft" data-action="view-tutor" data-class-id="' + safe(item.itemId) + '">Xem gia sư</button>';
+    }
+
+    return '<button class="btn btn-primary" data-action="complete" data-class-id="' + safe(item.itemId) + '" data-raw-status="' + safe(item.rawStatus) + '">Yêu cầu hoàn thành</button>' +
+      '<button class="btn btn-outline" data-action="cancel" data-class-id="' + safe(item.itemId) + '" data-raw-status="' + safe(item.rawStatus) + '">Yêu cầu hủy</button>' +
+      '<button class="btn btn-soft" data-action="view-tutor" data-class-id="' + safe(item.itemId) + '">Xem gia sư</button>';
   }
 
   function render() {
@@ -280,25 +298,25 @@
     if (countEl) countEl.textContent = rows.length + ' lớp';
 
     if (!rows.length) {
-      listEl.innerHTML = '<div class="mini-item"><h4>Không có lớp</h4><p>Không có dữ liệu ở bộ lọc hiện tại.</p></div>';
+      setHtml(listEl, '<div class="mini-item"><h4>Không có lớp</h4><p>Không có dữ liệu ở bộ lọc hiện tại.</p></div>');
       return;
     }
 
-    listEl.innerHTML = rows.map(function (item) {
+    setHtml(listEl, rows.map(function (item) {
       const focusItem = findFocusItem();
       const isFocused = focusItem
         && String(focusItem.source) === String(item.source)
         && String(focusItem.itemId) === String(item.itemId);
-      const focusStyle = isFocused ? ' style="border:2px solid #2563eb"' : '';
+      const focusClass = isFocused ? ' is-focused' : '';
 
       const actionsHtml = item.source === 'MATCHED'
         ? matchedClassActions(item)
         : courseClassActions(item);
 
-      return '<article class="list-card" data-source="' + item.source + '" data-item-id="' + item.itemId + '"' + focusStyle + '>' +
+      return '<article class="list-card' + focusClass + '" data-source="' + safe(item.source) + '" data-item-id="' + safe(item.itemId) + '">' +
         '<div class="badge-row">' +
-          '<span class="badge badge-gray">' + sourceText(item.source) + '</span>' +
-          '<span class="badge ' + item.badgeClass + '">' + item.statusText + '</span>' +
+          '<span class="badge badge-gray">' + safe(sourceText(item.source)) + '</span>' +
+          '<span class="badge ' + safe(item.badgeClass) + '">' + safe(item.statusText) + '</span>' +
         '</div>' +
         '<h3 class="card-title">' + safe(item.title) + '</h3>' +
         '<p class="muted">' + safe(item.sub) + '</p>' +
@@ -306,11 +324,11 @@
           '<div class="info-box"><strong>Thông tin 1</strong><span>' + safe(item.meta1) + '</span></div>' +
           '<div class="info-box"><strong>Thông tin 2</strong><span>' + safe(item.meta2) + '</span></div>' +
           '<div class="info-box"><strong>Thông tin 3</strong><span>' + safe(item.meta3) + '</span></div>' +
-          '<div class="info-box"><strong>Nhóm lớp</strong><span>' + sourceText(item.source) + '</span></div>' +
+          '<div class="info-box"><strong>Nhóm lớp</strong><span>' + safe(sourceText(item.source)) + '</span></div>' +
         '</div>' +
-        '<div class="card-actions"><span class="muted">Trạng thái học tập: ' + item.statusText + '</span><div class="manage-action-group">' + actionsHtml + '</div></div>' +
+        '<div class="card-actions"><span class="muted">Trạng thái học tập: ' + safe(item.statusText) + '</span><div class="manage-action-group">' + actionsHtml + '</div></div>' +
       '</article>';
-    }).join('');
+    }).join(''));
 
     const focusItem = findFocusItem();
     if (focusItem) {
@@ -336,11 +354,15 @@
             return;
           }
           if (action === 'cancel') {
-            await cancelMatchedClass(classId);
+            await UiUtils.withButtonLoading(btn, 'Đang xử lý...', async function () {
+              await cancelMatchedClass(classId, btn.getAttribute('data-raw-status') || item.rawStatus);
+            });
             return;
           }
           if (action === 'complete') {
-            await completeMatchedClass(classId, btn.getAttribute('data-raw-status') || item.rawStatus);
+            await UiUtils.withButtonLoading(btn, 'Đang xử lý...', async function () {
+              await completeMatchedClass(classId, btn.getAttribute('data-raw-status') || item.rawStatus);
+            });
             return;
           }
           if (action === 'review') {
@@ -381,11 +403,11 @@
         ApiClient.get('/api/learner/classes'),
         ApiClient.get('/api/learner/enrollments')
       ]);
-      allItems = buildFromMatched(matchedClasses).concat(buildFromEnrollments(enrollments));
+      allItems = buildFromMatched(ApiClient.asArray(matchedClasses)).concat(buildFromEnrollments(ApiClient.asArray(enrollments)));
       applyFocusFiltersIfNeeded();
       render();
     } catch (err) {
-      listEl.innerHTML = '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được dữ liệu lớp học') + '</p></div>';
+      setHtml(listEl, '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được dữ liệu lớp học') + '</p></div>');
     }
   }
 
@@ -416,7 +438,7 @@
   if (submitReviewButton) {
     submitReviewButton.addEventListener('click', async function () {
       try {
-        await submitReview();
+        await UiUtils.withButtonLoading(submitReviewButton, 'Đang gửi...', submitReview);
       } catch (err) {
         alert(err.message || 'Không gửi được đánh giá. Có thể lớp đã được đánh giá trước đó.');
       }

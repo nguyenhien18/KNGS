@@ -28,9 +28,9 @@ public class AuthRegistrationService {
 
     @Transactional
     public LoginResponse createTutorAccount(RegisterTutorAccountRequest request) {
-        String email = authValueNormalizer.normalizeRequired(request.getEmail(), "Email khong duoc trong");
-        String password = authValueNormalizer.normalizeRequired(request.getPassword(), "Password khong duoc trong");
-        String fullName = authValueNormalizer.normalizeRequired(request.getFullName(), "Ho ten khong duoc trong");
+        String email = authValueNormalizer.normalizeRequired(request.getEmail(), "Email không được trống");
+        String password = authValueNormalizer.normalizeRequired(request.getPassword(), "Mật khẩu không được trống");
+        String fullName = authValueNormalizer.normalizeRequired(request.getFullName(), "Họ tên không được trống");
         String phone = authValueNormalizer.normalizeBlank(request.getPhone());
 
         validateUniqueCredentials(email, phone);
@@ -51,9 +51,9 @@ public class AuthRegistrationService {
 
     @Transactional
     public LoginResponse createLearnerAccount(RegisterLearnerRequest request) {
-        String email = authValueNormalizer.normalizeRequired(request.getEmail(), "Email khong duoc trong");
-        String password = authValueNormalizer.normalizeRequired(request.getPassword(), "Password khong duoc trong");
-        String fullName = authValueNormalizer.normalizeRequired(request.getFullName(), "Ho ten khong duoc trong");
+        String email = authValueNormalizer.normalizeRequired(request.getEmail(), "Email không được trống");
+        String password = authValueNormalizer.normalizeRequired(request.getPassword(), "Mật khẩu không được trống");
+        String fullName = authValueNormalizer.normalizeRequired(request.getFullName(), "Họ tên không được trống");
         String phone = authValueNormalizer.normalizeBlank(request.getPhone());
 
         validateUniqueCredentials(email, phone);
@@ -78,7 +78,7 @@ public class AuthRegistrationService {
             throw new AppException(HttpStatus.CONFLICT, "Email da ton tai");
         }
         if (phone != null && userRepository.existsByPhone(phone)) {
-            throw new AppException(HttpStatus.CONFLICT, "So dien thoai da ton tai");
+            throw new AppException(HttpStatus.CONFLICT, "Số điện thoại da ton tai");
         }
     }
 }

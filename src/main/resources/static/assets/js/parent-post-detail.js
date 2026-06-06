@@ -1,9 +1,5 @@
-﻿(function () {
-  const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-    headerRight.innerHTML = renderUtilityHeaderRight();
-  }
-  if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
+(function () {
+  UiUtils.renderHeader();
 
   const params = new URLSearchParams(location.search);
   const postId = params.get('id');
@@ -14,54 +10,35 @@
   const postInfo = document.getElementById('postInfo');
   const sendApplyBtn = document.getElementById('sendApplyBtn');
 
-  function esc(v) {
-    return String(v ?? '').replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-  }
-
-  function formatMoney(v) {
-    const n = Number(v || 0);
-    return new Intl.NumberFormat('vi-VN').format(n) + ' đ';
-  }
-
-  function formatDate(v) {
-    if (!v) return '-';
-    const d = new Date(v);
-    if (Number.isNaN(d.getTime())) return esc(v);
-    return d.toLocaleDateString('vi-VN');
-  }
-
   async function loadDetail() {
     if (!postId) {
-      postHeader.innerHTML = '<h1>Thiếu mã bài đăng</h1>';
+      DomUtils.setHtml(postHeader, '<h1>Thiếu mã bài đăng</h1>');
       return;
     }
 
     try {
       const post = await ApiClient.get(`/api/public/posts/${encodeURIComponent(postId)}`);
 
-      postHeader.innerHTML = `
+      DomUtils.setHtml(postHeader, `
         <div class="detail-header-badges">
-          <span class="badge badge-primary">${esc(post.subject)}</span>
-          <span class="badge badge-gray">${esc(post.grade)}</span>
-          <span class="badge badge-info">${esc(post.teachingMode)}</span>
           <span class="badge badge-success">Đang mở</span>
         </div>
         <h1 class="detail-header-title">${esc(post.title)}</h1>
-        <p class="detail-header-sub">Bài đăng tìm gia sư do phụ huynh / học viên tạo.</p>
+        <p class="detail-header-sub">${esc(post.subject || '-')} · ${esc(post.grade || '-')} · ${esc(post.teachingMode || '-')}</p>
         <div class="detail-meta-row">
           <span class="detail-meta-pill"><i class="fas fa-coins"></i> Ngân sách: ${formatMoney(post.budget)} / buổi</span>
           <span class="detail-meta-pill"><i class="fas fa-location-dot"></i> ${esc(post.province || '-')} ${post.district ? ', ' + esc(post.district) : ''}</span>
           <span class="detail-meta-pill"><i class="fas fa-clock"></i> ${esc(post.studyTime || '-')}</span>
-        </div>`;
+        </div>`);
 
       postDescription.textContent = post.description || 'Chưa có mô tả.';
       postRequirements.textContent = 'Gia sư cần phù hợp môn học, khối lớp và thời gian học.';
-      postInfo.innerHTML = `
+      DomUtils.setHtml(postInfo, `
         <div class="info-item"><strong>Hình thức học</strong><span>${esc(post.teachingMode)}</span></div>
         <div class="info-item"><strong>Khu vực</strong><span>${esc(post.addressDetail || '-')}</span></div>
-        <div class="info-item"><strong>Ngày đăng</strong><span>${formatDate(post.createdAt)}</span></div>`;
+        <div class="info-item"><strong>Ngày đăng</strong><span>${formatDate(post.createdAt)}</span></div>`);
     } catch (err) {
-      postHeader.innerHTML = `<h1>Lỗi tải bài đăng</h1><p>${esc(err.message || 'Không thể tải dữ liệu')}</p>`;
+      DomUtils.setHtml(postHeader, `<h1>Lỗi tải bài đăng</h1><p>${esc(err.message || 'Không thể tải dữ liệu')}</p>`);
     }
   }
 
@@ -89,9 +66,11 @@
     }
 
     try {
-      await ApiClient.post(`/api/tutor/posts/${encodeURIComponent(postId)}/apply`, {
-        message,
-        expectedFee
+      await UiUtils.withButtonLoading(sendApplyBtn, 'Đang xử lý...', async function () {
+        await ApiClient.post(`/api/tutor/posts/${encodeURIComponent(postId)}/apply`, {
+          message,
+          expectedFee
+        });
       });
       alert('Đã gửi ứng tuyển thành công.');
       location.href = '/gia-su/tutor-applications.html';

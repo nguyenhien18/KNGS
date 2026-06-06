@@ -1,9 +1,5 @@
-﻿(function () {
-  const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-    headerRight.innerHTML = renderUtilityHeaderRight();
-  }
-  if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
+(function () {
+  UiUtils.renderHeader();
 
   const listEl = document.getElementById('tutorClasses');
   if (!listEl) return;
@@ -21,19 +17,7 @@
   let courses = [];
   let activeApproval = 'all';
   let activeCourseId = null;
-
-  function ensureTutorAuth() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!window.ApiClient || !ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'TUTOR') {
-      alert('Bạn cần đăng nhập tài khoản gia sư để sử dụng chức năng này.');
-      const returnTo = encodeURIComponent(location.pathname + location.search + location.hash);
-      location.href = '/login.html?returnTo=' + returnTo;
-      return false;
-    }
-    return true;
-  }
-
-  function asArray(value) {
+function asArray(value) {
     if (Array.isArray(value)) return value;
     if (value && Array.isArray(value.content)) return value.content;
     if (value && Array.isArray(value.items)) return value.items;
@@ -44,13 +28,6 @@
     const num = Number(value || 0);
     if (typeof window.formatVND === 'function') return window.formatVND(num);
     return new Intl.NumberFormat('vi-VN').format(num) + ' đ';
-  }
-
-  function formatDateTime(value) {
-    if (!value) return 'Chua cap nhat';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return String(value);
-    return date.toLocaleString('vi-VN');
   }
 
   function approvalBadge(status) {
@@ -91,27 +68,27 @@
 
     if (emptyStateEl) emptyStateEl.classList.toggle('hidden', rows.length > 0);
 
-    listEl.innerHTML = rows.map((item) => {
+    DomUtils.setHtml(listEl, rows.map((item) => {
       return `
-        <article class="manage-card" data-course-id="${item.courseId}" data-approval-status="${item.approvalStatus || ''}">
+        <article class="manage-card" data-course-id="${safe(item.courseId)}" data-approval-status="${safe(item.approvalStatus || '')}">
           <div class="manage-card-top">
             <div>
               <div class="manage-badge-row">
-                <span class="badge badge-primary">${item.subject || '-'}</span>
-                <span class="badge badge-gray">${item.grade || '-'}</span>
+                <span class="badge badge-primary">${safe(item.subject || '-')}</span>
+                <span class="badge badge-gray">${safe(item.grade || '-')}</span>
                 ${approvalBadge(item.approvalStatus)}
                 ${courseBadge(item.status)}
               </div>
-              <h3 class="manage-card-title">${item.title || '-'}</h3>
-              <p class="manage-card-sub">${item.teachingMode || '-'} • ${(item.province || '-')}${item.district ? ` - ${item.district}` : ''} • ${item.studyTime || 'Chua cap nhat'}</p>
+              <h3 class="manage-card-title">${safe(item.title || '-')}</h3>
+              <p class="manage-card-sub">${safe(item.teachingMode || '-')} • ${safe(item.province || '-')}${item.district ? ' - ' + safe(item.district) : ''} • ${safe(item.studyTime || 'Chưa cập nhật')}</p>
             </div>
             <div class="manage-price">${formatCurrency(item.price)} / buoi</div>
           </div>
           <div class="manage-meta-grid">
-            <div class="manage-meta-item"><strong>So hoc vien toi da</strong><span>${item.maxStudents || 0}</span></div>
-            <div class="manage-meta-item"><strong>Ngay tao</strong><span>${formatDateTime(item.createdAt)}</span></div>
-            <div class="manage-meta-item"><strong>Tinh thanh</strong><span>${item.province || '-'}</span></div>
-            <div class="manage-meta-item"><strong>Quan huyen</strong><span>${item.district || '-'}</span></div>
+            <div class="manage-meta-item"><strong>Số học viên tối đa</strong><span>${safe(item.maxStudents || 0)}</span></div>
+            <div class="manage-meta-item"><strong>Ngay tao</strong><span>${safe(formatDateTime(item.createdAt))}</span></div>
+            <div class="manage-meta-item"><strong>Tỉnh thành</strong><span>${safe(item.province || '-')}</span></div>
+            <div class="manage-meta-item"><strong>Quận huyện</strong><span>${safe(item.district || '-')}</span></div>
           </div>
           <div class="manage-card-footer">
             <div class="manage-action-group">
@@ -119,7 +96,7 @@
             </div>
           </div>
         </article>`;
-    }).join('');
+    }).join(''));
   }
 
   function enrollmentStatusText(status) {
@@ -135,8 +112,8 @@
 
   function actionButtons(enrollment) {
     if (enrollment.status !== 'PENDING') return '';
-    return `<button class="btn btn-primary" data-eid="${enrollment.enrollmentId}" data-status="ACCEPTED">Chấp nhận</button>
-      <button class="btn btn-outline" data-eid="${enrollment.enrollmentId}" data-status="REJECTED">Từ chối</button>`;
+    return `<button class="btn btn-primary" data-eid="${safe(enrollment.enrollmentId)}" data-status="ACCEPTED">Chấp nhận</button>
+      <button class="btn btn-outline" data-eid="${safe(enrollment.enrollmentId)}" data-status="REJECTED">Từ chối</button>`;
   }
 
   function learnerLabel(enrollment) {
@@ -146,22 +123,22 @@
   async function loadEnrollments(courseId) {
     const rowsRaw = await ApiClient.get(`/api/tutor/courses/${courseId}/enrollments`);
     const rows = asArray(rowsRaw);
-    studentsModalContent.innerHTML = rows.length
+    DomUtils.setHtml(studentsModalContent, rows.length
       ? rows.map((e) => `
-          <div class="student-item" style="margin-bottom:12px">
-            <div class="student-row" style="align-items:flex-start;gap:16px">
+          <div class="student-item student-item-spaced">
+            <div class="student-row student-row-start">
               <div>
-                <h4>${learnerLabel(e)}</h4>
+                <h4>${safe(learnerLabel(e))}</h4>
                 <p>Phí đề xuất: ${formatCurrency(e.agreedFee)}</p>
-                <p>Lời nhắn: ${e.message || '(không có)'}</p>
-                <p>Trạng thái: <strong>${enrollmentStatusText(e.status)}</strong></p>
+                <p>Lời nhắn: ${safe(e.message || '(không có)')}</p>
+                <p>Trạng thái: <strong>${safe(enrollmentStatusText(e.status))}</strong></p>
               </div>
               <div class="manage-action-group" data-actions>
                 ${actionButtons(e)}
               </div>
             </div>
           </div>`).join('')
-      : '<p>Chưa có đăng ký học viên cho lớp này.</p>';
+      : '<p>Chưa có đăng ký học viên cho lớp này.</p>');
   }
 
   async function updateEnrollmentStatus(enrollmentId, status) {
@@ -255,7 +232,7 @@
   }
 
   (async function init() {
-    if (!ensureTutorAuth()) return;
+    if (!AuthGuard.requireTutor()) return;
     try {
       await loadCourses();
     } catch (err) {

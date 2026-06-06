@@ -31,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/tutor")
 @RequiredArgsConstructor
@@ -54,16 +52,16 @@ public class TutorFeatureController {
     ) {
         return ApiResponse.<PageResponse<AvailablePostResponse>>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorFeatureService.getAvailablePosts(keyword, subjectId, gradeId, teachingMode, province, district, page, size))
             .build();
     }
 
     @PostMapping("/posts/{postId}/apply")
-    public ApiResponse<TutorApplicationResponse> applyToPost(@PathVariable Long postId, @RequestBody TutorApplyRequest request) {
+    public ApiResponse<TutorApplicationResponse> applyToPost(@PathVariable Long postId, @Valid @RequestBody TutorApplyRequest request) {
         return ApiResponse.<TutorApplicationResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorFeatureService.applyToPostByUser(postId, currentUserService.userId(), request))
             .build();
     }
@@ -72,26 +70,33 @@ public class TutorFeatureController {
     public ApiResponse<TutorApplicationResponse> cancelApplication(@PathVariable Long applicationId) {
         return ApiResponse.<TutorApplicationResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorFeatureService.cancelApplicationByUser(currentUserService.userId(), applicationId))
             .build();
     }
 
     @GetMapping("/applications")
-    public ApiResponse<List<TutorApplicationResponse>> getApplications(@RequestParam(required = false) ApplicationStatus status) {
-        return ApiResponse.<List<TutorApplicationResponse>>builder()
+    public ApiResponse<PageResponse<TutorApplicationResponse>> getApplications(
+        @RequestParam(required = false) ApplicationStatus status,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        return ApiResponse.<PageResponse<TutorApplicationResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(tutorFeatureService.getApplicationsByUser(currentUserService.userId(), status))
+            .message("Thành công")
+            .result(tutorFeatureService.getApplicationsByUser(currentUserService.userId(), status, page, size))
             .build();
     }
 
     @GetMapping("/matched-classes")
-    public ApiResponse<List<TutorMatchedClassResponse>> getMatchedClasses() {
-        return ApiResponse.<List<TutorMatchedClassResponse>>builder()
+    public ApiResponse<PageResponse<TutorMatchedClassResponse>> getMatchedClasses(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        return ApiResponse.<PageResponse<TutorMatchedClassResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(tutorFeatureService.getMatchedClassesByUser(currentUserService.userId()))
+            .message("Thành công")
+            .result(tutorFeatureService.getMatchedClassesByUser(currentUserService.userId(), page, size))
             .build();
     }
 
@@ -102,7 +107,7 @@ public class TutorFeatureController {
     ) {
         return ApiResponse.<TutorMatchedClassResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorFeatureService.updateMatchedClassStatusByUser(currentUserService.userId(), classId, request))
             .build();
     }
@@ -111,7 +116,7 @@ public class TutorFeatureController {
     public ApiResponse<TutorCourseResponse> createCourse(@Valid @RequestBody TutorCourseRequest request) {
         return ApiResponse.<TutorCourseResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorFeatureService.createCourseByUser(currentUserService.userId(), request))
             .build();
     }
@@ -120,7 +125,7 @@ public class TutorFeatureController {
     public ApiResponse<TutorCourseResponse> updateCourse(@PathVariable Long courseId, @Valid @RequestBody TutorCourseRequest request) {
         return ApiResponse.<TutorCourseResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorFeatureService.updateCourseByUser(currentUserService.userId(), courseId, request))
             .build();
     }
@@ -132,26 +137,34 @@ public class TutorFeatureController {
     ) {
         return ApiResponse.<TutorCourseResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorFeatureService.updateCourseStatusByUser(currentUserService.userId(), courseId, request))
             .build();
     }
 
     @GetMapping("/courses")
-    public ApiResponse<List<TutorCourseResponse>> getCourses(@RequestParam(required = false) CourseStatus status) {
-        return ApiResponse.<List<TutorCourseResponse>>builder()
+    public ApiResponse<PageResponse<TutorCourseResponse>> getCourses(
+        @RequestParam(required = false) CourseStatus status,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        return ApiResponse.<PageResponse<TutorCourseResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(tutorFeatureService.getTutorCoursesByUser(currentUserService.userId(), status))
+            .message("Thành công")
+            .result(tutorFeatureService.getTutorCoursesByUser(currentUserService.userId(), status, page, size))
             .build();
     }
 
     @GetMapping("/courses/{courseId}/enrollments")
-    public ApiResponse<List<CourseEnrollmentResponse>> getEnrollments(@PathVariable Long courseId) {
-        return ApiResponse.<List<CourseEnrollmentResponse>>builder()
+    public ApiResponse<PageResponse<CourseEnrollmentResponse>> getEnrollments(
+        @PathVariable Long courseId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        return ApiResponse.<PageResponse<CourseEnrollmentResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(tutorFeatureService.getCourseEnrollmentsByUser(currentUserService.userId(), courseId))
+            .message("Thành công")
+            .result(tutorFeatureService.getCourseEnrollmentsByUser(currentUserService.userId(), courseId, page, size))
             .build();
     }
 
@@ -162,17 +175,20 @@ public class TutorFeatureController {
     ) {
         return ApiResponse.<CourseEnrollmentResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(tutorFeatureService.updateEnrollmentStatusByUser(currentUserService.userId(), enrollmentId, request))
             .build();
     }
 
     @GetMapping("/reviews")
-    public ApiResponse<List<TutorReviewResponse>> getReviews() {
-        return ApiResponse.<List<TutorReviewResponse>>builder()
+    public ApiResponse<PageResponse<TutorReviewResponse>> getReviews(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        return ApiResponse.<PageResponse<TutorReviewResponse>>builder()
             .code(200)
-            .message("Success")
-            .result(tutorFeatureService.getReviewsByUser(currentUserService.userId()))
+            .message("Thành công")
+            .result(tutorFeatureService.getReviewsByUser(currentUserService.userId(), page, size))
             .build();
     }
 }

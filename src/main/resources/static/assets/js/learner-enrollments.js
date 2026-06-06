@@ -1,18 +1,8 @@
-﻿(function () {
-  function ensureLearner() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'LEARNER') {
-      alert('Bạn cần đăng nhập tài khoản học viên.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname + location.search);
-      return false;
-    }
-    return true;
-  }
-
-  if (!ensureLearner()) return;
+(function () {
+  if (!AuthGuard.requireLearner()) return;
 
   const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') headerRight.innerHTML = renderUtilityHeaderRight();
+  if (headerRight && typeof renderUtilityHeaderRight === 'function') DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
 
   const listEl = document.getElementById('enrollmentsList');
@@ -22,22 +12,6 @@
 
   let allRows = [];
   let currentStatus = 'ALL';
-
-  function safe(value) {
-    return String(value == null ? '' : value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
-
-  function formatDate(value) {
-    if (!value) return '---';
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return safe(value);
-    return d.toLocaleString('vi-VN');
-  }
 
   function normalizeStatus(raw) {
     const s = String(raw || 'PENDING');
@@ -88,11 +62,11 @@
     if (countEl) countEl.textContent = rows.length + ' đăng ký';
 
     if (!rows.length) {
-      listEl.innerHTML = '<div class="mini-item"><h4>Không có đăng ký</h4><p>Không có dữ liệu ở bộ lọc hiện tại.</p></div>';
+      DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có đăng ký</h4><p>Không có dữ liệu ở bộ lọc hiện tại.</p></div>');
       return;
     }
 
-    listEl.innerHTML = rows.map(function (e) {
+    DomUtils.setHtml(listEl, rows.map(function (e) {
       const normalized = normalizeStatus(e.status);
       const meta = statusMeta(normalized);
       const canCancel = normalized === 'PENDING';
@@ -120,7 +94,7 @@
             '</div>' +
           '</div>' +
         '</article>';
-    }).join('');
+    }).join(''));
 
     listEl.querySelectorAll('button[data-cancel]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -131,12 +105,11 @@
 
   async function load() {
     try {
-      allRows = await ApiClient.get('/api/learner/enrollments');
-      if (!Array.isArray(allRows)) allRows = [];
+      allRows = ApiClient.asArray(await ApiClient.get('/api/learner/enrollments'));
       render();
     } catch (err) {
       if (countEl) countEl.textContent = 'Không tải được dữ liệu';
-      listEl.innerHTML = '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được đăng ký') + '</p></div>';
+      DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được đăng ký') + '</p></div>');
     }
   }
 

@@ -39,7 +39,7 @@ class CustomUserDetailsServiceTest {
             LockedException.class,
             () -> service.loadUserByUsername("blocked@example.com")
         );
-        assertTrue(ex.getMessage().contains("khoa"));
+        assertTrue(ex.getMessage().contains("khóa"));
     }
 
     @Test

@@ -52,7 +52,7 @@ public class TutorCertificateService {
     public TutorCertificateResponse updateMyCertificate(Long tutorUserId, Long certificateId, TutorCertificateUpsertRequest request) {
         Long tutorId = findTutorIdByUserId(tutorUserId);
         TutorCertificate certificate = tutorCertificateRepository.findByIdAndTutorId(certificateId, tutorId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay bang cap"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tim thay bằng cấp"));
         applyRequest(certificate, request);
         certificate = tutorCertificateRepository.save(certificate);
         return toResponse(certificate);
@@ -62,7 +62,7 @@ public class TutorCertificateService {
     public void deleteMyCertificate(Long tutorUserId, Long certificateId) {
         Long tutorId = findTutorIdByUserId(tutorUserId);
         TutorCertificate certificate = tutorCertificateRepository.findByIdAndTutorId(certificateId, tutorId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay bang cap"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tim thay bằng cấp"));
         tutorCertificateRepository.delete(certificate);
     }
 
@@ -83,7 +83,7 @@ public class TutorCertificateService {
     }
 
     private void applyRequest(TutorCertificate certificate, TutorCertificateUpsertRequest request) {
-        certificate.setTitle(trimOrThrow(request.getTitle(), "Tieu de bang cap khong duoc de trong"));
+        certificate.setTitle(trimOrThrow(request.getTitle(), "Tiêu đề bằng cấp không được de trong"));
         certificate.setCertificateType(trimToNull(request.getCertificateType()));
         certificate.setIssuer(trimToNull(request.getIssuer()));
         certificate.setIssuedDate(request.getIssuedDate());
@@ -96,12 +96,12 @@ public class TutorCertificateService {
 
     private Tutor findTutorByUserId(Long userId) {
         return tutorRepository.findByUserId(userId)
-            .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Tai khoan chua co ho so gia su"));
+            .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Tài khoản chưa có hồ sơ gia sư"));
     }
 
     private Tutor findTutorById(Long tutorId) {
         return tutorRepository.findById(tutorId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay ho so gia su"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy hồ sơ gia sư"));
     }
 
     private Long findTutorIdByUserId(Long userId) {
@@ -110,9 +110,9 @@ public class TutorCertificateService {
 
     private User validateAdmin(Long adminUserId) {
         User admin = userRepository.findById(adminUserId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Khong tim thay admin"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy quản trị viên"));
         if (admin.getRole() != UserRole.ADMIN) {
-            throw new AppException(HttpStatus.FORBIDDEN, "User khong phai admin");
+            throw new AppException(HttpStatus.FORBIDDEN, "Người dùng không phải quản trị viên");
         }
         return admin;
     }

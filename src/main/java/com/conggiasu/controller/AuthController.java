@@ -25,7 +25,7 @@ public class AuthController {
     public ApiResponse<LoginResponse> createTutorAccount(@Valid @RequestBody RegisterTutorAccountRequest request) {
         return ApiResponse.<LoginResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(authService.createTutorAccount(request))
             .build();
     }
@@ -34,7 +34,7 @@ public class AuthController {
     public ApiResponse<LoginResponse> createLearnerAccount(@Valid @RequestBody RegisterLearnerRequest request) {
         return ApiResponse.<LoginResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(authService.createLearnerAccount(request))
             .build();
     }
@@ -43,7 +43,7 @@ public class AuthController {
     public ApiResponse<LoginResponse> authenticate(@Valid @RequestBody LoginRequest request) {
         return ApiResponse.<LoginResponse>builder()
             .code(200)
-            .message("Success")
+            .message("Thành công")
             .result(authService.authenticate(request))
             .build();
     }

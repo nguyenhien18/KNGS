@@ -29,7 +29,7 @@ public class TutorProfileMutationService {
     public void validateUserConflicts(User user, TutorUpsertRequest request) {
         String phone = normalizeBlank(request.getPhone());
         if (phone != null && userRepository.existsByPhoneAndIdNot(phone, user.getId())) {
-            throw new AppException(HttpStatus.CONFLICT, "So dien thoai da ton tai");
+            throw new AppException(HttpStatus.CONFLICT, "Số điện thoại da ton tai");
         }
     }
 
@@ -54,13 +54,13 @@ public class TutorProfileMutationService {
         Set<Long> distinctSubjectIds = new HashSet<>(request.getSubjectIds());
         List<Subject> subjects = subjectRepository.findAllById(distinctSubjectIds);
         if (subjects.size() != distinctSubjectIds.size()) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Danh sach subjectIds khong hop le");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Danh sách subjectIds không hợp lệ");
         }
 
         Set<Long> distinctGradeIds = new HashSet<>(request.getGradeIds());
         List<Grade> grades = gradeRepository.findAllById(distinctGradeIds);
         if (grades.size() != distinctGradeIds.size()) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Danh sach gradeIds khong hop le");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Danh sách gradeIds không hợp lệ");
         }
 
         if (tutor.getId() != null) {

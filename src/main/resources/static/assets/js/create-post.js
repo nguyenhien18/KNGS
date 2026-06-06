@@ -1,18 +1,8 @@
-﻿(function () {
-  function ensureLearner() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'LEARNER') {
-      alert('Ban can dang nhap tai khoan hoc vien.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname);
-      return false;
-    }
-    return true;
-  }
-
-  if (!ensureLearner()) return;
+(function () {
+  if (!AuthGuard.requireLearner()) return;
 
   const headerRight = document.getElementById('headerRight');
-  if (headerRight && typeof renderUtilityHeaderRight === 'function') headerRight.innerHTML = renderUtilityHeaderRight();
+  if (headerRight && typeof renderUtilityHeaderRight === 'function') DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
 
   const form = document.getElementById('createPostForm');
@@ -28,6 +18,7 @@
   const provinceInput = document.getElementById('postProvince');
   const districtInput = document.getElementById('postDistrict');
   const addressInput = document.getElementById('postAddress');
+  const submitButton = form.querySelector('button[type="submit"]');
 
   async function loadLookups() {
     const [subjects, grades] = await Promise.all([
@@ -35,14 +26,20 @@
       ApiClient.get('/api/lookups/grades')
     ]);
 
-    subjectSelect.innerHTML = '<option value="">Chon mon hoc</option>';
+    DomUtils.setHtml(subjectSelect, '<option value="">Chọn môn học</option>');
     (subjects || []).forEach(function (s) {
-      subjectSelect.insertAdjacentHTML('beforeend', '<option value="' + s.id + '">' + s.name + '</option>');
+      const option = document.createElement('option');
+      option.value = String(s.id);
+      option.textContent = s.name || '';
+      subjectSelect.appendChild(option);
     });
 
-    gradeSelect.innerHTML = '<option value="">Chon khoi lop</option>';
+    DomUtils.setHtml(gradeSelect, '<option value="">Chọn khối lớp</option>');
     (grades || []).forEach(function (g) {
-      gradeSelect.insertAdjacentHTML('beforeend', '<option value="' + g.id + '">' + g.name + '</option>');
+      const option = document.createElement('option');
+      option.value = String(g.id);
+      option.textContent = g.name || '';
+      gradeSelect.appendChild(option);
     });
   }
 
@@ -53,13 +50,13 @@
     const teachingMode = modeSelect.value;
 
     if (!title || !subjectId || !gradeId || !teachingMode) {
-      throw new Error('Vui long nhap day du cac truong bat buoc (*).');
+      throw new Error('Vui lòng nhập đầy đủ các trường bắt buộc (*).');
     }
 
     const budgetRaw = (budgetInput.value || '').trim();
     const budgetNum = budgetRaw ? Number(budgetRaw) : null;
     if (budgetRaw && (!Number.isFinite(budgetNum) || budgetNum < 0)) {
-      throw new Error('Ngan sach khong hop le.');
+      throw new Error('Ngân sách không hợp lệ.');
     }
 
     return {
@@ -79,10 +76,12 @@
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
     try {
-      await ApiClient.post('/api/learner/posts', payload());
-      location.href = '/hoc-vien/learner-posts.html?created=1';
+      await UiUtils.withButtonLoading(submitButton, 'Đang xử lý...', async function () {
+        await ApiClient.post('/api/learner/posts', payload());
+        location.href = '/hoc-vien/learner-posts.html?created=1';
+      });
     } catch (err) {
-      alert(err.message || 'Tao bai dang that bai.');
+      alert(err.message || 'Tạo bài đăng thất bại.');
     }
   });
 
@@ -90,7 +89,7 @@
     try {
       await loadLookups();
     } catch (err) {
-      alert(err.message || 'Khong tai duoc danh muc mon hoc/khoi lop.');
+      alert(err.message || 'Không tải được danh mục môn học/khối lớp.');
     }
   })();
 })();

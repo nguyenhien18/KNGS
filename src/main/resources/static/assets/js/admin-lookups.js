@@ -1,19 +1,9 @@
 (function () {
-  function ensureAdmin() {
-    const user = ApiClient.getCurrentUser ? ApiClient.getCurrentUser() : null;
-    if (!ApiClient.getToken || !ApiClient.getToken() || !user || String(user.role || '').toUpperCase() !== 'ADMIN') {
-      alert('Bạn cần đăng nhập tài khoản admin.');
-      location.href = '/login.html?returnTo=' + encodeURIComponent(location.pathname);
-      return false;
-    }
-    return true;
-  }
-
-  if (!ensureAdmin()) return;
+  if (!AuthGuard.requireAdmin()) return;
 
   const headerRight = document.getElementById('headerRight');
   if (headerRight && typeof renderUtilityHeaderRight === 'function') {
-    headerRight.innerHTML = renderUtilityHeaderRight();
+    DomUtils.setHtml(headerRight, renderUtilityHeaderRight());
   }
   if (typeof renderHeaderExtras === 'function') renderHeaderExtras();
 
@@ -34,15 +24,6 @@
     kind: 'subject',
     id: null
   };
-
-  function esc(value) {
-    return String(value == null ? '' : value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
 
   function listHtml(rows, kind) {
     if (!rows.length) {
@@ -74,12 +55,12 @@
         ApiClient.get('/api/admin/lookups/subjects'),
         ApiClient.get('/api/admin/lookups/grades')
       ]);
-      subjectListEl.innerHTML = listHtml(Array.isArray(subjects) ? subjects : [], 'subject');
-      gradeListEl.innerHTML = listHtml(Array.isArray(grades) ? grades : [], 'grade');
+      DomUtils.setHtml(subjectListEl, listHtml(Array.isArray(subjects) ? subjects : [], 'subject'));
+      DomUtils.setHtml(gradeListEl, listHtml(Array.isArray(grades) ? grades : [], 'grade'));
     } catch (err) {
       const msg = esc(prettyError(err, 'Không tải được dữ liệu danh mục'));
-      subjectListEl.innerHTML = '<div class="mini-item"><h4>Lỗi</h4><p>' + msg + '</p></div>';
-      gradeListEl.innerHTML = '<div class="mini-item"><h4>Lỗi</h4><p>' + msg + '</p></div>';
+      DomUtils.setHtml(subjectListEl, '<div class="mini-item"><h4>Lỗi</h4><p>' + msg + '</p></div>');
+      DomUtils.setHtml(gradeListEl, '<div class="mini-item"><h4>Lỗi</h4><p>' + msg + '</p></div>');
     }
   }
 
@@ -125,41 +106,10 @@
   async function deleteItem(kind, id, name) {
     const label = kind === 'subject' ? 'môn học' : 'khối/lớp';
     if (!window.confirm('Xóa ' + label + ' "' + name + '"?')) return;
-    if (kind === 'subject') {
-      await fetch('/api/admin/lookups/subjects/' + encodeURIComponent(id), {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(ApiClient.getToken() ? { Authorization: 'Bearer ' + ApiClient.getToken() } : {})
-        }
-      }).then(async function (res) {
-        if (!res.ok) {
-          let msg = 'Xóa thất bại';
-          try {
-            const data = await res.json();
-            msg = data.message || msg;
-          } catch (_) {}
-          throw new Error(msg);
-        }
-      });
-    } else {
-      await fetch('/api/admin/lookups/grades/' + encodeURIComponent(id), {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(ApiClient.getToken() ? { Authorization: 'Bearer ' + ApiClient.getToken() } : {})
-        }
-      }).then(async function (res) {
-        if (!res.ok) {
-          let msg = 'Xóa thất bại';
-          try {
-            const data = await res.json();
-            msg = data.message || msg;
-          } catch (_) {}
-          throw new Error(msg);
-        }
-      });
-    }
+    const path = kind === 'subject'
+      ? '/api/admin/lookups/subjects/' + encodeURIComponent(id)
+      : '/api/admin/lookups/grades/' + encodeURIComponent(id);
+    await ApiClient.delete(path);
     await load();
   }
 

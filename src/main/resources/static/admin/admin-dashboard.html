@@ -1,48 +1,102 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Dashboard Admin</title>
-  <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
-<body class="page-bg">
-<header class="site-header">
-  <div class="container header-inner">
-    <div class="header-left">
-      <a href="/index.html" class="logo"><div class="logo-box"><i class="fas fa-graduation-cap"></i></div><span>Gia Su Viet</span></a>
-      <nav class="desktop-nav"><a href="/index.html">Trang chu</a><a href="/tim-gia-su.html">Tim gia su</a><a href="/lop-gia-su.html">Tim lop hoc</a></nav>
-    </div>
-    <div class="header-right" id="headerRight"></div>
-    <button id="mobileMenuButton" class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-  </div>
-  <div id="mobileMenu" class="mobile-menu hidden"></div>
-</header>
-<main class="page-section">
-  <div class="container">
-    <div class="heading"><h1>Dashboard Admin</h1><p>Tong quan tai khoan va cac yeu cau cho duyet</p></div>
-    <div class="kpi-grid">
-      <div class="kpi"><strong id="kpiUsers">0</strong><span>Tong nguoi dung</span></div>
-      <div class="kpi"><strong id="kpiTutors">0</strong><span>Tong gia su</span></div>
-      <div class="kpi"><strong id="kpiPendingPosts">0</strong><span>Bai dang cho duyet</span></div>
-      <div class="kpi"><strong id="kpiPendingCourses">0</strong><span>Khoa hoc cho duyet</span></div>
-    </div>
-    <div class="dashboard-grid" style="margin-top:24px">
-      <section class="dashboard-stack">
-        <div class="card-box"><h2 class="detail-section-title">Gia su cho duyet</h2><div id="pendingTutors" class="mini-list"></div></div>
-        <div class="card-box"><h2 class="detail-section-title">Bai dang cho duyet</h2><div id="pendingPosts" class="mini-list"></div></div>
-      </section>
-      <aside class="dashboard-stack">
-        <div class="card-box"><h2 class="detail-sidebar-title">Khoa hoc cho duyet</h2><div id="pendingCourses" class="mini-list"></div></div>
-      </aside>
-    </div>
-  </div>
-</main>
-<footer class="site-footer"></footer>
-<script src="../assets/js/app.js"></script>
-<script src="../assets/js/api-client.js"></script>
-<script src="../assets/js/admin-dashboard.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  </head>
+  <body class="page-bg admin-dashboard-page">
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="header-left">
+          <a href="/index.html" class="logo">
+            <div class="logo-box">
+              <i class="fas fa-graduation-cap">
+              </i>
+            </div>
+            <span>Gia Sư Việt</span>
+          </a>
+          <nav class="desktop-nav">
+            <a href="/index.html">Trang chủ</a>
+            <a href="/tim-gia-su.html">Tìm gia sư</a>
+            <a href="/lop-gia-su.html">Tìm lớp học</a>
+          </nav>
+        </div>
+        <div class="header-right" id="headerRight">
+        </div>
+        <button id="mobileMenuButton" class="mobile-menu-btn">
+          <i class="fas fa-bars">
+          </i>
+        </button>
+      </div>
+      <div id="mobileMenu" class="mobile-menu hidden">
+      </div>
+    </header>
+    <main class="page-section">
+      <div class="container">
+        <div class="heading">
+          <h1>Dashboard Admin</h1>
+          <p>Tổng quan tài khoản và các yêu cầu chờ duyệt</p>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi">
+            <strong id="kpiUsers">0</strong>
+            <span>Tổng người dùng</span>
+          </div>
+          <div class="kpi">
+            <strong id="kpiTutors">0</strong>
+            <span>Tổng gia sư</span>
+          </div>
+          <div class="kpi">
+            <strong id="kpiPendingPosts">0</strong>
+            <span>Bài đăng chờ duyệt</span>
+          </div>
+          <div class="kpi">
+            <strong id="kpiPendingCourses">0</strong>
+            <span>Khóa học chờ duyệt</span>
+          </div>
+        </div>
+        <div class="dashboard-grid">
+          <section class="dashboard-stack">
+            <div class="card-box">
+              <h2 class="detail-section-title">Gia sư chờ duyệt</h2>
+              <div id="pendingTutors" class="mini-list">
+              </div>
+            </div>
+            <div class="card-box">
+              <h2 class="detail-section-title">Bài đăng chờ duyệt</h2>
+              <div id="pendingPosts" class="mini-list">
+              </div>
+            </div>
+          </section>
+          <aside class="dashboard-stack">
+            <div class="card-box">
+              <h2 class="detail-sidebar-title">Khóa học chờ duyệt</h2>
+              <div id="pendingCourses" class="mini-list">
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+    <footer class="site-footer">
+    </footer>
+    <script src="../assets/js/format-utils.js">
+    </script>
+    <script src="../assets/js/dom-utils.js">
+    </script>
+    <script src="../assets/js/ui-utils.js">
+    </script>
+    <script src="../assets/js/app.js">
+    </script>
+    <script src="../assets/js/api-client.js">
+    </script>
+    <script src="../assets/js/auth-guard.js">
+    </script>
+    <script src="../assets/js/admin-dashboard.js">
+    </script>
+  </body>
 </html>
-

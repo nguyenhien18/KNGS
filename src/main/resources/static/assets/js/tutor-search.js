@@ -1,15 +1,11 @@
-const headerRight = document.getElementById("headerRight");
-if (headerRight && typeof renderUtilityHeaderRight === "function") {
-  headerRight.innerHTML = renderUtilityHeaderRight();
-}
-if (typeof renderHeaderExtras === "function") {
-  renderHeaderExtras();
-}
+UiUtils.renderHeader();
 
 const tutorNameInput = document.getElementById("tutorNameInput");
 const subjectSelect = document.getElementById("subjectSelect");
 const gradeSelect = document.getElementById("gradeSelect");
 const teachingModeSelect = document.getElementById("teachingModeSelect");
+const provinceInput = document.getElementById("provinceInput");
+const districtInput = document.getElementById("districtInput");
 const searchButton = document.getElementById("searchButton");
 const resultCount = document.getElementById("resultCount");
 const loadingState = document.getElementById("loadingState");
@@ -25,32 +21,36 @@ function stars(n) {
 
 function shortIntro(text) {
   const raw = String(text || "").replace(/\s+/g, " ").trim();
-  if (!raw) return "Gia su chua cap nhat loi gioi thieu.";
+  if (!raw) return "Gia sư chưa cập nhật lời giới thiệu.";
   return raw.length > 190 ? raw.slice(0, 190).trimEnd() + "..." : raw;
 }
 
 function renderTutorCard(t) {
   const avatar = t.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.fullName || "Tutor")}&background=2563eb&color=fff`;
-  const fee = t.hourlyRate ? `${new Intl.NumberFormat("vi-VN").format(t.hourlyRate)} d/buoi` : "Thoa thuan";
+  const fee = t.hourlyRate ? `${new Intl.NumberFormat("vi-VN").format(t.hourlyRate)} đ/buổi` : "Thỏa thuận";
   const intro = shortIntro(t.description);
-  const tags = (t.subjects || []).slice(0, 3);
+  const fullName = esc(t.fullName || "Gia sư");
+  const subjects = (t.subjects || []).slice(0, 3).join(", ") || "Chưa cập nhật môn";
+  const grades = (t.grades || []).slice(0, 3).join(", ") || "Chưa cập nhật khối";
+  const area = [t.district, t.province].filter(Boolean).join(", ") || "Chưa cập nhật khu vực";
+  const mode = t.teachingMode || "Linh hoat";
 
   return `
     <article class="tutor-card">
       <div class="tutor-card-body">
         <div class="tutor-header">
-          <img class="tutor-avatar" src="${avatar}" alt="${t.fullName || "Gia su"}">
+          <img class="tutor-avatar" src="${esc(avatar)}" alt="${fullName}">
           <div class="tutor-info">
-            <h3>${t.fullName || "Gia su"}</h3>
-            <div class="tutor-meta tutor-rating-row"><span style="color:#f59e0b">${stars(t.averageRating)}</span> (${t.reviewCount || 0})</div>
+            <h3>${fullName}</h3>
+            <div class="tutor-meta tutor-rating-row"><span class="rating-stars">${stars(t.averageRating)}</span> (${esc(t.reviewCount || 0)})</div>
           </div>
         </div>
-        <p class="tutor-intro">${intro}</p>
-        <p class="tutor-desc">${fee}</p>
-        <div class="tag-list">${tags.map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
+        <p class="tutor-meta">${esc(subjects)} · ${esc(grades)} · ${esc(area)}</p>
+        <p class="tutor-price">${esc(fee)} · ${esc(mode)}</p>
+        <p class="tutor-intro">${esc(intro)}</p>
       </div>
       <div class="tutor-card-footer">
-        <a class="btn btn-primary full-btn" href="gia-su-profile.html?id=${t.tutorId}">Xem chi tiet</a>
+        <a class="btn btn-primary full-btn" href="gia-su-profile.html?id=${encodeURIComponent(t.tutorId)}">Xem chi tiết</a>
       </div>
     </article>`;
 }
@@ -65,7 +65,7 @@ function render() {
   }
   noResults.classList.add("hidden");
   tutorResults.classList.remove("hidden");
-  tutorResults.innerHTML = tutors.map(renderTutorCard).join("");
+  DomUtils.setHtml(tutorResults, tutors.map(renderTutorCard).join(""));
 }
 
 function resolvePageItems(data) {
@@ -76,16 +76,16 @@ function resolvePageItems(data) {
 
 function appendOptions(selectEl, rows) {
   if (!selectEl || !Array.isArray(rows)) return;
-  const options = rows
-    .map(item => {
-      const id = Number(item && item.id);
-      const name = String((item && item.name) || "").trim();
-      if (!Number.isFinite(id) || !name) return "";
-      return `<option value="${id}">${name}</option>`;
-    })
-    .filter(Boolean)
-    .join("");
-  selectEl.insertAdjacentHTML("beforeend", options);
+  rows.forEach(item => {
+    const id = Number(item && item.id);
+    const name = String((item && item.name) || "").trim();
+    if (!Number.isFinite(id) || !name) return;
+
+    const option = document.createElement("option");
+    option.value = String(id);
+    option.textContent = name;
+    selectEl.appendChild(option);
+  });
 }
 
 function parseOptionalId(raw) {
@@ -117,6 +117,8 @@ async function run() {
       subjectId: parseOptionalId(subjectSelect.value),
       gradeId: parseOptionalId(gradeSelect.value),
       teachingMode: teachingModeSelect.value || undefined,
+      province: (provinceInput.value || "").trim() || undefined,
+      district: (districtInput.value || "").trim() || undefined,
       profileStatus: "APPROVED",
       page: 0,
       size: 30
@@ -129,8 +131,8 @@ async function run() {
     noResults.classList.remove("hidden");
     const title = noResults.querySelector("h3");
     const msg = noResults.querySelector("p");
-    if (title) title.textContent = "Loi tai du lieu gia su.";
-    if (msg) msg.textContent = (e && e.message) ? e.message : "Khong the tai danh sach gia su.";
+    if (title) title.textContent = "Lỗi tải dữ liệu gia sư.";
+    if (msg) msg.textContent = (e && e.message) ? e.message : "Không thể tải danh sách gia sư.";
     resultCount.textContent = "0";
     return;
   }
@@ -144,6 +146,12 @@ tutorNameInput.addEventListener("keydown", e => {
 subjectSelect.addEventListener("change", run);
 gradeSelect.addEventListener("change", run);
 teachingModeSelect.addEventListener("change", run);
+provinceInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") run();
+});
+districtInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") run();
+});
 
 run();
 loadLookups();
