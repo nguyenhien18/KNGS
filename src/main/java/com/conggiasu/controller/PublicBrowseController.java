@@ -59,11 +59,7 @@ public class PublicBrowseController {
             @RequestParam(required = false) String province,
             @RequestParam(required = false) String district,
             @RequestParam(defaultValue = "0") int page,
-<<<<<<< HEAD
             @RequestParam(defaultValue = "10") int size
-=======
-            @RequestParam(defaultValue = "20") int size
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<TutorCourseResponse>>builder()
             .code(200)
@@ -85,11 +81,7 @@ public class PublicBrowseController {
     public ApiResponse<PageResponse<TutorCourseResponse>> getAvailableCoursesByTutor(
         @PathVariable Long tutorId,
         @RequestParam(defaultValue = "0") int page,
-<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
-=======
-        @RequestParam(defaultValue = "20") int size
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<TutorCourseResponse>>builder()
             .code(200)
@@ -102,11 +94,7 @@ public class PublicBrowseController {
     public ApiResponse<PageResponse<TutorReviewResponse>> getTutorReviews(
         @PathVariable Long tutorId,
         @RequestParam(defaultValue = "0") int page,
-<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
-=======
-        @RequestParam(defaultValue = "20") int size
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<TutorReviewResponse>>builder()
             .code(200)

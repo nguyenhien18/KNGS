@@ -12,14 +12,11 @@
 
   let allRows = [];
   let currentStatus = 'ALL';
-<<<<<<< HEAD
   const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'learnerEnrollmentsPagination');
   let currentPage = 0;
   const pageSize = 10;
   let totalPages = 1;
   let totalElements = 0;
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
   function normalizeStatus(raw) {
     const s = String(raw || 'PENDING');
@@ -71,10 +68,7 @@
 
     if (!rows.length) {
       DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có đăng ký</h4><p>Không có dữ liệu ở bộ lọc hiện tại.</p></div>');
-<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       return;
     }
 
@@ -107,11 +101,8 @@
           '</div>' +
         '</article>';
     }).join(''));
-<<<<<<< HEAD
 
     UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
     listEl.querySelectorAll('button[data-cancel]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -122,7 +113,6 @@
 
   async function load() {
     try {
-<<<<<<< HEAD
       const page = await ApiClient.get('/api/learner/enrollments', { page: currentPage, size: pageSize });
       const info = UiUtils.pageInfo(page);
       allRows = info.content;
@@ -133,12 +123,6 @@
     } catch (err) {
       if (countEl) countEl.textContent = 'Không tải được dữ liệu';
       UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
-=======
-      allRows = ApiClient.asArray(await ApiClient.get('/api/learner/enrollments'));
-      render();
-    } catch (err) {
-      if (countEl) countEl.textContent = 'Không tải được dữ liệu';
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Lỗi</h4><p>' + safe(err.message || 'Không tải được đăng ký') + '</p></div>');
     }
   }

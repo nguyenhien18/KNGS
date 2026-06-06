@@ -34,7 +34,6 @@
     course: [],
     identity: []
   };
-<<<<<<< HEAD
   const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'adminReviewsPagination');
   const pageSize = 10;
   const pageState = {
@@ -43,8 +42,6 @@
     course: { page: 0, totalPages: 1, totalElements: 0 },
     identity: { page: 0, totalPages: 1, totalElements: 0 }
   };
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
   function statusBadgeLabel(kind) {
     if (kind === 'tutor') return 'PENDING PROFILE';
@@ -424,12 +421,8 @@
   function renderActiveList() {
     const rows = datasets[activeKind] || [];
     titleEl.textContent = sectionTitleByKind[activeKind];
-<<<<<<< HEAD
     const state = pageState[activeKind] || { page: 0, totalPages: 1, totalElements: rows.length };
     totalEl.textContent = state.totalElements + ' mục';
-=======
-    totalEl.textContent = rows.length + ' mục';
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
     if (!rows.length) {
       const emptyText = activeKind === 'tutor'
@@ -440,10 +433,7 @@
             ? 'Không có lớp/khóa học chờ duyệt.'
             : 'Không có xác minh danh tính chờ duyệt.';
       setHtml(listEl, '<div class="mini-item"><p>' + emptyText + '</p></div>');
-<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, state, function (nextPage) { loadDataset(activeKind, nextPage); });
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       return;
     }
 
@@ -553,25 +543,9 @@
         loadDataset('course', 0),
         loadDataset('identity', 0)
       ]);
-<<<<<<< HEAD
       renderActiveList();
     } catch (err) {
       UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
-=======
-      datasets = {
-        tutor: ApiClient.asArray(tutors),
-        post: ApiClient.asArray(posts),
-        course: ApiClient.asArray(courses),
-        identity: ApiClient.asArray(identities)
-      };
-
-      countTutorEl.textContent = String(datasets.tutor.length);
-      countPostEl.textContent = String(datasets.post.length);
-      countCourseEl.textContent = String(datasets.course.length);
-      countIdentityEl.textContent = String(datasets.identity.length);
-      renderActiveList();
-    } catch (err) {
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       setHtml(listEl, '<div class="mini-item"><p>' + escapeHtml(err.message || 'Không tải được dữ liệu duyệt') + '</p></div>');
     }
   }

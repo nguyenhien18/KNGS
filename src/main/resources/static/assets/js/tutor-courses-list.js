@@ -11,14 +11,11 @@
   const searchButton = document.getElementById('courseSearchButton');
   if (!list || !countEl) return;
 
-<<<<<<< HEAD
   const paginationEl = UiUtils.ensurePaginationAfter(list, 'coursePagination');
   let currentPage = 0;
   const pageSize = 10;
   let totalPages = 1;
 
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   function appendOptions(selectEl, rows) {
     if (!selectEl || !Array.isArray(rows)) return;
     rows.forEach((item) => {
@@ -59,7 +56,6 @@
         teachingMode: modeSelect && modeSelect.value ? modeSelect.value : undefined,
         province: provinceInput && provinceInput.value ? provinceInput.value.trim() : undefined,
         district: districtInput && districtInput.value ? districtInput.value.trim() : undefined,
-<<<<<<< HEAD
         page: currentPage,
         size: pageSize
       });
@@ -72,16 +68,6 @@
       if (!courses.length) {
         DomUtils.setHtml(list, '<div class="empty-state"><div><i class="fas fa-inbox"></i><h3>Chưa có dữ liệu lớp</h3><p>Hiện chưa có lớp gia sư mở nào.</p></div></div>');
         UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadCourses(); });
-=======
-        page: 0,
-        size: 50
-      });
-      const courses = ApiClient.asArray(rows);
-      countEl.textContent = String(courses.length);
-
-      if (!courses.length) {
-        DomUtils.setHtml(list, '<div class="empty-state"><div><i class="fas fa-inbox"></i><h3>Chưa có dữ liệu lớp</h3><p>Hiện chưa có lớp gia sư mở nào.</p></div></div>');
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
         return;
       }
 
@@ -112,7 +98,6 @@
             </div>
           </article>`;
       }).join(''));
-<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadCourses(); });
     } catch (err) {
       DomUtils.setHtml(list, `<div class="empty-state"><div><i class="fas fa-circle-exclamation"></i><h3>Lỗi tải dữ liệu</h3><p>${esc(err.message || 'Không thể tải danh sách lớp.')}</p></div></div>`);
@@ -124,25 +109,11 @@
   if (searchButton) searchButton.addEventListener('click', searchFromFirstPage);
   [subjectSelect, gradeSelect, modeSelect].forEach((el) => {
     if (el) el.addEventListener('change', searchFromFirstPage);
-=======
-    } catch (err) {
-      DomUtils.setHtml(list, `<div class="empty-state"><div><i class="fas fa-circle-exclamation"></i><h3>Lỗi tải dữ liệu</h3><p>${esc(err.message || 'Không thể tải danh sách lớp.')}</p></div></div>`);
-    }
-  }
-
-  if (searchButton) searchButton.addEventListener('click', loadCourses);
-  [subjectSelect, gradeSelect, modeSelect].forEach((el) => {
-    if (el) el.addEventListener('change', loadCourses);
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   });
   [provinceInput, districtInput].forEach((el) => {
     if (!el) return;
     el.addEventListener('keydown', (event) => {
-<<<<<<< HEAD
       if (event.key === 'Enter') searchFromFirstPage();
-=======
-      if (event.key === 'Enter') loadCourses();
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     });
   });
 

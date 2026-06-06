@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 (function () {
-=======
-﻿(function () {
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   UiUtils.renderHeader();
   if (!AuthGuard.requireTutor()) return;
 
@@ -66,10 +62,7 @@
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
     } catch (err) {
       DomUtils.setHtml(postsList, '<div class="mini-item"><h4>Lỗi tải dữ liệu</h4><p>' + safe(err.message || 'Vui lòng thử lại sau') + '</p></div>');
-<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     }
   }
 

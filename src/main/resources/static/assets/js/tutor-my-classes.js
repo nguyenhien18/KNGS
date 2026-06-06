@@ -323,16 +323,11 @@
   }
 
   function render() {
-<<<<<<< HEAD
     const allVisible = visibleItems();
     const totalPages = Math.max(1, Math.ceil(allVisible.length / pageSize));
     if (currentPage >= totalPages) currentPage = totalPages - 1;
     const rows = allVisible.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
     if (countEl) countEl.textContent = allVisible.length + ' lớp';
-=======
-    const rows = visibleItems();
-    if (countEl) countEl.textContent = rows.length + ' lớp';
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
     if (!rows.length) {
       const emptyText = allItems.length
@@ -340,10 +335,7 @@
         : 'Chưa có học viên nào trong lớp học.';
       const emptyTitle = allItems.length ? 'Không có lớp' : 'Chưa có học viên';
       setHtml(listEl, '<div class="mini-item"><h4>' + safe(emptyTitle) + '</h4><p>' + safe(emptyText) + '</p></div>');
-<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; render(); });
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       return;
     }
 
@@ -373,11 +365,8 @@
         '<div class="card-actions"><span class="muted">Trạng thái học tập: ' + safe(item.statusText) + '</span><div class="manage-action-group">' + actionButtons(item) + '</div></div>' +
       '</article>';
     }).join(''));
-<<<<<<< HEAD
 
     UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; render(); });
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
     if (focusSource || focusId || focusCourseId || focusClassId || focusPostId) {
       let targetItem = null;

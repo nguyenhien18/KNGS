@@ -38,11 +38,7 @@ function renderTutorCard(t) {
   const subjects = (t.subjects || []).slice(0, 3).join(", ") || "Chưa cập nhật môn";
   const grades = (t.grades || []).slice(0, 3).join(", ") || "Chưa cập nhật khối";
   const area = [t.district, t.province].filter(Boolean).join(", ") || "Chưa cập nhật khu vực";
-<<<<<<< HEAD
   const mode = t.teachingMode || "Linh hoạt";
-=======
-  const mode = t.teachingMode || "Linh hoat";
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
   return `
     <article class="tutor-card">
@@ -83,16 +79,7 @@ function render() {
   noResults.classList.add("hidden");
   tutorResults.classList.remove("hidden");
   DomUtils.setHtml(tutorResults, tutors.map(renderTutorCard).join(""));
-<<<<<<< HEAD
   renderPagination();
-=======
-}
-
-function resolvePageItems(data) {
-  if (data && Array.isArray(data.items)) return data.items;
-  if (data && Array.isArray(data.content)) return data.content;
-  return [];
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 }
 
 function appendOptions(selectEl, rows) {
@@ -101,10 +88,6 @@ function appendOptions(selectEl, rows) {
     const id = Number(item && item.id);
     const name = String((item && item.name) || "").trim();
     if (!Number.isFinite(id) || !name) return;
-<<<<<<< HEAD
-=======
-
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     const option = document.createElement("option");
     option.value = String(id);
     option.textContent = name;
@@ -188,18 +171,6 @@ provinceInput.addEventListener("keydown", e => {
 districtInput.addEventListener("keydown", e => {
   if (e.key === "Enter") searchFromFirstPage();
 });
-<<<<<<< HEAD
-=======
-subjectSelect.addEventListener("change", run);
-gradeSelect.addEventListener("change", run);
-teachingModeSelect.addEventListener("change", run);
-provinceInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") run();
-});
-districtInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") run();
-});
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
 run();
 loadLookups();

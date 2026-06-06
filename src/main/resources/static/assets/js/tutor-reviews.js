@@ -73,10 +73,7 @@
 
     if (!count) {
       DomUtils.setHtml(listEl, '<div class="card-box empty-state"><div><i class="fas fa-star-half-alt"></i><h3>Chưa có đánh giá</h3><p>Đánh giá từ học viên sẽ hiển thị tại đây.</p></div></div>');
-<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadReviews(); });
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       return;
     }
 
@@ -88,7 +85,6 @@
       + '<p>' + escapeHtml(review.comment || '(Không có nhận xét)') + '</p>'
       + '</div></div>'
     ).join(''));
-<<<<<<< HEAD
     UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; loadReviews(); });
   }
 
@@ -104,22 +100,10 @@
       alert(err.message || 'Không tải được danh sách đánh giá.');
       UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
     }
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   }
 
   (async function init() {
     if (!ensureTutorAuth()) return;
-<<<<<<< HEAD
     await loadReviews();
-=======
-    try {
-      const rows = await ApiClient.get('/api/tutor/reviews');
-      const reviews = filterReviews(ApiClient.asArray(rows));
-      render(reviews);
-    } catch (err) {
-      alert(err.message || 'Không tải được danh sách đánh giá.');
-    }
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
   })();
 })();

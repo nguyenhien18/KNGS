@@ -52,11 +52,7 @@ public class AdminController {
         @RequestParam(required = false) UserRole role,
         @RequestParam(required = false) UserStatus status,
         @RequestParam(defaultValue = "0") int page,
-<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
-=======
-        @RequestParam(defaultValue = "20") int size
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<AdminUserResponse>>builder()
             .code(200)
@@ -78,11 +74,7 @@ public class AdminController {
     @GetMapping("/tutors/pending")
     public ApiResponse<PageResponse<TutorSummaryResponse>> getPendingTutors(
         @RequestParam(defaultValue = "0") int page,
-<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
-=======
-        @RequestParam(defaultValue = "20") int size
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<TutorSummaryResponse>>builder()
             .code(200)
@@ -122,11 +114,7 @@ public class AdminController {
     @GetMapping("/identity-verifications/pending")
     public ApiResponse<PageResponse<IdentityVerificationResponse>> getPendingIdentityVerifications(
         @RequestParam(defaultValue = "0") int page,
-<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
-=======
-        @RequestParam(defaultValue = "20") int size
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<IdentityVerificationResponse>>builder()
             .code(200)
@@ -160,11 +148,7 @@ public class AdminController {
     @GetMapping("/posts/pending")
     public ApiResponse<PageResponse<LearnerPostResponse>> getPendingPosts(
         @RequestParam(defaultValue = "0") int page,
-<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
-=======
-        @RequestParam(defaultValue = "20") int size
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<LearnerPostResponse>>builder()
             .code(200)
@@ -186,11 +170,7 @@ public class AdminController {
     @GetMapping("/courses/pending")
     public ApiResponse<PageResponse<TutorCourseResponse>> getPendingCourses(
         @RequestParam(defaultValue = "0") int page,
-<<<<<<< HEAD
         @RequestParam(defaultValue = "10") int size
-=======
-        @RequestParam(defaultValue = "20") int size
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
     ) {
         return ApiResponse.<PageResponse<TutorCourseResponse>>builder()
             .code(200)

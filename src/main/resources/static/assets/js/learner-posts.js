@@ -17,14 +17,11 @@
   let allRows = [];
   let currentFilter = 'ALL';
   let activePostId = null;
-<<<<<<< HEAD
   const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'learnerPostsPagination');
   let currentPage = 0;
   const pageSize = 10;
   let totalPages = 1;
   let totalElements = 0;
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
   function modeText(value) {
     if (value === 'ONLINE') return 'Online';
@@ -164,10 +161,7 @@
 
     if (!rows.length) {
       DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có dữ liệu</h4><p>Không có bài đăng ở bộ lọc hiện tại.</p></div>');
-<<<<<<< HEAD
       UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       return;
     }
 
@@ -200,11 +194,8 @@
           '</div>' +
         '</article>';
     }).join(''));
-<<<<<<< HEAD
 
     UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
-=======
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
 
     listEl.querySelectorAll('button[data-cancel]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -221,7 +212,6 @@
 
   async function load() {
     try {
-<<<<<<< HEAD
       const query = { page: currentPage, size: pageSize };
       if (currentFilter !== 'ALL' && currentFilter !== 'CANCELLED') query.approvalStatus = currentFilter;
       const page = await ApiClient.get('/api/learner/posts', query);
@@ -234,12 +224,6 @@
     } catch (err) {
       if (countEl) countEl.textContent = 'Không tải được dữ liệu';
       UiUtils.renderSimplePagination(paginationEl, { page: 0, totalPages: 1 }, function () {});
-=======
-      allRows = ApiClient.asArray(await ApiClient.get('/api/learner/posts'));
-      render();
-    } catch (err) {
-      if (countEl) countEl.textContent = 'Không tải được dữ liệu';
->>>>>>> c0ad3c416d7d0f2655469575cb17f19e0b77f88b
       DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Lỗi tải dữ liệu</h4><p>' + safe(err.message || 'Vui lòng thử lại') + '</p></div>');
     }
   }
