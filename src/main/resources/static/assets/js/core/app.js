@@ -65,7 +65,7 @@
         <a href="/index.html" class="${homeActive}">Trang chủ</a>
         <a href="/tim-gia-su.html" class="${tutorActive}">Tìm gia sư</a>
         <div class="nav-dropdown ${classActive}">
-          <a href="#" class="nav-dropdown-trigger ${classActive}" aria-haspopup="true" aria-expanded="false">Tìm lớp học <i class="fas fa-chevron-down"></i></a>
+          <button type="button" class="nav-dropdown-trigger ${classActive}" aria-haspopup="true" aria-expanded="false">Tìm lớp học <i class="fas fa-chevron-down"></i></button>
           <div class="nav-dropdown-menu">
             <a href="/lop-gia-su.html">Lớp gia sư mở</a>
             <a href="/bai-dang-phu-huynh.html">Lớp học viên đăng</a>
@@ -249,7 +249,7 @@
       if (!window.ApiClient || typeof ApiClient.get !== 'function') return;
       if (!ApiClient.getToken || !ApiClient.getToken()) return;
       try {
-        const rows = await ApiClient.get('/api/notifications');
+        const rows = await ApiClient.get('/api/notifications', { page: 0, size: 10 });
         const allRows = ApiClient.asArray(rows);
         const items = allRows
           .slice()

@@ -15,11 +15,12 @@
 
   async function init() {
     try {
+      const pageParams = { page: 0, size: 10 };
       const [stats, pendingTutors, pendingPosts, pendingCourses] = await Promise.all([
         ApiClient.get('/api/admin/stats'),
-        ApiClient.get('/api/admin/tutors/pending'),
-        ApiClient.get('/api/admin/posts/pending'),
-        ApiClient.get('/api/admin/courses/pending')
+        ApiClient.get('/api/admin/tutors/pending', pageParams),
+        ApiClient.get('/api/admin/posts/pending', pageParams),
+        ApiClient.get('/api/admin/courses/pending', pageParams)
       ]);
 
       document.getElementById('kpiUsers').textContent = String(stats.totalUsers || 0);

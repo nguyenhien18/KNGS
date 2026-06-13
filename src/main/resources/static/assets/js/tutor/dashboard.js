@@ -33,11 +33,13 @@
 
   async function init() {
     try {
-      const [postsPage, applications, courses, unreadNotifications, tutorMe] = await Promise.all([
-        ApiClient.get('/api/tutor/posts/available', { page: 0, size: 5 }),
-        ApiClient.get('/api/tutor/applications'),
-        ApiClient.get('/api/tutor/courses'),
-        ApiClient.get('/api/notifications', { unreadOnly: true }),
+      const pageSize = 10;
+      const [postsPage, applications, pendingApplications, courses, unreadNotifications, tutorMe] = await Promise.all([
+        ApiClient.get('/api/tutor/posts/available', { page: 0, size: pageSize }),
+        ApiClient.get('/api/tutor/applications', { page: 0, size: pageSize }),
+        ApiClient.get('/api/tutor/applications', { status: 'PENDING', page: 0, size: pageSize }),
+        ApiClient.get('/api/tutor/courses', { page: 0, size: pageSize }),
+        ApiClient.get('/api/notifications', { unreadOnly: true, page: 0, size: pageSize }),
         ApiClient.get('/api/tutors/me')
       ]);
 
@@ -45,7 +47,7 @@
       const applicationRows = ApiClient.asArray(applications);
       const courseRows = ApiClient.asArray(courses);
       const unreadRows = ApiClient.asArray(unreadNotifications);
-      const pendingApps = applicationRows.filter(function (a) { return a.status === 'PENDING'; });
+      const pendingApps = ApiClient.asArray(pendingApplications);
       const sortedApps = applicationRows.slice().sort(function (a, b) {
         return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
       });
@@ -54,7 +56,7 @@
       });
 
       document.getElementById('kpiPosts').textContent = String(postsPage && postsPage.totalElements ? postsPage.totalElements : posts.length);
-      document.getElementById('kpiPendingApps').textContent = String(pendingApps.length);
+      document.getElementById('kpiPendingApps').textContent = String(pendingApplications && pendingApplications.totalElements != null ? pendingApplications.totalElements : pendingApps.length);
       document.getElementById('kpiCourses').textContent = String(courses && courses.totalElements != null ? courses.totalElements : courseRows.length);
       document.getElementById('kpiUnreadNoti').textContent = String(unreadNotifications && unreadNotifications.totalElements != null ? unreadNotifications.totalElements : unreadRows.length);
 

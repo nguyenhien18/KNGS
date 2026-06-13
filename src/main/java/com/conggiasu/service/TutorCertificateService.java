@@ -52,7 +52,7 @@ public class TutorCertificateService {
     public TutorCertificateResponse updateMyCertificate(Long tutorUserId, Long certificateId, TutorCertificateUpsertRequest request) {
         Long tutorId = findTutorIdByUserId(tutorUserId);
         TutorCertificate certificate = tutorCertificateRepository.findByIdAndTutorId(certificateId, tutorId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tim thay bằng cấp"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy bằng cấp"));
         applyRequest(certificate, request);
         certificate = tutorCertificateRepository.save(certificate);
         return toResponse(certificate);
@@ -62,7 +62,7 @@ public class TutorCertificateService {
     public void deleteMyCertificate(Long tutorUserId, Long certificateId) {
         Long tutorId = findTutorIdByUserId(tutorUserId);
         TutorCertificate certificate = tutorCertificateRepository.findByIdAndTutorId(certificateId, tutorId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tim thay bằng cấp"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy bằng cấp"));
         tutorCertificateRepository.delete(certificate);
     }
 
@@ -83,7 +83,7 @@ public class TutorCertificateService {
     }
 
     private void applyRequest(TutorCertificate certificate, TutorCertificateUpsertRequest request) {
-        certificate.setTitle(trimOrThrow(request.getTitle(), "Tiêu đề bằng cấp không được de trong"));
+        certificate.setTitle(trimOrThrow(request.getTitle(), "Tiêu đề bằng cấp không được để trống"));
         certificate.setCertificateType(trimToNull(request.getCertificateType()));
         certificate.setIssuer(trimToNull(request.getIssuer()));
         certificate.setIssuedDate(request.getIssuedDate());

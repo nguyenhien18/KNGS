@@ -71,8 +71,9 @@
       btn.addEventListener('click', async function () {
         const id = btn.getAttribute('data-enroll');
         try {
-          const enrollments = ApiClient.asArray(await ApiClient.get('/api/tutor/courses/' + encodeURIComponent(id) + '/enrollments'));
-          alert('Lớp #' + id + ' có ' + enrollments.length + ' đăng ký.');
+          const enrollmentsPage = await ApiClient.get('/api/tutor/courses/' + encodeURIComponent(id) + '/enrollments', { page: 0, size: 10 });
+          const info = UiUtils.pageInfo(enrollmentsPage);
+          alert('Lớp #' + id + ' có ' + info.totalElements + ' đăng ký.');
         } catch (err) {
           alert(err.message || 'Không tải được danh sách đăng ký.');
         }

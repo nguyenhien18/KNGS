@@ -39,7 +39,7 @@ public class TutorCertificateSyncService {
         List<TutorCertificate> toSave = new ArrayList<>();
 
         for (TutorCertificateUpsertRequest request : certificates) {
-            String incomingTitle = normalizeRequired(request.getTitle(), "Tiêu đề bằng cấp không được de trong");
+            String incomingTitle = normalizeRequired(request.getTitle(), "Tiêu đề bằng cấp không được để trống");
             String key = normalizeKey(incomingTitle);
             TutorCertificate matched = null;
             Deque<TutorCertificate> bucket = existingByTitle.get(key);

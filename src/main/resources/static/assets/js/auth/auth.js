@@ -1,5 +1,5 @@
 let activeRole = 'learner';
-const API_BASE = window.API_BASE || 'http://localhost:8088';
+const API_BASE = window.API_BASE || '';
 
 function normalize(v) {
   return String(v || '').trim();
@@ -153,11 +153,15 @@ async function handleRegister(e) {
     const payload = buildRegisterPayload();
     const res = await request(payload.path, payload.body);
 
-    if (activeRole === 'learner' && res && res.accessToken) {
+    if (res && res.accessToken) {
       saveAuth(res);
-      showAlert('registerSuccess', 'Đăng ký thành công! Đang chuyển về trang chủ...');
+      const nextUrl = activeRole === 'tutor' ? '/gia-su/profile.html' : '/index.html';
+      const message = activeRole === 'tutor'
+        ? 'Đăng ký thành công! Đang chuyển sang hồ sơ gia sư...'
+        : 'Đăng ký thành công! Đang chuyển về trang chủ...';
+      showAlert('registerSuccess', message);
       setTimeout(() => {
-        location.href = '/index.html';
+        location.href = nextUrl;
       }, 1200);
       return;
     }

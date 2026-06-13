@@ -1,5 +1,5 @@
 window.ApiClient = (function () {
-  const API_BASE = window.API_BASE || "http://localhost:8088";
+  const API_BASE = window.API_BASE || "";
   const TOKEN_KEY = "accessToken";
   const USER_KEY = "currentUser";
 
@@ -102,6 +102,29 @@ window.ApiClient = (function () {
     return [];
   }
 
+  async function getAll(path, params) {
+    const baseParams = { ...(params || {}) };
+    const size = Number(baseParams.size || 10);
+    let page = Number(baseParams.page || 0);
+    const items = [];
+
+    delete baseParams.page;
+    delete baseParams.size;
+
+    for (let guard = 0; guard < 100; guard += 1) {
+      const data = await request(`${path}${encodeQuery({ ...baseParams, page, size })}`, { method: "GET" });
+      const rows = asArray(data);
+      items.push(...rows);
+
+      if (!data || !Array.isArray(data.content)) break;
+      if (data.last || page + 1 >= Number(data.totalPages || 0)) break;
+
+      page += 1;
+    }
+
+    return items;
+  }
+
   return {
     getToken,
     setToken,
@@ -109,6 +132,7 @@ window.ApiClient = (function () {
     getCurrentUser,
     setCurrentUser,
     asArray,
+    getAll,
     get(path, params) {
       return request(`${path}${encodeQuery(params)}`, { method: "GET" });
     },

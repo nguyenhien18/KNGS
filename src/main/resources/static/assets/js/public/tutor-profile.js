@@ -171,8 +171,8 @@
         : ApiClient.get(`/api/tutors/${tutorId}`));
 
       const [courses, reviews] = await Promise.all([
-        ApiClient.get(`/api/public/tutors/${tutorId}/courses`).catch(() => []),
-        ApiClient.get(`/api/public/tutors/${tutorId}/reviews`).catch(() => [])
+        ApiClient.get(`/api/public/tutors/${tutorId}/courses`, { page: 0, size: 10 }).catch(() => []),
+        ApiClient.get(`/api/public/tutors/${tutorId}/reviews`, { page: 0, size: 10 }).catch(() => [])
       ]);
 
       renderTutorHeader(tutor || {});

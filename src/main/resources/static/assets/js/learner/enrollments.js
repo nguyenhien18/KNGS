@@ -17,39 +17,51 @@
   const pageSize = 10;
   let totalPages = 1;
   let totalElements = 0;
+  const knownStatuses = ['PENDING', 'ACCEPTED', 'REJECTED', 'COMPLETED', 'CANCELLED'];
 
   function normalizeStatus(raw) {
     const s = String(raw || 'PENDING');
-    if (s === 'ACCEPTED') return 'ACCEPTED';
-    if (s === 'PENDING') return 'PENDING';
-    return 'CANCELLED';
+    return knownStatuses.indexOf(s) >= 0 ? s : 'PENDING';
   }
 
   function statusMeta(status) {
     const map = {
       PENDING: { text: 'Đang chờ', badgeClass: 'badge-warning' },
       ACCEPTED: { text: 'Được chấp nhận', badgeClass: 'badge-success' },
+      REJECTED: { text: 'Bị từ chối', badgeClass: 'badge-danger' },
+      COMPLETED: { text: 'Đã hoàn thành', badgeClass: 'badge-success' },
       CANCELLED: { text: 'Đã hủy', badgeClass: 'badge-gray' }
     };
-    return map[status] || map.CANCELLED;
+    return map[status] || map.PENDING;
   }
 
   function helperText(status) {
     if (status === 'PENDING') return 'Đơn đăng ký đang chờ gia sư xác nhận.';
     if (status === 'ACCEPTED') return 'Đơn đăng ký đã được chấp nhận. Bấm "Xem lớp học" để chuyển sang quản lý lớp học.';
-    return 'Đơn đăng ký đã kết thúc hoặc bị hủy.';
+    if (status === 'REJECTED') return 'Đăng ký đã bị gia sư từ chối.';
+    if (status === 'COMPLETED') return 'Lớp học đã hoàn thành.';
+    return 'Đăng ký đã được hủy.';
   }
 
   function filterRows(rows) {
     const base = rows.filter(function (item) {
-      const n = normalizeStatus(item.status);
-      return n === 'PENDING' || n === 'ACCEPTED' || n === 'CANCELLED';
+      return knownStatuses.indexOf(normalizeStatus(item.status)) >= 0;
     });
 
     if (currentStatus === 'ALL') return base;
     return base.filter(function (item) {
       return normalizeStatus(item.status) === currentStatus;
     });
+  }
+
+  function pageRows(rows) {
+    totalElements = rows.length;
+    totalPages = Math.max(1, Math.ceil(totalElements / pageSize));
+    if (currentPage >= totalPages) currentPage = totalPages - 1;
+    if (currentPage < 0) currentPage = 0;
+
+    const start = currentPage * pageSize;
+    return rows.slice(start, start + pageSize);
   }
 
   async function cancelEnrollment(id) {
@@ -63,12 +75,13 @@
   }
 
   function render() {
-    const rows = filterRows(allRows);
+    const filteredRows = filterRows(allRows);
+    const rows = pageRows(filteredRows);
     if (countEl) countEl.textContent = totalElements + ' đăng ký';
 
     if (!rows.length) {
       DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có đăng ký</h4><p>Không có dữ liệu ở bộ lọc hiện tại.</p></div>');
-      UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
+      UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; render(); });
       return;
     }
 
@@ -76,7 +89,7 @@
       const normalized = normalizeStatus(e.status);
       const meta = statusMeta(normalized);
       const canCancel = normalized === 'PENDING';
-      const canViewClass = normalized === 'ACCEPTED';
+      const canViewClass = normalized === 'ACCEPTED' || normalized === 'COMPLETED';
 
       return '' +
         '<article class="list-card">' +
@@ -102,7 +115,7 @@
         '</article>';
     }).join(''));
 
-    UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
+    UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; render(); });
 
     listEl.querySelectorAll('button[data-cancel]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -113,12 +126,7 @@
 
   async function load() {
     try {
-      const page = await ApiClient.get('/api/learner/enrollments', { page: currentPage, size: pageSize });
-      const info = UiUtils.pageInfo(page);
-      allRows = info.content;
-      currentPage = info.page;
-      totalPages = info.totalPages;
-      totalElements = info.totalElements;
+      allRows = await ApiClient.getAll('/api/learner/enrollments', { size: pageSize });
       render();
     } catch (err) {
       if (countEl) countEl.textContent = 'Không tải được dữ liệu';

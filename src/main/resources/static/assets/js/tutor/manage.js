@@ -121,8 +121,7 @@ function asArray(value) {
   }
 
   async function loadEnrollments(courseId) {
-    const rowsRaw = await ApiClient.get(`/api/tutor/courses/${courseId}/enrollments`);
-    const rows = asArray(rowsRaw);
+    const rows = await ApiClient.getAll(`/api/tutor/courses/${courseId}/enrollments`, { size: 10 });
     DomUtils.setHtml(studentsModalContent, rows.length
       ? rows.map((e) => `
           <div class="student-item student-item-spaced">
@@ -147,8 +146,7 @@ function asArray(value) {
   }
 
   async function loadCourses() {
-    const rowsRaw = await ApiClient.get('/api/tutor/courses');
-    courses = asArray(rowsRaw);
+    courses = await ApiClient.getAll('/api/tutor/courses', { size: 10 });
     render();
   }
 
@@ -197,8 +195,7 @@ function asArray(value) {
 
     if (viewClassBtn) {
       try {
-        const rowsRaw = await ApiClient.get(`/api/tutor/courses/${courseId}/enrollments`);
-        const rows = asArray(rowsRaw);
+        const rows = await ApiClient.getAll(`/api/tutor/courses/${courseId}/enrollments`, { size: 10 });
         if (!hasAcceptedLearner(rows)) {
           alert('Chưa có học viên. Lớp học chỉ được tạo khi có học viên được chấp nhận.');
           return;

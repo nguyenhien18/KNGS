@@ -66,7 +66,7 @@
                   <h1>Hồ sơ cá nhân</h1>
                   <p>Cập nhật thông tin đúng với dữ liệu hệ thống đang hỗ trợ lưu trữ.</p>
                 </div>
-                <a id="viewMyPublicProfile" href="#" class="btn btn-outline-primary">
+                <a id="viewMyPublicProfile" class="btn btn-outline-primary hidden">
                   <i class="fas fa-eye">
                   </i> Xem hồ sơ của tôi
                 </a>
@@ -216,7 +216,7 @@
                         </i> Tải ảnh bằng cấp</label>
                       <input id="certificateImageFile" type="file" class="hidden" accept="image/*">
                       <input id="certificateImageUrlInput" placeholder="Hoặc dán link ảnh bằng cấp (nếu có)">
-                      <a id="certificateImagePreview" class="text-link hidden" href="#" target="_blank" rel="noopener">Xem ảnh</a>
+                      <a id="certificateImagePreview" class="text-link hidden" target="_blank" rel="noopener">Xem ảnh</a>
                     </div>
                     <p class="helper-text">Trên hồ sơ cá nhân chỉ hiển thị tên bằng cấp. Ảnh bằng cấp (nếu có) chỉ admin xem.</p>
                   </div>
@@ -247,7 +247,7 @@
                   <input type="password">
                 </div>
                 <div class="password-footer">
-                  <a href="#" class="text-link">Quên mật khẩu?</a>
+                  <span class="text-link muted">Quên mật khẩu?</span>
                   <button class="btn btn-primary btn-lg">
                     <i class="fas fa-save">
                     </i> Đổi mật khẩu</button>
@@ -297,7 +297,7 @@
                         <i class="fas fa-upload">
                         </i> Chọn ảnh từ máy</label>
                       <input id="idFrontFile" type="file" class="hidden" accept="image/*">
-                      <a id="idFrontPreview" class="text-link hidden" href="#" target="_blank" rel="noopener">Xem ảnh</a>
+                      <a id="idFrontPreview" class="text-link hidden" target="_blank" rel="noopener">Xem ảnh</a>
                     </div>
                   </div>
                   <div class="form-group">
@@ -308,7 +308,7 @@
                         <i class="fas fa-upload">
                         </i> Chọn ảnh từ máy</label>
                       <input id="idBackFile" type="file" class="hidden" accept="image/*">
-                      <a id="idBackPreview" class="text-link hidden" href="#" target="_blank" rel="noopener">Xem ảnh</a>
+                      <a id="idBackPreview" class="text-link hidden" target="_blank" rel="noopener">Xem ảnh</a>
                     </div>
                   </div>
                   <div class="form-group">
@@ -319,7 +319,7 @@
                         <i class="fas fa-upload">
                         </i> Chọn ảnh từ máy</label>
                       <input id="idSelfieFile" type="file" class="hidden" accept="image/*">
-                      <a id="idSelfiePreview" class="text-link hidden" href="#" target="_blank" rel="noopener">Xem ảnh</a>
+                      <a id="idSelfiePreview" class="text-link hidden" target="_blank" rel="noopener">Xem ảnh</a>
                     </div>
                   </div>
                 </div>
@@ -344,55 +344,33 @@
       </div>
     </main>
     <footer class="site-footer">
-      <div class="container footer-grid">
-        <div>
-          <div class="logo footer-logo">
-            <div class="logo-box">
-              <i class="fas fa-graduation-cap">
-              </i>
-            </div>
-            <span>Cổng Gia Sư</span>
-          </div>
-          <p>Nền tảng kết nối gia sư và học viên hàng đầu Việt Nam</p>
-          <p>Địa chỉ: 122 Hoàng Quốc Việt, Cầu Giấy, Hà Nội</p>
-        </div>
-        <div>
-          <h3>Dành cho học viên</h3>
-          <a href="/lop-gia-su.html">Tìm gia sư</a>
-          <a href="#">Cách thức hoạt động</a>
-          <a href="#">Bảng giá</a>
-          <a href="#">Câu hỏi thường gặp</a>
-        </div>
-        <div>
-          <h3>Dành cho gia sư</h3>
-          <a href="#">Trở thành gia sư</a>
-          <a href="#">Hướng dẫn đăng lớp</a>
-          <a href="#">Chính sách hoa hồng</a>
-          <a href="#">Công cụ gia sư</a>
-        </div>
-        <div>
-          <h3>Hỗ trợ</h3>
-          <a href="#">Trung tâm trợ giúp</a>
-          <a href="#">Liên hệ</a>
-          <a href="#">Điều khoản sử dụng</a>
-          <a href="#">Chính sách bảo mật</a>
-        </div>
-      </div>
-      <div class="footer-bottom">© 2025 Cổng Gia Sư. Tất cả quyền được bảo lưu.</div>
-    </footer>
-    <script src="../assets/js/format-utils.js">
+  <div class="container footer-inner">
+    <span>Gia Sư Việt</span>
+    <nav>
+      <a href="/index.html">Trang chủ</a>
+      <a href="/tim-gia-su.html">Tìm gia sư</a>
+      <a href="/lop-gia-su.html">Lớp gia sư mở</a>
+      <a href="/bai-dang-phu-huynh.html">Lớp học viên đăng</a>
+    </nav>
+  </div>
+</footer>
+    <script src="../assets/js/core/format-utils.js">
     </script>
-    <script src="../assets/js/dom-utils.js">
+    <script src="../assets/js/core/dom-utils.js">
     </script>
-    <script src="../assets/js/ui-utils.js">
+    <script src="../assets/js/core/ui-utils.js">
     </script>
-    <script src="../assets/js/app.js">
+    <script src="../assets/js/core/app.js">
     </script>
-    <script src="../assets/js/api-client.js">
+    <script src="../assets/js/core/api-client.js">
     </script>
-    <script src="../assets/js/auth-guard.js">
+    <script src="../assets/js/core/auth-guard.js">
     </script>
-    <script src="../assets/js/profile.js?v=20260422-5">
+    <script src="../assets/js/tutor/profile-certificates.js?v=20260612-1">
+    </script>
+    <script src="../assets/js/tutor/profile-identity.js?v=20260612-1">
+    </script>
+    <script src="../assets/js/tutor/profile.js?v=20260612-split-1">
     </script>
   </body>
 </html>

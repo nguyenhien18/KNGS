@@ -75,7 +75,7 @@ public class NotificationService {
     @Transactional
     public NotificationResponse markRead(Long userId, Long notificationId) {
         Notification n = notificationRepository.findByIdAndUserId(notificationId, userId)
-            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tim thay thông báo"));
+            .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy thông báo"));
         n.setIsRead(true);
         n.setReadAt(LocalDateTime.now());
         return toResponse(notificationRepository.save(n));

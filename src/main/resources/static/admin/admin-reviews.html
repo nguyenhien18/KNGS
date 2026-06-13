@@ -77,21 +77,47 @@
         </div>
       </div>
     </div>
+    <div id="rejectReasonModal" class="modal-backdrop hidden" data-reject-close="true">
+      <div class="modal-box modal-md reject-reason-modal" role="dialog" aria-modal="true" aria-labelledby="rejectReasonTitle">
+        <div class="modal-header">
+          <h3 id="rejectReasonTitle">Lý do từ chối</h3>
+          <button class="modal-close" type="button" data-reject-close="true">&times;</button>
+        </div>
+        <form id="rejectReasonForm" class="modal-body reject-reason-form">
+          <div class="form-group">
+            <label for="rejectReasonInput">Lý do</label>
+            <textarea id="rejectReasonInput" rows="4" maxlength="255" placeholder="Nhập lý do từ chối"></textarea>
+          </div>
+          <div class="reject-reason-actions">
+            <button type="button" class="btn btn-soft" data-reject-close="true">Hủy</button>
+            <button type="submit" class="btn btn-primary">Gửi</button>
+          </div>
+        </form>
+      </div>
+    </div>
     <footer class="site-footer">
     </footer>
-    <script src="../assets/js/format-utils.js">
+    <script src="../assets/js/core/format-utils.js">
     </script>
-    <script src="../assets/js/dom-utils.js">
+    <script src="../assets/js/core/dom-utils.js">
     </script>
-    <script src="../assets/js/ui-utils.js">
+    <script src="../assets/js/core/ui-utils.js">
     </script>
-    <script src="../assets/js/app.js">
+    <script src="../assets/js/core/app.js">
     </script>
-    <script src="../assets/js/api-client.js">
+    <script src="../assets/js/core/api-client.js">
     </script>
-    <script src="../assets/js/auth-guard.js">
+    <script src="../assets/js/core/auth-guard.js">
     </script>
-    <script src="../assets/js/admin-reviews.js?v=20260422-3">
+    <script src="../assets/js/admin/review-api.js">
+    </script>
+    <script src="../assets/js/admin/review-list.js">
+    </script>
+    <script src="../assets/js/admin/image-lightbox.js">
+    </script>
+    <script src="../assets/js/admin/review-detail.js">
+    </script>
+    <script src="../assets/js/admin/reviews.js?v=20260613-reject-modal-2">
     </script>
   </body>
 </html>

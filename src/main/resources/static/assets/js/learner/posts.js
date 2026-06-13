@@ -86,6 +86,16 @@
     });
   }
 
+  function pageRows(rows) {
+    totalElements = rows.length;
+    totalPages = Math.max(1, Math.ceil(totalElements / pageSize));
+    if (currentPage >= totalPages) currentPage = totalPages - 1;
+    if (currentPage < 0) currentPage = 0;
+
+    const start = currentPage * pageSize;
+    return rows.slice(start, start + pageSize);
+  }
+
   async function cancelPost(id) {
     if (!confirm('Hủy bài đăng này?')) return;
     await ApiClient.patch('/api/learner/posts/' + encodeURIComponent(id) + '/cancel', {});
@@ -130,8 +140,8 @@
   }
 
   async function loadApplications(postId) {
-    const rows = await ApiClient.get('/api/learner/posts/' + encodeURIComponent(postId) + '/applications');
-    renderApplications(ApiClient.asArray(rows));
+    const rows = await ApiClient.getAll('/api/learner/posts/' + encodeURIComponent(postId) + '/applications', { size: pageSize });
+    renderApplications(rows);
   }
 
   async function decideApplication(applicationId, accepted) {
@@ -156,12 +166,13 @@
   }
 
   function render() {
-    const rows = filterRows(allRows);
+    const filteredRows = filterRows(allRows);
+    const rows = pageRows(filteredRows);
     if (countEl) countEl.textContent = totalElements + ' bài đăng';
 
     if (!rows.length) {
       DomUtils.setHtml(listEl, '<div class="mini-item"><h4>Không có dữ liệu</h4><p>Không có bài đăng ở bộ lọc hiện tại.</p></div>');
-      UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
+      UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; render(); });
       return;
     }
 
@@ -195,7 +206,7 @@
         '</article>';
     }).join(''));
 
-    UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; load(); });
+    UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; render(); });
 
     listEl.querySelectorAll('button[data-cancel]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -212,14 +223,9 @@
 
   async function load() {
     try {
-      const query = { page: currentPage, size: pageSize };
+      const query = { size: pageSize };
       if (currentFilter !== 'ALL' && currentFilter !== 'CANCELLED') query.approvalStatus = currentFilter;
-      const page = await ApiClient.get('/api/learner/posts', query);
-      const info = UiUtils.pageInfo(page);
-      allRows = info.content;
-      currentPage = info.page;
-      totalPages = info.totalPages;
-      totalElements = info.totalElements;
+      allRows = await ApiClient.getAll('/api/learner/posts', query);
       render();
     } catch (err) {
       if (countEl) countEl.textContent = 'Không tải được dữ liệu';

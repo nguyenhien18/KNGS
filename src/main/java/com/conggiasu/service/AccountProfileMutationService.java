@@ -25,7 +25,7 @@ public class AccountProfileMutationService {
         if (request.getPhone() != null) {
             String phone = normalizeBlank(request.getPhone());
             if (phone != null && userRepository.existsByPhoneAndIdNot(phone, user.getId())) {
-                throw new AppException(HttpStatus.CONFLICT, "Số điện thoại da ton tai");
+                throw new AppException(HttpStatus.CONFLICT, "Số điện thoại đã tồn tại");
             }
             user.setPhone(phone);
         }

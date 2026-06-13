@@ -2,32 +2,51 @@
 .admin-dashboard-page .dashboard-grid {
   margin-top: 24px;
 }
-
 .admin-reviews-page .review-tabs {
   max-width: 860px;
 }
-
 .admin-reviews-page .tab-count {
   margin-left: 8px;
 }
-
 .admin-reviews-page .review-section-header {
   margin-bottom: 12px;
 }
-
 .admin-reviews-page .review-section-title {
   margin: 0;
 }
-
 .admin-reviews-page .review-detail-modal {
   max-width: 760px;
 }
-
+.admin-reviews-page .reject-reason-modal {
+  max-width: 520px;
+}
+.admin-reviews-page .reject-reason-form {
+  display: grid;
+  gap: 14px;
+}
+.admin-reviews-page .reject-reason-form .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--secondary-800);
+  font-weight: 700;
+}
+.admin-reviews-page .reject-reason-form textarea {
+  min-height: 126px;
+  resize: vertical;
+}
+.admin-reviews-page .reject-reason-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+.admin-reviews-page .reject-reason-actions .btn {
+  min-width: 116px;
+}
 .admin-users-page .admin-users-shell {
   display: grid;
   gap: 20px;
 }
-
 .admin-users-page .admin-filter-card {
   padding: 22px;
   border-radius: 10px;
@@ -35,21 +54,18 @@
   border: 1px solid #e5e7eb;
   box-shadow: none;
 }
-
 .admin-users-page .admin-filter-grid {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 180px;
   gap: 16px;
   align-items: end;
 }
-
 .admin-users-page .admin-filter-grid .field label {
   display: block;
   margin-bottom: 8px;
   font-weight: 700;
   color: var(--secondary-800);
 }
-
 .admin-users-page .admin-filter-grid select {
   height: 46px;
   border: 1px solid var(--secondary-300);
@@ -58,14 +74,12 @@
   background: #fff;
   font-size: 16px;
 }
-
 .admin-users-page .admin-filter-grid .btn {
   height: 46px;
   border-radius: 10px;
   font-size: 16px;
   font-weight: 700;
 }
-
 .admin-users-page .users-toolbar {
   display: flex;
   align-items: center;
@@ -75,16 +89,13 @@
   font-size: 14px;
   padding: 0 4px;
 }
-
 .admin-users-page .users-toolbar strong {
   color: var(--secondary-900);
 }
-
 .admin-users-page .users-grid {
   display: grid;
   gap: 12px;
 }
-
 .admin-users-page .user-card {
   padding: 14px 16px;
   display: grid;
@@ -92,11 +103,9 @@
   gap: 14px;
   align-items: center;
 }
-
 .admin-users-page .user-main {
   min-width: 0;
 }
-
 .admin-users-page .user-headline {
   display: flex;
   align-items: center;
@@ -104,7 +113,6 @@
   flex-wrap: wrap;
   margin-bottom: 8px;
 }
-
 .admin-users-page .user-name {
   margin: 0;
   font-size: 22px;
@@ -112,7 +120,6 @@
   line-height: 1.15;
   color: var(--secondary-900);
 }
-
 .admin-users-page .user-email {
   margin: 0 0 8px;
   color: var(--secondary-600);
@@ -120,7 +127,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .admin-users-page .user-meta {
   display: flex;
   gap: 16px;
@@ -128,49 +134,40 @@
   font-size: 14px;
   color: var(--secondary-700);
 }
-
 .admin-users-page .user-meta b {
   color: var(--secondary-900);
 }
-
 .admin-users-page .user-action {
   min-width: 132px;
   white-space: nowrap;
 }
-
 .admin-lookups-page .page-section {
   max-width: 1240px;
 }
-
 .admin-lookups-page .heading h1 {
   font-size: 42px;
   line-height: 1.15;
   margin-bottom: 8px;
 }
-
 .admin-lookups-page .heading p {
   font-size: 16px;
   color: var(--secondary-600);
 }
-
 .admin-lookups-page .lookup-grid {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
   gap: 18px;
   align-items: start;
 }
-
 .admin-lookups-page .lookup-panel {
   display: grid;
   gap: 12px;
   padding: 16px;
 }
-
 .admin-lookups-page .lookup-list {
   display: grid;
   gap: 10px;
 }
-
 .admin-lookups-page .lookup-item {
   border: 1px solid var(--secondary-200);
   border-radius: 10px;
@@ -181,7 +178,6 @@
   justify-content: space-between;
   gap: 10px;
 }
-
 .admin-lookups-page .lookup-name {
   margin: 0;
   font-size: 20px;
@@ -190,51 +186,41 @@
   line-height: 1.25;
   text-transform: none;
 }
-
 .admin-lookups-page .lookup-actions {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
-
-.admin-lookups-page .lookup-actions .btn,
-.admin-lookups-page .lookup-panel .section-heading-split .btn {
+.admin-lookups-page .lookup-actions .btn, .admin-lookups-page .lookup-panel .section-heading-split .btn {
   border-radius: 10px;
   font-weight: 600;
 }
-
 .admin-lookups-page .lookup-actions .btn {
   min-width: 88px;
   height: 36px;
   font-size: 15px;
   padding: 0 12px;
 }
-
 .admin-lookups-page .lookup-panel .section-heading-split .btn {
   height: 40px;
   font-size: 16px;
 }
-
 .admin-lookups-page .modal-box.modal-md {
   max-width: 480px;
 }
-
 .admin-lookups-page .modal-body .form-group label {
   font-size: 15px;
   font-weight: 600;
   color: var(--secondary-700);
 }
-
 .admin-lookups-page .modal-body .form-group input {
   height: 42px;
   font-size: 16px;
   border-radius: 10px;
 }
-
 .admin-lookups-page .modal-body .form-actions {
   margin-top: 18px;
 }
-
 .admin-lookups-page .modal-body .form-actions .btn {
   height: 38px;
   min-width: 88px;
@@ -242,64 +228,50 @@
   font-size: 15px;
   font-weight: 600;
 }
-
 @media (max-width: 1024px) {
   .admin-lookups-page .lookup-grid {
     grid-template-columns: 1fr;
   }
-
   .admin-lookups-page .heading h1 {
     font-size: 36px;
   }
 }
-
 @media (max-width: 900px) {
   .admin-users-page .admin-filter-grid {
     grid-template-columns: 1fr 1fr;
   }
-
   .admin-users-page .admin-filter-grid .btn {
     grid-column: 1 / -1;
   }
 }
-
 @media (max-width: 700px) {
-  .admin-users-page .admin-filter-grid,
-  .admin-users-page .user-card {
+  .admin-users-page .admin-filter-grid, .admin-users-page .user-card {
     grid-template-columns: 1fr;
   }
-
   .admin-users-page .user-email {
     white-space: normal;
   }
-
   .admin-users-page .user-action {
     width: 100%;
   }
 }
-
 @media (max-width: 640px) {
   .admin-lookups-page .heading h1 {
     font-size: 30px;
   }
-
   .admin-lookups-page .heading p {
     font-size: 15px;
   }
-
   .admin-lookups-page .lookup-item {
     flex-direction: column;
     align-items: flex-start;
   }
-
   .admin-lookups-page .lookup-name {
     font-size: 17px;
   }
-
   .admin-lookups-page .lookup-actions {
     width: 100%;
   }
-
   .admin-lookups-page .lookup-actions .btn {
     flex: 1;
     min-width: 0;

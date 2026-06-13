@@ -75,10 +75,10 @@ public class AuthRegistrationService {
 
     private void validateUniqueCredentials(String email, String phone) {
         if (userRepository.existsByEmail(email)) {
-            throw new AppException(HttpStatus.CONFLICT, "Email da ton tai");
+            throw new AppException(HttpStatus.CONFLICT, "Email đã tồn tại");
         }
         if (phone != null && userRepository.existsByPhone(phone)) {
-            throw new AppException(HttpStatus.CONFLICT, "Số điện thoại da ton tai");
+            throw new AppException(HttpStatus.CONFLICT, "Số điện thoại đã tồn tại");
         }
     }
 }

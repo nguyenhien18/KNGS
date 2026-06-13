@@ -3,6 +3,7 @@
 
   UiUtils.renderHeader();
 
+  const common = MyClassesCommon;
   const listEl = document.getElementById('myClassesList');
   const countEl = document.getElementById('myClassesCount');
   const sourceFilterSelect = document.getElementById('sourceFilterSelect');
@@ -12,12 +13,7 @@
   const studentsModalContent = document.getElementById('studentsModalContent');
   const closeStudentsModalButton = document.getElementById('closeStudentsModalButton');
 
-  const params = new URLSearchParams(location.search);
-  const focusSource = params.get('source');
-  const focusId = params.get('id');
-  const focusCourseId = params.get('courseId');
-  const focusClassId = params.get('classId');
-  const focusPostId = params.get('postId');
+  const focus = common.readFocus();
 
   let allItems = [];
   const paginationEl = UiUtils.ensurePaginationAfter(listEl, 'tutorMyClassesPagination');
@@ -40,31 +36,11 @@
     });
   }
 
-  function toDate(value) {
-    return FormatUtils.formatDate(value);
-  }
-
   function statusTextByCourse(raw) {
     if (raw === 'OPEN' || raw === 'CLOSED' || raw === 'IN_PROGRESS') return 'Đang học';
     if (raw === 'COMPLETED') return 'Đã hoàn thành';
     if (raw === 'CANCELLED') return 'Đã hủy';
     return raw || '---';
-  }
-
-  function statusTextByMatched(raw, waitingForMyConfirmation) {
-    if (raw === 'ASSIGNED' || raw === 'IN_PROGRESS') return 'Đang học';
-    if (raw === 'COMPLETION_REQUESTED') return waitingForMyConfirmation ? 'Cần xác nhận hoàn thành' : 'Chờ xác nhận hoàn thành';
-    if (raw === 'COMPLETED') return 'Đã hoàn thành';
-    if (raw === 'CANCELLATION_REQUESTED') return waitingForMyConfirmation ? 'Cần xác nhận hủy' : 'Chờ xác nhận hủy';
-    if (raw === 'CANCELLED') return 'Đã hủy';
-    return raw || '---';
-  }
-
-  function statusBadgeByMatched(raw) {
-    if (raw === 'COMPLETED') return 'badge-success';
-    if (raw === 'CANCELLED') return 'badge-gray';
-    if (raw === 'COMPLETION_REQUESTED' || raw === 'CANCELLATION_REQUESTED') return 'badge-warning';
-    return 'badge-primary';
   }
 
   function buildFromTutorCourses(rows) {
@@ -106,13 +82,13 @@
         title: c.postTitle || 'Lớp từ bài đăng',
         sub: 'Học viên: ' + (c.learnerName || '---'),
         meta1: 'Mã lớp: #' + (c.classId || '-'),
-        meta2: 'Bắt đầu: ' + toDate(c.startDate || c.assignedAt),
-        meta3: 'Kết thúc: ' + toDate(c.endDate),
-        statusText: statusTextByMatched(s, waitingForMyConfirmation),
+        meta2: 'Bắt đầu: ' + common.toDate(c.startDate || c.assignedAt),
+        meta3: 'Kết thúc: ' + common.toDate(c.endDate),
+        statusText: common.matchedStatusText(s, waitingForMyConfirmation),
         learnerName: c.learnerName,
         learnerEmail: c.learnerEmail,
         learnerPhone: c.learnerPhone,
-        badgeClass: statusBadgeByMatched(s)
+        badgeClass: common.matchedBadgeClass(s)
       };
     });
   }
@@ -128,51 +104,11 @@
   }
 
   function applyFocusFiltersIfNeeded() {
-    if (!focusSource && !focusId && !focusCourseId && !focusClassId && !focusPostId) return;
-
-    let found = null;
-    if (focusSource && focusId) {
-      found = allItems.find(function (item) {
-        return String(item.source) === String(focusSource) && String(item.itemId) === String(focusId);
-      });
-    }
-    if (!found && focusCourseId) {
-      found = allItems.find(function (item) {
-        return item.source === 'COURSE' && String(item.itemId) === String(focusCourseId);
-      });
-    }
-    if (!found && focusClassId) {
-      found = allItems.find(function (item) {
-        return item.source === 'MATCHED' && String(item.itemId) === String(focusClassId);
-      });
-    }
-    if (!found && focusPostId) {
-      found = allItems.find(function (item) {
-        return item.source === 'MATCHED' && String(item.postId) === String(focusPostId);
-      });
-    }
+    const found = common.findFocusItem(allItems, focus);
     if (!found) return;
 
     setActiveSourceFilter('ALL');
-    if (found.state === 'COMPLETED') {
-      setActiveStatusTab('COMPLETED');
-    } else if (found.state === 'CANCELLED') {
-      setActiveStatusTab('CANCELLED');
-    } else {
-      setActiveStatusTab('ACTIVE');
-    }
-  }
-
-  function visibleItems() {
-    return allItems.filter(function (item) {
-      if (sourceFilter !== 'ALL' && item.source !== sourceFilter) return false;
-      if (stateFilter !== 'ALL' && item.state !== stateFilter) return false;
-      return true;
-    });
-  }
-
-  function sourceText(source) {
-    return source === 'MATCHED' ? 'Lớp từ bài đăng' : 'Lớp gia sư mở';
+    setActiveStatusTab(common.stateForFocus(found));
   }
 
   async function completeCourseWithoutStartStep(courseId, rawStatus) {
@@ -279,8 +215,7 @@
   }
 
   async function openStudentsModalByCourse(courseId) {
-    const enrollmentsRaw = await ApiClient.get('/api/tutor/courses/' + encodeURIComponent(courseId) + '/enrollments');
-    const rows = asArray(enrollmentsRaw);
+    const rows = await ApiClient.getAll('/api/tutor/courses/' + encodeURIComponent(courseId) + '/enrollments', { size: 10 });
 
     if (!rows.length) {
       setHtml(studentsModalContent, '<p>Chưa có học viên nào trong lớp này.</p>');
@@ -323,10 +258,12 @@
   }
 
   function render() {
-    const allVisible = visibleItems();
-    const totalPages = Math.max(1, Math.ceil(allVisible.length / pageSize));
-    if (currentPage >= totalPages) currentPage = totalPages - 1;
-    const rows = allVisible.slice(currentPage * pageSize, currentPage * pageSize + pageSize);
+    const allVisible = common.filterItems(allItems, sourceFilter, stateFilter);
+    const page = common.paginate(allVisible, currentPage, pageSize);
+    const totalPages = page.totalPages;
+    currentPage = page.page;
+    const rows = page.rows;
+    const focusItem = common.findFocusItem(allItems, focus);
     if (countEl) countEl.textContent = allVisible.length + ' lớp';
 
     if (!rows.length) {
@@ -340,64 +277,12 @@
     }
 
     setHtml(listEl, rows.map(function (item) {
-      const focusBySourceId = focusSource && focusId
-        && String(item.source) === String(focusSource)
-        && String(item.itemId) === String(focusId);
-      const focusByCourseId = focusCourseId && item.source === 'COURSE' && String(item.itemId) === String(focusCourseId);
-      const focusByClassId = focusClassId && item.source === 'MATCHED' && String(item.itemId) === String(focusClassId);
-      const focusByPostId = focusPostId && item.source === 'MATCHED' && String(item.postId) === String(focusPostId);
-      const focusClass = (focusBySourceId || focusByCourseId || focusByClassId || focusByPostId)
-        ? ' is-focused'
-        : '';
-      return '<article class="list-card' + focusClass + '" data-source="' + safe(item.source) + '" data-item-id="' + safe(item.itemId) + '">' +
-        '<div class="badge-row">' +
-          '<span class="badge badge-gray">' + safe(sourceText(item.source)) + '</span>' +
-          '<span class="badge ' + safe(item.badgeClass) + '">' + safe(item.statusText) + '</span>' +
-        '</div>' +
-        '<h3 class="card-title">' + safe(item.title) + '</h3>' +
-        '<p class="muted">' + safe(item.sub) + '</p>' +
-        '<div class="info-grid">' +
-          '<div class="info-box"><strong>Thông tin 1</strong><span>' + safe(item.meta1) + '</span></div>' +
-          '<div class="info-box"><strong>Thông tin 2</strong><span>' + safe(item.meta2) + '</span></div>' +
-          '<div class="info-box"><strong>Thông tin 3</strong><span>' + safe(item.meta3) + '</span></div>' +
-          '<div class="info-box"><strong>Nhóm lớp</strong><span>' + safe(sourceText(item.source)) + '</span></div>' +
-        '</div>' +
-        '<div class="card-actions"><span class="muted">Trạng thái học tập: ' + safe(item.statusText) + '</span><div class="manage-action-group">' + actionButtons(item) + '</div></div>' +
-      '</article>';
+      return common.renderClassCard(item, actionButtons(item), common.focusClass(item, focusItem));
     }).join(''));
 
     UiUtils.renderSimplePagination(paginationEl, { page: currentPage, totalPages: totalPages }, function (nextPage) { currentPage = nextPage; render(); });
 
-    if (focusSource || focusId || focusCourseId || focusClassId || focusPostId) {
-      let targetItem = null;
-      if (focusSource && focusId) {
-        targetItem = allItems.find(function (item) {
-          return String(item.source) === String(focusSource) && String(item.itemId) === String(focusId);
-        });
-      }
-      if (!targetItem && focusCourseId) {
-        targetItem = allItems.find(function (item) {
-          return item.source === 'COURSE' && String(item.itemId) === String(focusCourseId);
-        });
-      }
-      if (!targetItem && focusClassId) {
-        targetItem = allItems.find(function (item) {
-          return item.source === 'MATCHED' && String(item.itemId) === String(focusClassId);
-        });
-      }
-      if (!targetItem && focusPostId) {
-        targetItem = allItems.find(function (item) {
-          return item.source === 'MATCHED' && String(item.postId) === String(focusPostId);
-        });
-      }
-
-      let selector = '';
-      if (targetItem) {
-        selector = '[data-source="' + String(targetItem.source).replace(/"/g, '') + '"][data-item-id="' + String(targetItem.itemId).replace(/"/g, '') + '"]';
-      }
-      const el = selector ? listEl.querySelector(selector) : null;
-      if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    common.scrollToFocus(listEl, focusItem);
 
     listEl.querySelectorAll('button[data-class-id][data-action]').forEach(function (button) {
       button.addEventListener('click', function () {
@@ -449,17 +334,17 @@
   async function load() {
     try {
       const [courses, matched] = await Promise.all([
-        ApiClient.get('/api/tutor/courses', { page: 0, size: 50 }),
-        ApiClient.get('/api/tutor/matched-classes', { page: 0, size: 50 })
+        ApiClient.getAll('/api/tutor/courses', { size: 10 }),
+        ApiClient.getAll('/api/tutor/matched-classes', { size: 10 })
       ]);
-      const courseRows = asArray(courses);
+      const courseRows = courses;
       const activeCourseIds = courseRows
         .map(function (course) { return course && (course.courseId || course.id); })
         .filter(Boolean);
 
       const enrollmentChecks = await Promise.all(activeCourseIds.map(async function (courseId) {
         try {
-          const rows = await ApiClient.get('/api/tutor/courses/' + encodeURIComponent(courseId) + '/enrollments');
+          const rows = await ApiClient.getAll('/api/tutor/courses/' + encodeURIComponent(courseId) + '/enrollments', { size: 10 });
           return { courseId: String(courseId), ok: hasAcceptedLearner(rows) };
         } catch (_) {
           return { courseId: String(courseId), ok: false };
@@ -504,4 +389,3 @@
 
   load();
 })();
-
