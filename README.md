@@ -33,7 +33,6 @@ Copy-Item secrets-local.example.properties secrets-local.properties
 - `APP_LIMITS_LEARNER_POSTS_PER_DAY`
 - `APP_LIMITS_TUTOR_COURSES_PER_DAY`
 
-`application.properties` đang cấu hình `spring.jpa.hibernate.ddl-auto=update`, nên Hibernate có thể tự cập nhật bảng khi chạy local. File SQL tham khảo nằm ở `src/main/resources/sql/ket_noi_gia_su.sql`.
 
 ## Chạy Dự Án
 
@@ -79,8 +78,4 @@ Tất cả tài khoản mẫu dùng mật khẩu `12345678`.
 - Gia sư chờ duyệt: `giasu5@gmail.com`
 - Gia sư bị khóa: `giasu6@gmail.com`
 
-## Ghi Chú Bảo Mật
 
-- Không commit `secrets-local.properties`.
-- Không dùng `JWT_SECRET` mặc định khi deploy.
-- Tài khoản admin seed chỉ nên bật khi đã đặt password an toàn.
