@@ -260,7 +260,8 @@
 
   if (rejectReasonModal) {
     rejectReasonModal.addEventListener('click', function (event) {
-      if (event.target === rejectReasonModal || event.target.closest('[data-reject-close="true"]')) {
+      const closeControl = event.target.closest('[data-reject-close="true"]');
+      if (event.target === rejectReasonModal || (closeControl && closeControl !== rejectReasonModal)) {
         closeRejectReasonModal(null);
       }
     });

@@ -70,7 +70,7 @@ function asArray(value) {
 
     DomUtils.setHtml(listEl, rows.map((item) => {
       return `
-        <article class="manage-card" data-course-id="${safe(item.courseId)}" data-approval-status="${safe(item.approvalStatus || '')}">
+        <article class="manage-card" data-course-id="${safe(item.courseId)}" data-approval-status="${safe(item.approvalStatus || '')}" data-course-status="${safe(item.status || '')}">
           <div class="manage-card-top">
             <div>
               <div class="manage-badge-row">
@@ -167,6 +167,7 @@ function asArray(value) {
     if (!card) return;
     const courseId = card.dataset.courseId;
     const approvalStatus = String(card.dataset.approvalStatus || '').toUpperCase();
+    const courseStatus = String(card.dataset.courseStatus || '').toUpperCase();
 
     if (btn) {
       activeCourseId = courseId;
@@ -185,8 +186,8 @@ function asArray(value) {
     }
 
     if (viewPostBtn) {
-      if (approvalStatus !== 'APPROVED') {
-        alert('Bài đăng chưa được duyệt.');
+      if (approvalStatus !== 'APPROVED' || courseStatus !== 'OPEN') {
+        alert('Hi\u1ec7n kh\u00f4ng th\u1ec3 xem b\u00e0i \u0111\u0103ng n\u00e0y.');
         return;
       }
       location.href = '/lop-chi-tiet.html?id=' + encodeURIComponent(courseId);
